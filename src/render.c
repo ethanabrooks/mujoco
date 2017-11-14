@@ -41,6 +41,21 @@ int initMujoco(mjModel* m, mjData* d, RenderContext* context) {
       mjr_makeContext(m, &context->con, 200);
 }
 
+int setCamera(int camid, mjModel* m, mjData* d, RenderContext* context) {
+      mjvScene scn = context->scn;
+      mjvCamera cam = context->cam;
+      mjvOption opt = context->opt;
+
+      cam.fixedcamid = camid;
+      if (camid = 0) {
+        cam.type = mjCAMERA_FIXED;
+      } else {
+        cam.type = mjCAMERA_FREE;
+      }
+
+      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
+}
+
 int renderOffscreen(unsigned char* rgb, int height, int width,
     mjModel* m, mjData* d, RenderContext* context) {
 
