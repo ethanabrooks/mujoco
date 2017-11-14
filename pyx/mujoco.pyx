@@ -3,9 +3,10 @@ import numpy as np
 from codecs import encode
 from enum import Enum
 
+cimport numpy as np
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id
-from pxd.mjmodel cimport mjModel, mjtObj
+from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
@@ -61,31 +62,51 @@ class Types(Enum):
     KEY = 22        # keyframe
 
 
+cdef class Model(object):
+    cdef mjModel * ptr
+    cdef mjOption opt
+    cdef int nq
+    cdef int nv
+    cdef np.ndarray actuator_ctrlrange
+
+    def __cinit__(self, const char * fullpath):
+        self.ptr = loadModel(fullpath)
+        self.opt = self.ptr.opt
+        self.nq = self.ptr.nq
+        self.nv = self.ptr.nv
+        self.actuator_ctrlrange = np.array([self.ptr.actuator_ctrlrange[i]
+                                            for i in range(self.ptr.nu)])
+
+
+def load_model_from_path(fullpath):
+    return Model(encode(fullpath))
+
+
 cdef class Sim(object):
     cdef GLFWwindow * window
-    cdef mjModel * model
     cdef mjData * data
     cdef RenderContext context
+    cdef Model model
 
     def __cinit__(self, filepath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
         self.window = initGlfw()
-        self.model = loadModel(encode(filepath))
-        self.data = mj_makeData(self.model)
-        initMujoco(self.model, self.data, & self.context)
+        self.model = load_model_from_path(filepath)
+        self.data = mj_makeData(self.model.ptr)
+        initMujoco(self.model.ptr, self.data, & self.context)
 
     def __enter__(self):
         pass
 
     def __exit__(self, *args):
-        closeMujoco(self.model, self.data, & self.context)
+        closeMujoco(self.model.ptr, self.data, & self.context)
 
     def render_offscreen(self, height, width, camera_name):
         camid = self.get_id(Types.CAMERA, camera_name)
-        array = np.zeros(height * width * 3, dtype=np.uint8)
+        array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        renderOffscreen(camid, & view[0], height, width, self.model, self.data,
+        renderOffscreen(camid, & view[0], height, width, self.model.ptr, self.data,
                         & self.context)
         return array.reshape(height, width, 3)
 
@@ -94,14 +115,14 @@ cdef class Sim(object):
             camid = -1
         else:
             camid = self.get_id(Types.CAMERA, camera_name)
-        return renderOnscreen(camid, self.window, self.model, self.data, & self.context)
+        return renderOnscreen(camid, self.window, self.model.ptr, self.data, & self.context)
 
     def step(self):
-        mj_step(self.model, self.data)
+        mj_step(self.model.ptr, self.data)
 
     def get_id(self, obj_type, name):
         assert type(obj_type) == Types, type(obj_type)
-        return mj_name2id(self.model, obj_type.value, encode(name))
+        return mj_name2id(self.model.ptr, obj_type.value, encode(name))
 
     def get_qpos(self, obj, name):
         return self.data.qpos[self.get_id(obj, name)]
@@ -109,4 +130,4 @@ cdef class Sim(object):
     def get_xpos(self, obj, name):
         """ Need to call mj_forward first """
         id = self.get_id(obj, name)
-        return [self.data.xpos[3 * (id + i)] for i in range(3)]
+        return np.array([self.data.xpos[3 * (id + i)] for i in range(3)])
