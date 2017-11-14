@@ -5,7 +5,8 @@ from enum import Enum
 
 cimport numpy as np
 from cython cimport view
-from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id, mj_resetData
+from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id, \
+        mj_resetData, mj_forward
 from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
@@ -62,7 +63,7 @@ class Types(Enum):
     KEY = 22        # keyframe
 
 
-cdef asarray(float* ptr, size_t size):
+cdef asarray(float * ptr, size_t size):
     cdef float[:] view = <float[:size] > ptr
     return np.asarray(view)
 
@@ -70,7 +71,7 @@ cdef asarray(float* ptr, size_t size):
 cdef class Sim(object):
     cdef GLFWwindow * window
     cdef mjData * data
-    cdef mjModel* model
+    cdef mjModel * model
     cdef RenderContext context
     cdef float timesteps
     cdef int nq
@@ -94,10 +95,10 @@ cdef class Sim(object):
         self.nv = self.model.nv
         self.nu = self.model.nu
         ptr = self.model.actuator_ctrlrange
-        self.actuator_ctrlrange = asarray(<float*> ptr, self.model.nu)
-        self.qpos = asarray(<float*> self.data.qpos, self.nq)
-        self.qvel = asarray(<float*> self.data.qvel, self.nv)
-        self.ctrl = asarray(<float*> self.data.ctrl, self.nu)
+        self.actuator_ctrlrange = asarray( < float*> ptr, self.model.nu)
+        self.qpos = asarray( < float*> self.data.qpos, self.nq)
+        self.qvel = asarray( < float*> self.data.qvel, self.nv)
+        self.ctrl = asarray( < float*> self.data.ctrl, self.nu)
 
     # @property
     # def actuator_ctrlrange(self):
@@ -144,7 +145,10 @@ cdef class Sim(object):
         mj_step(self.model, self.data)
 
     def reset(self):
-         mj_resetData(self.model, self.data)
+        mj_resetData(self.model, self.data)
+
+    def forward(self):
+        mj_forward(self.model, self.data)
 
     def get_id(self, obj_type, name):
         assert type(obj_type) == Types, type(obj_type)
