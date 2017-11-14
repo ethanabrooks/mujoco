@@ -80,11 +80,14 @@ int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* con
       glfwSwapBuffers(window);
 }
 
-int closeMujoco(mjModel* m, mjData* d, mjrContext* con, mjvScene* scn) {
+int closeMujoco(mjModel* m, mjData* d, RenderContext* context) {
+    mjvScene scn = context->scn;
+    mjrContext con = context->con;
+
     mj_deleteData(d);
     mj_deleteModel(m);
-    mjr_freeContext(con);
-    mjv_freeScene(scn);
+    mjr_freeContext(&con);
+    mjv_freeScene(&scn);
     mj_deactivate();
 }
 
@@ -128,7 +131,7 @@ int main(int argc, const char** argv)
 
     fclose(fp);
     free(rgb);
-    closeMujoco(m, d, &context.con, &context.scn);
+    closeMujoco(m, d, &context);
 
     return 0;
 }
