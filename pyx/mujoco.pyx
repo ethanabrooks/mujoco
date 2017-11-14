@@ -74,8 +74,17 @@ cdef class Model(object):
         self.opt = self.ptr.opt
         self.nq = self.ptr.nq
         self.nv = self.ptr.nv
-        self.actuator_ctrlrange = np.array([self.ptr.actuator_ctrlrange[i]
-                                            for i in range(self.ptr.nu)])
+        cdef size_t nu = self.ptr.nu
+        cdef double[:] view = <double[:nu] > self.ptr.actuator_ctrlrange
+        self.actuator_ctrlrange = np.asarray(view)
+
+cdef class Data(object):
+    cdef mjtNum * qpos
+    cdef mjtNum * qvel
+    cdef mjtNum * ctrl
+
+    def __cinit__(self):
+        pass
 
 
 def load_model_from_path(fullpath):
