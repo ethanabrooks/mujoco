@@ -56,9 +56,9 @@ int setCamera(int camid, mjModel* m, mjData* d, RenderContext* context) {
       mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
 }
 
-int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* context) {
+int renderOnscreen(int camid, GLFWwindow* window, mjModel* m, mjData* d, RenderContext* context) {
 
-      setCamera(-1, m, d, context);
+      setCamera(camid, m, d, context);
 
       mjvScene scn = context->scn;
       mjrContext con = context->con;
@@ -74,9 +74,9 @@ int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* con
       glfwSwapBuffers(window);
 }
 
-int renderOffscreen(unsigned char* rgb, int height, int width,
+int renderOffscreen(int camid, unsigned char* rgb, int height, int width,
     mjModel* m, mjData* d, RenderContext* context) {
-      setCamera(0, m, d, context);
+      setCamera(camid, m, d, context);
 
       mjvScene scn = context->scn;
       mjrContext con = context->con;
@@ -135,9 +135,9 @@ int main(int argc, const char** argv)
 
     // main loop
     for( int i = 0; i < 10; i++) {
-      renderOffscreen(rgb, H, W, m, d, &context);
+      renderOffscreen(0, rgb, H, W, m, d, &context);
       fwrite(rgb, 3, H * W, fp);
-      renderOnscreen(window, m, d, &context);
+      renderOnscreen(-1, window, m, d, &context);
       mj_step(m, d);
     }
     printf("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n", H, W);

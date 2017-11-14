@@ -11,8 +11,6 @@ from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 
 
-# TODO: make rendercontext struct
-# TODO: make camera a settable param
 # TODO: integrate with hsr_gym
 # TODO: get GPU working
 
