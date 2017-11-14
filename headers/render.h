@@ -4,6 +4,13 @@
 #include "mujoco.h"
 #include "glfw3.h"
 
+typedef struct render_context_t {
+    mjvScene* scene;
+    mjrContext* context;
+    mjvCamera* camera;
+    mjvOption* option;
+} RenderContext;
+
 GLFWwindow* initGlfw();
 mjModel* loadModel(const char* filepath);
 int initMujoco(mjModel* m, mjData* d, mjvScene* scn, 

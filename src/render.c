@@ -1,3 +1,4 @@
+#include "render.h"
 #include "mujoco.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -83,8 +84,8 @@ int main(int argc, const char** argv)
 {
     int H = 800;
     int W = 800;
-    char const* filepath = "humanoid.xml";
-    char const* keypath = "mjkey.txt";
+    char const* filepath = "xml/humanoid.xml";
+    char const* keypath = "../.mujoco/mjkey.txt";
     mjModel* m;
     mjData* d;
     mjvScene scn;
@@ -104,18 +105,18 @@ int main(int argc, const char** argv)
         mju_error("Could not allocate buffers");
 
     // create output rgb file
-    FILE* fp = fopen("rgb.out", "wb");
+    FILE* fp = fopen("build/rgb.out", "wb");
     if( !fp )
         mju_error("Could not open rgbfile for writing");
 
     // main loop
-    for( int i = 0; i < 500; i++) {
+    for( int i = 0; i < 50; i++) {
       renderOffscreen(rgb, H, W, m, d, &scn, &con, &cam, &opt);
       fwrite(rgb, 3, H * W, fp);
       renderOnscreen(window, m, d, &scn, &con, &cam, &opt);
       mj_step(m, d);
     }
-    printf("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i rgb.out -vf 'vflip' video.mp4\n", H, W);
+    printf("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n", H, W);
 
     fclose(fp);
     free(rgb);

@@ -2,9 +2,10 @@
 from mujoco import Sim, MjtObj
 
 sim = Sim("xml/humanoid.xml")
-print(sim.get_qpos(MjtObj.BODY, 'torso'))
+# print(sim.get_xpos(MjtObj.BODY, 'worldbody'))
+# print(sim.get_xpos(MjtObj.BODY, 'left_lower_arm'))
 
-# while True: 
-    # sim.render()
-    # sim.step()
-    # print(sim.render_offscreen(4, 4))
+while True: 
+    sim.render()
+    sim.step()
+    sim.render_offscreen(4, 4)
