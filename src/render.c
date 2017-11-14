@@ -42,18 +42,18 @@ int initMujoco(mjModel* m, mjData* d, RenderContext* context) {
 }
 
 int setCamera(int camid, mjModel* m, mjData* d, RenderContext* context) {
-      mjvScene scn = context->scn;
-      mjvCamera cam = context->cam;
-      mjvOption opt = context->opt;
+      mjvScene* scn = &(context->scn);
+      mjvCamera* cam = &(context->cam);
+      mjvOption* opt = &(context->opt);
 
-      cam.fixedcamid = camid;
-      if (camid = 0) {
-        cam.type = mjCAMERA_FIXED;
+      cam->fixedcamid = camid;
+      if (camid = -1) {
+        cam->type = mjCAMERA_FREE;
       } else {
-        cam.type = mjCAMERA_FREE;
+        cam->type = mjCAMERA_FIXED;
       }
 
-      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
+      mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
 }
 
 int renderOffscreen(unsigned char* rgb, int height, int width,
@@ -64,13 +64,14 @@ int renderOffscreen(unsigned char* rgb, int height, int width,
       mjvCamera cam = context->cam;
       mjvOption opt = context->opt;
       mjrRect viewport = {0, 0, height, width};
-      cam.fixedcamid = 0;
-      cam.type = mjCAMERA_FIXED;
+      cam.fixedcamid = -1;
+      cam.type = mjCAMERA_FREE;
 
       // write offscreen-rendered pixels to file
       mjr_setBuffer(mjFB_OFFSCREEN, &con);
       if( con.currentBuffer!=mjFB_OFFSCREEN )
           printf("Warning: offscreen rendering not supported, using default/window framebuffer\n");
+      /*printf("camid: %d\n", context->cam.fixedcamid);*/
       mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
       mjr_render(viewport, &scn, &con);
       mjr_readPixels(rgb, NULL, viewport, &con);
@@ -84,8 +85,8 @@ int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* con
       mjvOption opt = context->opt;
       mjrRect rect = {0, 0, 0, 0};
       glfwGetFramebufferSize(window, &rect.width, &rect.height);
-      cam.fixedcamid = -1;
-      cam.type = mjCAMERA_FREE;
+      cam.fixedcamid = 0;
+      cam.type = mjCAMERA_FIXED;
       mjr_setBuffer(mjFB_WINDOW, &con);
 
       if( con.currentBuffer!=mjFB_WINDOW )
@@ -136,7 +137,7 @@ int main(int argc, const char** argv)
         mju_error("Could not open rgbfile for writing");
 
     // main loop
-    for( int i = 0; i < 50; i++) {
+    for( int i = 0; i < 10; i++) {
       renderOffscreen(rgb, H, W, m, d, &context);
       fwrite(rgb, 3, H * W, fp);
       renderOnscreen(window, m, d, &context);
