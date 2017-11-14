@@ -44,35 +44,39 @@ int initMujoco(mjModel* m, mjData* d, RenderContext* context) {
 int renderOffscreen(unsigned char* rgb, int height, int width,
     mjModel* m, mjData* d, RenderContext* context) {
 
-      mjrRect viewport = {0, 0, height, width};
       mjvScene scn = context->scn;
       mjrContext con = context->con;
       mjvCamera cam = context->cam;
       mjvOption opt = context->opt;
-
-      (&cam)->fixedcamid = 0;
-      (&cam)->type = mjCAMERA_FIXED;
+      mjrRect viewport = {0, 0, height, width};
+      cam.fixedcamid = 0;
+      cam.type = mjCAMERA_FIXED;
 
       // write offscreen-rendered pixels to file
       mjr_setBuffer(mjFB_OFFSCREEN, &con);
-      if( (&con)->currentBuffer!=mjFB_OFFSCREEN )
+      if( con.currentBuffer!=mjFB_OFFSCREEN )
           printf("Warning: offscreen rendering not supported, using default/window framebuffer\n");
       mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
       mjr_render(viewport, &scn, &con);
       mjr_readPixels(rgb, NULL, viewport, &con);
 }
 
-int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, 
-    mjvScene* scn, mjrContext* con, mjvCamera* cam, mjvOption* opt) {
+int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* context) {
+
+      mjvScene scn = context->scn;
+      mjrContext con = context->con;
+      mjvCamera cam = context->cam;
+      mjvOption opt = context->opt;
       mjrRect rect = {0, 0, 0, 0};
       glfwGetFramebufferSize(window, &rect.width, &rect.height);
-      cam->fixedcamid = -1;
-      cam->type = mjCAMERA_FREE;
-      mjr_setBuffer(mjFB_WINDOW, con);
-      if( con->currentBuffer!=mjFB_WINDOW )
+      cam.fixedcamid = -1;
+      cam.type = mjCAMERA_FREE;
+      mjr_setBuffer(mjFB_WINDOW, &con);
+
+      if( con.currentBuffer!=mjFB_WINDOW )
           printf("Warning: window rendering not supported\n");
-      mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
-      mjr_render(rect, scn, con);
+      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
+      mjr_render(rect, &scn, &con);
       glfwSwapBuffers(window);
 }
 
@@ -117,7 +121,7 @@ int main(int argc, const char** argv)
     for( int i = 0; i < 50; i++) {
       renderOffscreen(rgb, H, W, m, d, &context);
       fwrite(rgb, 3, H * W, fp);
-      renderOnscreen(window, m, d, &context.scn, &context.con, &context.cam, &context.opt);
+      renderOnscreen(window, m, d, &context);
       mj_step(m, d);
     }
     printf("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n", H, W);
