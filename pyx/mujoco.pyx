@@ -76,10 +76,10 @@ cdef class Sim(object):
     cdef int nq
     cdef int nv
     cdef int nu
-    cdef np.ndarray _actuator_ctrlrange
-    cdef np.ndarray _qpos
-    cdef np.ndarray _qvel
-    cdef np.ndarray _ctrl
+    cdef np.ndarray actuator_ctrlrange
+    cdef np.ndarray qpos
+    cdef np.ndarray qvel
+    cdef np.ndarray ctrl
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -94,30 +94,30 @@ cdef class Sim(object):
         self.nv = self.model.nv
         self.nu = self.model.nu
         ptr = self.model.actuator_ctrlrange
-        self._actuator_ctrlrange = asarray(<float*> ptr, self.model.nu)
-        self._qpos = asarray(<float*> self.data.qpos, self.nq)
-        self._qvel = asarray(<float*> self.data.qvel, self.nv)
-        self._ctrl = asarray(<float*> self.data.ctrl, self.nu)
+        self.actuator_ctrlrange = asarray(<float*> ptr, self.model.nu)
+        self.qpos = asarray(<float*> self.data.qpos, self.nq)
+        self.qvel = asarray(<float*> self.data.qvel, self.nv)
+        self.ctrl = asarray(<float*> self.data.ctrl, self.nu)
 
-    @property
-    def actuator_ctrlrange(self):
-        return self._actuator_ctrlrange.copy()
+    # @property
+    # def actuator_ctrlrange(self):
+        # return self._actuator_ctrlrange.copy()
 
-    @property
-    def qpos(self):
-        return self._qpos.copy()
+    # @property
+    # def qpos(self):
+        # return self._qpos.copy()
 
     # @qpos.setter
     # def qpos(self, value):
-        # return self._qpos()
+        # return self._qpos[:] = value
 
-    @property
-    def qvel(self):
-        return self._qvel.copy()
+    # @property
+    # def qvel(self):
+        # return self._qvel.copy()
 
-    @property
-    def ctrl(self):
-        return self._ctrl.copy()
+    # @property
+    # def ctrl(self):
+        # return self._ctrl.copy()
 
     def __enter__(self):
         pass
