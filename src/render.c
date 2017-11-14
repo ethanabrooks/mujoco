@@ -41,11 +41,10 @@ int initMujoco(mjModel* m, mjData* d, RenderContext* context) {
       mjr_makeContext(m, &context->con, 200);
 }
 
-int renderOffscreen(unsigned char* rgb, int height, int width, mjModel* m, mjData* d,
-    RenderContext* context) {
-     /*mjvScene* scn, mjrContext* con, mjvCamera* cam, mjvOption* opt) {*/
-      mjrRect viewport;
-      viewport = {0, 0, height, width};
+int renderOffscreen(unsigned char* rgb, int height, int width,
+    mjModel* m, mjData* d, RenderContext* context) {
+
+      mjrRect viewport = {0, 0, height, width};
       mjvScene scn = context->scn;
       mjrContext con = context->con;
       mjvCamera cam = context->cam;
