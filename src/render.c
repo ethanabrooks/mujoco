@@ -47,14 +47,18 @@ int setCamera(int camid, mjModel* m, mjData* d, RenderContext* context) {
       mjvOption* opt = &(context->opt);
 
       cam->fixedcamid = camid;
-      if (camid = -1) {
+      if (camid == -1) {
         cam->type = mjCAMERA_FREE;
       } else {
         cam->type = mjCAMERA_FIXED;
       }
+
+      mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
 }
 
 int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* context) {
+
+      setCamera(-1, m, d, context);
 
       mjvScene scn = context->scn;
       mjrContext con = context->con;
@@ -63,11 +67,7 @@ int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* con
       mjrRect rect = {0, 0, 0, 0};
       glfwGetFramebufferSize(window, &rect.width, &rect.height);
 
-      setCamera(0, m, d, context);
-      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
-
       mjr_setBuffer(mjFB_WINDOW, &con);
-
       if( con.currentBuffer!=mjFB_WINDOW )
           printf("Warning: window rendering not supported\n");
       mjr_render(rect, &scn, &con);
@@ -76,21 +76,18 @@ int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* con
 
 int renderOffscreen(unsigned char* rgb, int height, int width,
     mjModel* m, mjData* d, RenderContext* context) {
+      setCamera(0, m, d, context);
 
       mjvScene scn = context->scn;
       mjrContext con = context->con;
       mjvCamera cam = context->cam;
       mjvOption opt = context->opt;
       mjrRect viewport = {0, 0, height, width};
-      cam.fixedcamid = -1;
-      cam.type = mjCAMERA_FREE;
 
       // write offscreen-rendered pixels to file
       mjr_setBuffer(mjFB_OFFSCREEN, &con);
       if( con.currentBuffer!=mjFB_OFFSCREEN )
           printf("Warning: offscreen rendering not supported, using default/window framebuffer\n");
-      /*printf("camid: %d\n", context->cam.fixedcamid);*/
-      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
       mjr_render(viewport, &scn, &con);
       mjr_readPixels(rgb, NULL, viewport, &con);
 }
