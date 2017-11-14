@@ -1,7 +1,6 @@
 #! /usr/bin/env python
-from mujoco import Sim
+from pyx.mujoco import Sim
 
-
-# sim = Sim("../humanoid.xml")
+sim = Sim("../humanoid.xml")
 
 # while True: sim.render_offscreen(80, 80)

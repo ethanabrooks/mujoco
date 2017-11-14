@@ -8,7 +8,7 @@ mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
 
 extensions = Extension(
-    join(build_dir, 'mujoco'),
+    'mujoco',
     sources=[
         "pyx/mujoco.pyx",
         "src/render.c",
