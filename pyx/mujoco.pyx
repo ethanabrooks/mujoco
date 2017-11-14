@@ -77,6 +77,9 @@ cdef class Sim(object):
     cdef int nv
     cdef int nu
     cdef np.ndarray actuator_ctrlrange
+    cdef np.ndarray qpos
+    cdef np.ndarray qvel
+    cdef np.ndarray ctrl
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -92,6 +95,9 @@ cdef class Sim(object):
         self.nu = self.model.nu
         ptr = self.model.actuator_ctrlrange
         self.actuator_ctrlrange = asarray(<float*> ptr, self.model.nu)
+        self.qpos = asarray(<float*> self.data.qpos, self.nq)
+        self.qvel = asarray(<float*> self.data.qvel, self.nv)
+        self.ctrl = asarray(<float*> self.data.ctrl, self.nu)
 
 
     def __enter__(self):
