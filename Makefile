@@ -5,6 +5,7 @@ COMMON=-O2 -I$(MJ_DIR)/include -L$(MJ_DIR)/bin -std=c++11 -mavx
 
 default:
 	python setup.py build_ext --inplace
+	python main.py
 
 render:
 	$(MK_BUILD)

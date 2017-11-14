@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
-from distutils.core import setup, Extension
+# from distutils.core import setup, Extension
+from setuptools import setup, Extension
 from Cython.Build import cythonize
 from os.path import join, expanduser
 
@@ -34,7 +35,7 @@ if __name__ == '__main__':
             extensions,
             build_dir=build_dir,
         ),
-        build_requires=[
+        install_requires=[
             'Cython',
             'Numpy',
         ])

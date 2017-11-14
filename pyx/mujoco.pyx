@@ -37,7 +37,7 @@ cdef class Sim(object):
     def __cinit__(self, filepath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        self.window = initGlfw()
+        self.window = NULL
         self.model = loadModel(encode(filepath))
         self.data = mj_makeData(self.model)
         initMujoco(self.model, self.data, &self.scn, &self.cam, &self.opt, &self.con)
@@ -48,13 +48,15 @@ cdef class Sim(object):
     def __exit__(self, *args):
         closeMujoco(self.model, self.data, &self.con, &self.scn)
 
-    # def render_offscreen(self, height, width):
-        # array = np.zeros(height * width * 3, dtype=np.uint8)
-        # cdef unsigned char[::view.contiguous] view = array
-        # renderOffscreen(&view[0], height, width, self.model, self.data,
-                # &self.scn, &self.con, &self.cam, &self.opt)
-        # return array.reshape(height, width, 3)
+    def render_offscreen(self, height, width):
+        array = np.zeros(height * width * 3, dtype=np.uint8)
+        cdef unsigned char[::view.contiguous] view = array
+        renderOffscreen(&view[0], height, width, self.model, self.data,
+                &self.scn, &self.con, &self.cam, &self.opt)
+        return array.reshape(height, width, 3)
 
-    # def render(self):
-        # return renderOnscreen(self.window, self.model, self.data, 
-                # &self.scn, &self.con, &self.cam, &self.opt)
+    def render(self):
+        if self.window is NULL:
+            self.window = initGlfw()
+        return renderOnscreen(self.window, self.model, self.data, 
+                &self.scn, &self.con, &self.cam, &self.opt)

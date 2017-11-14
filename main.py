@@ -1,6 +1,10 @@
 #! /usr/bin/env python
-from pyx.mujoco import Sim
+from mujoco import Sim
+import os
 
-sim = Sim("../humanoid.xml")
+print(os.path.realpath(os.path.curdir))
+
+
+sim = Sim("xml/humanoid.xml")
 
 # while True: sim.render_offscreen(80, 80)
