@@ -15,6 +15,7 @@ extensions = Extension(
         include_dirs=[
             join(mjpro_path, 'include'),
             'headers',
+            'pxd',
             ],
         libraries=['mujoco150', 'GL', 'glew'],
         library_dirs=[join(mjpro_path, 'bin')],

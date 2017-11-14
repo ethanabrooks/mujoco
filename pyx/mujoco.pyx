@@ -3,22 +3,27 @@ import numpy as np
 from cython cimport view
 from codecs import encode
 
-include "pxd/mjdata.pxd"
-include "pxd/mjmodel.pxd"
-include "pxd/mjrender.pxd"
-include "pxd/mjvisualize.pxd"
+from pxd.mjmodel cimport mjModel
+from pxd.mjdata cimport mjData
+from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
+from pxd.mjrender cimport mjrContext
+# cimport pxd.mjmodel
+# cimport pxd.mjrender
+# include "pxd/mjdata.pxd"
+# include "pxd/mjmodel.pxd"
+# include "pxd/mjrender.pxd"
+# include "pxd/mjvisualize.pxd"
 # include "pxd/mujoco.pxd"
 
+cdef extern from "glfw3.h":
+    ctypedef struct GLFWwindow
 
-# cdef extern from "glfw3.h":
-    # ctypedef struct GLFWwindow
 
-
-# cdef extern from "render.h":
-    # GLFWwindow* initGlfw();
-    # mjModel* loadModel(const char* filepath);
-    # int initMujoco(mjModel* m, mjData* d, mjvScene* scn, 
-        # mjvCamera* cam, mjvOption* opt, mjrContext* con);
+cdef extern from "render.h":
+    GLFWwindow* initGlfw();
+    mjModel* loadModel(const char* filepath);
+    int initMujoco(mjModel* m, mjData* d, mjvScene* scn, 
+        mjvCamera* cam, mjvOption* opt, mjrContext* con);
     # int renderOffscreen(unsigned char* rgb, int height, int width, mjModel* m, mjData* d,
         # mjvScene* scn, mjrContext* con, mjvCamera* cam, mjvOption* opt);
     # int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, 
@@ -26,9 +31,9 @@ include "pxd/mjvisualize.pxd"
     # int closeMujoco(mjModel* m, mjData* d, mjrContext* con, mjvScene* scn);
 
 
-# cdef class Sim(object):
+cdef class Sim(object):
     # cdef GLFWwindow* window
-    # cdef mjModel* model
+    cdef mjModel* model
     # cdef mjData* data
     # cdef mjvScene scn
     # cdef mjvCamera cam

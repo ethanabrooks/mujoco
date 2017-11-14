@@ -4,18 +4,6 @@
 #include "mujoco.h"
 #include "glfw3.h"
 
-struct Foo {
-  int bar;
-};
-mjModel* m;
-mjData* d;
-
-// MuJoCo visualization
-mjvScene scn;
-mjvCamera cam;
-mjvOption opt;
-mjrContext con;
-
 GLFWwindow* initGlfw();
 mjModel* loadModel(const char* filepath);
 int initMujoco(mjModel* m, mjData* d, mjvScene* scn, 

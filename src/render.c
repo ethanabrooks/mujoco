@@ -46,7 +46,7 @@ int renderOffscreen(unsigned char* rgb, int height, int width, mjModel* m, mjDat
       cam->fixedcamid = 0;
       cam->type = mjCAMERA_FIXED;
       // write offscreen-rendered pixels to file
-      mjr_setBuffer(mjFB_OFFSCREEN, *con);
+      mjr_setBuffer(mjFB_OFFSCREEN, con);
       if( con->currentBuffer!=mjFB_OFFSCREEN )
           printf("Warning: offscreen rendering not supported, using default/window framebuffer\n");
       mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
@@ -57,14 +57,14 @@ int renderOffscreen(unsigned char* rgb, int height, int width, mjModel* m, mjDat
 int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, 
     mjvScene* scn, mjrContext* con, mjvCamera* cam, mjvOption* opt) {
       mjrRect rect = {0, 0, 0, 0};
-      glfwGetFramebufferSize(window, rect.width, rect.height);
+      glfwGetFramebufferSize(window, &rect.width, &rect.height);
       cam->fixedcamid = -1;
       cam->type = mjCAMERA_FREE;
       mjr_setBuffer(mjFB_WINDOW, con);
       if( con->currentBuffer!=mjFB_WINDOW )
           printf("Warning: window rendering not supported\n");
       mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
-      mjr_render(window_rect, scn, con);
+      mjr_render(rect, scn, con);
       glfwSwapBuffers(window);
 }
 
@@ -110,7 +110,7 @@ int main(int argc, const char** argv)
 
     // main loop
     for( int i = 0; i < 500; i++) {
-      renderOffscreen(rgb, H, W, m, d, &cam);
+      renderOffscreen(rgb, H, W, m, d, &scn, &con, &cam, &opt);
       fwrite(rgb, 3, H * W, fp);
       renderOnscreen(window, m, d, &scn, &con, &cam, &opt);
       mj_step(m, d);
