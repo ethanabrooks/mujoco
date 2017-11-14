@@ -67,61 +67,44 @@ cdef asarray(float* ptr, size_t size):
     return np.asarray(view)
 
 
-cdef class Model(object):
-    cdef mjModel * ptr
-    cdef mjOption opt
-    cdef int nq
-    cdef int nv
-    cdef np.ndarray actuator_ctrlrange
-
-    def __cinit__(self, const char * fullpath):
-        self.ptr = loadModel(fullpath)
-        self.opt = self.ptr.opt
-        self.nq = self.ptr.nq
-        self.nv = self.ptr.nv
-        self.actuator_ctrlrange = asarray(<float*> self.ptr.actuator_ctrlrange,
-                self.ptr.nu)
-
-# cdef class Data(object):
-    # cdef np.ndarray qpos
-    # cdef np.ndarray qvel
-    # cdef np.ndarray ctrl
-
-    # def __cinit__(self, mjData * ptr):
-        # self.qpos = asarray(<float* ptr.qpos, ptr.nq)
-        # self.qvel = asarray(<float* ptr.qvel, ptr.nv)
-        # self.ctrl = asarray(<float* ptr.ctrl, ptr.nu)
-
-
-def load_model_from_path(fullpath):
-    return Model(encode(fullpath))
-
-
 cdef class Sim(object):
     cdef GLFWwindow * window
     cdef mjData * data
+    cdef mjModel* model
     cdef RenderContext context
-    cdef Model model
+    cdef float timesteps
+    cdef int nq
+    cdef int nv
+    cdef int nu
+    cdef np.ndarray actuator_ctrlrange
 
-    def __cinit__(self, filepath):
+    def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
         self.window = initGlfw()
-        self.model = load_model_from_path(filepath)
-        self.data = mj_makeData(self.model.ptr)
-        initMujoco(self.model.ptr, self.data, & self.context)
+        self.model = loadModel(encode(fullpath))
+        self.data = mj_makeData(self.model)
+        initMujoco(self.model, self.data, & self.context)
+
+        self.timesteps = self.model.opt.timestep
+        self.nq = self.model.nq
+        self.nv = self.model.nv
+        self.nu = self.model.nu
+        ptr = self.model.actuator_ctrlrange
+        self.actuator_ctrlrange = asarray(<float*> ptr, self.model.nu)
+
 
     def __enter__(self):
         pass
 
     def __exit__(self, *args):
-        closeMujoco(self.model.ptr, self.data, & self.context)
+        closeMujoco(self.model, self.data, & self.context)
 
     def render_offscreen(self, height, width, camera_name):
         camid = self.get_id(Types.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        renderOffscreen(camid, & view[0], height, width, self.model.ptr, self.data,
+        renderOffscreen(camid, & view[0], height, width, self.model, self.data,
                         & self.context)
         return array.reshape(height, width, 3)
 
@@ -130,14 +113,14 @@ cdef class Sim(object):
             camid = -1
         else:
             camid = self.get_id(Types.CAMERA, camera_name)
-        return renderOnscreen(camid, self.window, self.model.ptr, self.data, & self.context)
+        return renderOnscreen(camid, self.window, self.model, self.data, & self.context)
 
     def step(self):
-        mj_step(self.model.ptr, self.data)
+        mj_step(self.model, self.data)
 
     def get_id(self, obj_type, name):
         assert type(obj_type) == Types, type(obj_type)
-        return mj_name2id(self.model.ptr, obj_type.value, encode(name))
+        return mj_name2id(self.model, obj_type.value, encode(name))
 
     def get_qpos(self, obj, name):
         return self.data.qpos[self.get_id(obj, name)]
