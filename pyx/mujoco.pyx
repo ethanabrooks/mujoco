@@ -101,8 +101,7 @@ cdef class Sim(object):
 
     def get_id(self, obj_type, name):
         assert type(obj_type) == Types, type(obj_type)
-        cdef int id = mj_name2id(self.model, obj_type.value, encode(name))
-        return id
+        return mj_name2id(self.model, obj_type.value, encode(name))
 
     def get_qpos(self, obj, name):
         return self.data.qpos[self.get_id(obj, name)]
