@@ -62,6 +62,11 @@ class Types(Enum):
     KEY = 22        # keyframe
 
 
+cdef asarray(float* ptr, size_t size):
+    cdef float[:] view = <float[:size] > ptr
+    return np.asarray(view)
+
+
 cdef class Model(object):
     cdef mjModel * ptr
     cdef mjOption opt
@@ -74,17 +79,18 @@ cdef class Model(object):
         self.opt = self.ptr.opt
         self.nq = self.ptr.nq
         self.nv = self.ptr.nv
-        cdef size_t nu = self.ptr.nu
-        cdef double[:] view = <double[:nu] > self.ptr.actuator_ctrlrange
-        self.actuator_ctrlrange = np.asarray(view)
+        self.actuator_ctrlrange = asarray(<float*> self.ptr.actuator_ctrlrange,
+                self.ptr.nu)
 
-cdef class Data(object):
-    cdef mjtNum * qpos
-    cdef mjtNum * qvel
-    cdef mjtNum * ctrl
+# cdef class Data(object):
+    # cdef np.ndarray qpos
+    # cdef np.ndarray qvel
+    # cdef np.ndarray ctrl
 
-    def __cinit__(self):
-        pass
+    # def __cinit__(self, mjData * ptr):
+        # self.qpos = asarray(<float* ptr.qpos, ptr.nq)
+        # self.qvel = asarray(<float* ptr.qvel, ptr.nv)
+        # self.ctrl = asarray(<float* ptr.ctrl, ptr.nu)
 
 
 def load_model_from_path(fullpath):
