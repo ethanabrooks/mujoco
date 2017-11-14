@@ -42,17 +42,25 @@ int initMujoco(mjModel* m, mjData* d, RenderContext* context) {
 }
 
 int renderOffscreen(unsigned char* rgb, int height, int width, mjModel* m, mjData* d,
-    mjvScene* scn, mjrContext* con, mjvCamera* cam, mjvOption* opt) {
-      mjrRect viewport = {0, 0, height, width};
-      cam->fixedcamid = 0;
-      cam->type = mjCAMERA_FIXED;
+    RenderContext* context) {
+     /*mjvScene* scn, mjrContext* con, mjvCamera* cam, mjvOption* opt) {*/
+      mjrRect viewport;
+      viewport = {0, 0, height, width};
+      mjvScene scn = context->scn;
+      mjrContext con = context->con;
+      mjvCamera cam = context->cam;
+      mjvOption opt = context->opt;
+
+      (&cam)->fixedcamid = 0;
+      (&cam)->type = mjCAMERA_FIXED;
+
       // write offscreen-rendered pixels to file
-      mjr_setBuffer(mjFB_OFFSCREEN, con);
-      if( con->currentBuffer!=mjFB_OFFSCREEN )
+      mjr_setBuffer(mjFB_OFFSCREEN, &con);
+      if( (&con)->currentBuffer!=mjFB_OFFSCREEN )
           printf("Warning: offscreen rendering not supported, using default/window framebuffer\n");
-      mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
-      mjr_render(viewport, scn, con);
-      mjr_readPixels(rgb, NULL, viewport, con);
+      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
+      mjr_render(viewport, &scn, &con);
+      mjr_readPixels(rgb, NULL, viewport, &con);
 }
 
 int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, 
@@ -108,7 +116,7 @@ int main(int argc, const char** argv)
 
     // main loop
     for( int i = 0; i < 50; i++) {
-      renderOffscreen(rgb, H, W, m, d, &context.scn, &context.con, &context.cam, &context.opt);
+      renderOffscreen(rgb, H, W, m, d, &context);
       fwrite(rgb, 3, H * W, fp);
       renderOnscreen(window, m, d, &context.scn, &context.con, &context.cam, &context.opt);
       mj_step(m, d);
