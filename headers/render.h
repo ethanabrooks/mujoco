@@ -5,10 +5,10 @@
 #include "glfw3.h"
 
 typedef struct render_context_t {
-    mjvScene* scene;
-    mjrContext* context;
-    mjvCamera* camera;
-    mjvOption* option;
+    mjvScene scn;
+    mjrContext con;
+    mjvCamera cam;
+    mjvOption opt;
 } RenderContext;
 
 GLFWwindow* initGlfw();

@@ -31,14 +31,14 @@ mjModel* loadModel(const char* filepath) {
     return m;
 }
 
-int initMujoco(mjModel* m, mjData* d, mjvScene* scn, 
-    mjvCamera* cam, mjvOption* opt, mjrContext* con) {
+int initMujoco(mjModel* m, mjData* d, RenderContext* context) {
+    /*mjvScene* scn, mjvCamera* cam, mjvOption* opt, mjrContext* con) {*/
       mj_forward(m, d);
-      mjv_makeScene(scn, 1000);
-      mjv_defaultCamera(cam);
-      mjv_defaultOption(opt);
-      mjr_defaultContext(con);
-      mjr_makeContext(m, con, 200);
+      mjv_makeScene(&context->scn, 1000);
+      mjv_defaultCamera(&context->cam);
+      mjv_defaultOption(&context->opt);
+      mjr_defaultContext(&context->con);
+      mjr_makeContext(m, &context->con, 200);
 }
 
 int renderOffscreen(unsigned char* rgb, int height, int width, mjModel* m, mjData* d,
@@ -88,16 +88,13 @@ int main(int argc, const char** argv)
     char const* keypath = "../.mujoco/mjkey.txt";
     mjModel* m;
     mjData* d;
-    mjvScene scn;
-    mjrContext con;
-    mjvCamera cam; 
-    mjvOption opt;
+    RenderContext context;
 
     GLFWwindow* window = initGlfw();
     mj_activate(keypath);
     m = loadModel(filepath);
     d = mj_makeData(m);
-    initMujoco(m, d, &scn, &cam, &opt, &con);
+    initMujoco(m, d, &context);
 
     // allocate rgb and depth buffers
     unsigned char* rgb = (unsigned char*)malloc(3*H*W);
@@ -111,16 +108,16 @@ int main(int argc, const char** argv)
 
     // main loop
     for( int i = 0; i < 50; i++) {
-      renderOffscreen(rgb, H, W, m, d, &scn, &con, &cam, &opt);
+      renderOffscreen(rgb, H, W, m, d, &context.scn, &context.con, &context.cam, &context.opt);
       fwrite(rgb, 3, H * W, fp);
-      renderOnscreen(window, m, d, &scn, &con, &cam, &opt);
+      renderOnscreen(window, m, d, &context.scn, &context.con, &context.cam, &context.opt);
       mj_step(m, d);
     }
     printf("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n", H, W);
 
     fclose(fp);
     free(rgb);
-    closeMujoco(m, d, &con, &scn);
+    closeMujoco(m, d, &context.con, &context.scn);
 
     return 0;
 }
