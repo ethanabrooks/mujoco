@@ -52,8 +52,26 @@ int setCamera(int camid, mjModel* m, mjData* d, RenderContext* context) {
       } else {
         cam->type = mjCAMERA_FIXED;
       }
+}
 
-      mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
+int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* context) {
+
+      mjvScene scn = context->scn;
+      mjrContext con = context->con;
+      mjvCamera cam = context->cam;
+      mjvOption opt = context->opt;
+      mjrRect rect = {0, 0, 0, 0};
+      glfwGetFramebufferSize(window, &rect.width, &rect.height);
+
+      setCamera(0, m, d, context);
+      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
+
+      mjr_setBuffer(mjFB_WINDOW, &con);
+
+      if( con.currentBuffer!=mjFB_WINDOW )
+          printf("Warning: window rendering not supported\n");
+      mjr_render(rect, &scn, &con);
+      glfwSwapBuffers(window);
 }
 
 int renderOffscreen(unsigned char* rgb, int height, int width,
@@ -77,24 +95,6 @@ int renderOffscreen(unsigned char* rgb, int height, int width,
       mjr_readPixels(rgb, NULL, viewport, &con);
 }
 
-int renderOnscreen(GLFWwindow* window, mjModel* m, mjData* d, RenderContext* context) {
-
-      mjvScene scn = context->scn;
-      mjrContext con = context->con;
-      mjvCamera cam = context->cam;
-      mjvOption opt = context->opt;
-      mjrRect rect = {0, 0, 0, 0};
-      glfwGetFramebufferSize(window, &rect.width, &rect.height);
-      cam.fixedcamid = 0;
-      cam.type = mjCAMERA_FIXED;
-      mjr_setBuffer(mjFB_WINDOW, &con);
-
-      if( con.currentBuffer!=mjFB_WINDOW )
-          printf("Warning: window rendering not supported\n");
-      mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);
-      mjr_render(rect, &scn, &con);
-      glfwSwapBuffers(window);
-}
 
 int closeMujoco(mjModel* m, mjData* d, RenderContext* context) {
     mjvScene scn = context->scn;
