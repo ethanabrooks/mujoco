@@ -29,7 +29,12 @@ extensions = Extension(
     language='c')
 
 if __name__ == '__main__':
-    setup(ext_modules=cythonize(
-        extensions,
-        build_dir=build_dir,
-    ))
+    setup(
+        ext_modules=cythonize(
+            extensions,
+            build_dir=build_dir,
+        ),
+        build_requires=[
+            'Cython',
+            'Numpy',
+        ])
