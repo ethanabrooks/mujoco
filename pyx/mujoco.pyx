@@ -21,15 +21,20 @@ cdef extern from "glfw3.h":
 
 
 cdef extern from "render.h":
+    ctypedef struct RenderContext:
+        mjvScene scn
+        mjrContext con
+        mjvCamera cam
+        mjvOption opt
+
     GLFWwindow * initGlfw()
     mjModel * loadModel(const char * filepath)
-    int initMujoco(mjModel * m, mjData * d, mjvScene * scn,
-                   mjvCamera * cam, mjvOption * opt, mjrContext * con)
-    int renderOffscreen(unsigned char * rgb, int height, int width, mjModel * m, mjData * d,
-                        mjvScene * scn, mjrContext * con, mjvCamera * cam, mjvOption * opt)
+    int initMujoco(mjModel * m, mjData * d, RenderContext * context)
+    int renderOffscreen(unsigned char * rgb, int height, int width,
+                        mjModel * m, mjData * d, RenderContext * context)
     int renderOnscreen(GLFWwindow * window, mjModel * m, mjData * d,
-                       mjvScene * scn, mjrContext * con, mjvCamera * cam, mjvOption * opt)
-    int closeMujoco(mjModel * m, mjData * d, mjrContext * con, mjvScene * scn)
+                       RenderContext * context)
+    int closeMujoco(mjModel * m, mjData * d, RenderContext * context)
 
 
 class MjtObj(Enum):
@@ -62,10 +67,7 @@ cdef class Sim(object):
     cdef GLFWwindow * window
     cdef mjModel * model
     cdef mjData * data
-    cdef mjvScene scn
-    cdef mjvCamera cam
-    cdef mjvOption opt
-    cdef mjrContext con
+    cdef RenderContext context
 
     def __cinit__(self, filepath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -73,24 +75,23 @@ cdef class Sim(object):
         self.window = initGlfw()
         self.model = loadModel(encode(filepath))
         self.data = mj_makeData(self.model)
-        initMujoco(self.model, self.data, & self.scn, & self.cam, & self.opt, & self.con)
+        initMujoco(self.model, self.data, & self.context)
 
     def __enter__(self):
         pass
 
     def __exit__(self, *args):
-        closeMujoco(self.model, self.data, & self.con, & self.scn)
+        closeMujoco(self.model, self.data, & self.context)
 
     def render_offscreen(self, height, width):
         array = np.zeros(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         renderOffscreen( & view[0], height, width, self.model, self.data,
-                        & self.scn, & self.con, & self.cam, & self.opt)
+                &self.context)
         return array.reshape(height, width, 3)
 
     def render(self):
-        return renderOnscreen(self.window, self.model, self.data,
-                              & self.scn, & self.con, & self.cam, & self.opt)
+        return renderOnscreen(self.window, self.model, self.data, &self.context)
 
     def step(self):
         mj_step(self.model, self.data)
