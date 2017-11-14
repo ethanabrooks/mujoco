@@ -16,4 +16,6 @@ egl:
 	g++ $(COMMON) -L/usr/lib/nvidia-384 -DMJ_EGL render.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o $(BUILD)renderegl
 
 clean:
+	MUJOCO_LOG.txt
+	*.so
 	rm -rf build/
