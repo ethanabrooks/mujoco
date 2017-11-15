@@ -92,18 +92,14 @@ GLFWwindow *initGlfw()
 	return window;
 }
 
-mjModel *loadModel(const char *filepath)
+int initMujoco(const char *filepath, State * state)
 {
 	char error[1000] = "Could not load xml model";
-	mjModel *m = mj_loadXML(filepath, 0, error, 1000);
-	if (!m)
+	state->m = mj_loadXML(filepath, 0, error, 1000);
+	if (!state->m)
 		mju_error_s("Load model error: %s", error);
-	return m;
-}
+	state->d = mj_makeData(state->m);
 
-int initMujoco(State * state)
-{
-	/*mjvScene* scn, mjvCamera* cam, mjvOption* opt, mjrContext* con) { */
 	mj_forward(state->m, state->d);
 	mjv_makeScene(&state->scn, 1000);
 	mjv_defaultCamera(&state->cam);
@@ -193,9 +189,7 @@ int main(int argc, const char **argv)
 
 	GLFWwindow *window = initGlfw();
 	mj_activate(keypath);
-	state.m = loadModel(filepath);
-	state.d = mj_makeData(state.m);
-	initMujoco(&state);
+	initMujoco(filepath, &state);
 
   // install GLFW mouse and keyboard callbacks
   /*glfwSetWindowUserPointer(window, &state);*/

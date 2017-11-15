@@ -16,8 +16,7 @@ typedef struct state_t {
 } State;
 
 GLFWwindow *initGlfw();
-mjModel *loadModel(const char *filepath);
-int initMujoco(State * state);
+int initMujoco(const char *filepath,State * state);
 int renderOffscreen(int camid, unsigned char *rgb, 
     int height, int width, State *);
 int renderOnscreen(int camid, GLFWwindow * window, State * state);
