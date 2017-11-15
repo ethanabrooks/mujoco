@@ -67,6 +67,12 @@ cdef asarray(float * ptr, size_t size):
     cdef float[:] view = <float[:size] > ptr
     return np.asarray(view)
 
+cdef get_vec(float * ptr, int size, int offset):
+    return np.array([ptr[i] for i in range(offset, offset + size)])
+
+cdef get_vec3(float * ptr, int n):
+    return get_vec(ptr, size=3, offset=3 * n)
+
 
 cdef class Sim(object):
     cdef GLFWwindow * window
@@ -159,5 +165,11 @@ cdef class Sim(object):
 
     def get_xpos(self, obj, name):
         """ Need to call mj_forward first """
-        id = self.get_id(obj, name)
-        return np.array([self.data.xpos[3 * (id + i)] for i in range(3)])
+        return get_vec3(<float*> self.data.xpos, self.get_id(obj, name))
+
+    def get_geom_size(self, obj, name):
+        """ Need to call mj_forward first """
+        return get_vec3(<float*> self.model.geom_size, self.get_id(obj, name))
+
+
+
