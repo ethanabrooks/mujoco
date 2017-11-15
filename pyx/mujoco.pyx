@@ -6,7 +6,7 @@ from enum import Enum
 cimport numpy as np
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id, \
-        mj_resetData, mj_forward
+    mj_resetData, mj_forward
 from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
@@ -160,16 +160,21 @@ cdef class Sim(object):
         assert type(obj_type) == Types, type(obj_type)
         return mj_name2id(self.model, obj_type.value, encode(name))
 
-    def get_qpos(self, obj, name):
-        return self.data.qpos[self.get_id(obj, name)]
+    def key2id(self, obj, key):
+        assert type(key) in [int, str]
+        if type(key) is str:
+            return self.get_id(obj, key)
+        return key
 
-    def get_xpos(self, name):
+    def get_qpos(self, obj, key):
+        return self.data.qpos[self.key2id(key)]
+
+    def get_xpos(self, key):
         """ Need to call mj_forward first """
-        return get_vec3(<float*> self.data.xpos, self.get_id(Types.BODY, name))
+        return get_vec3( < float*> self.data.xpos, self.key2id(Types.BODY, key))
 
-    def get_geom_size(self, name):
-        return get_vec3(<float*> self.model.geom_size, self.get_id(Types.GEOM, name))
+    def get_geom_size(self, key):
+        return get_vec3( < float*> self.model.geom_size, self.key2id(Types.GEOM, key))
 
-    def get_geom_pos(self, name):
-        return get_vec3(<float*> self.model.geom_pos, self.get_id(Types.GEOM, name))
-
+    def get_geom_pos(self, key):
+        return get_vec3( < float*> self.model.geom_pos, self.key2id(Types.GEOM, key))
