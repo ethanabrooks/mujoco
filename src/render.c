@@ -42,7 +42,8 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 	State *state = (State *) glfwGetWindowUserPointer(window);
 
 	// no buttons down: nothing to do 
-	if (!state->button_left && !state->button_middle && !state->button_right)
+	if (!state->button_left && !state->button_middle
+	    && !state->button_right)
 		return;
 
 	// compute mouse displacement, save 
@@ -57,8 +58,8 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 
 	// get shift key state 
 	int mod_shift = (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
-			  || glfwGetKey(window,
-					GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+			 || glfwGetKey(window,
+				       GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
 
 	// determine action based on mouse button 
 	mjtMouse action;
@@ -70,7 +71,8 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 		action = mjMOUSE_ZOOM;
 
 	// move camera 
-	mjv_moveCamera(state->m, action, dx / height, dy / height, &(state->scn), &(state->cam));
+	mjv_moveCamera(state->m, action, dx / height, dy / height,
+		       &(state->scn), &(state->cam));
 }
 
 // scroll callback
@@ -83,7 +85,7 @@ void scroll(GLFWwindow * window, double xoffset, double yoffset)
 		       &(state->scn), &(state->cam));
 }
 
-GLFWwindow *initGlfw(State *state)
+GLFWwindow *initGlfw(State * state)
 {
 	if (!glfwInit())
 		mju_error("Could not initialize GLFW");
@@ -98,15 +100,15 @@ GLFWwindow *initGlfw(State *state)
 
 	glfwMakeContextCurrent(window);
 
-  state->button_left = 0;
-  state->button_middle = 0;
-  state->button_right = 0;
+	state->button_left = 0;
+	state->button_middle = 0;
+	state->button_right = 0;
 
 	// install GLFW mouse and keyboard callbacks
 	glfwSetWindowUserPointer(window, state);
 	glfwSetKeyCallback(window, keyboard);
-  glfwSetCursorPosCallback(window, mouse_move); 
-  glfwSetMouseButtonCallback(window, mouse_button); 
+	glfwSetCursorPosCallback(window, mouse_move);
+	glfwSetMouseButtonCallback(window, mouse_button);
 	glfwSetScrollCallback(window, scroll);
 
 	return window;
@@ -203,7 +205,7 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-	char const *filepath = "xml/humanoid.xml";
+char const *filepath = "../zero_shot/environment/models/navigate.xml"; // xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	mjModel *m;
 	mjData *d;
@@ -213,7 +215,6 @@ int main(int argc, const char **argv)
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
-
 
 	// allocate rgb and depth buffers
 	unsigned char *rgb = (unsigned char *)malloc(3 * H * W);
@@ -230,6 +231,7 @@ int main(int argc, const char **argv)
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 		renderOnscreen(-1, window, &state);
+    state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
 	}
 	printf

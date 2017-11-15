@@ -1,8 +1,7 @@
 from os.path import join, expanduser
-import numpy as np
 from codecs import encode
 from enum import Enum
-cimport numpy as np
+from libc.stdlib cimport free
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id, \
     mj_resetData, mj_forward
@@ -12,6 +11,9 @@ from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from libcpp cimport bool 
 
+cimport numpy as np
+import numpy as np
+np.import_array()
 
 # TODO: integrate with hsr_gym
 # TODO: get GPU working
@@ -79,16 +81,33 @@ class ObjType(Enum):
     KEY = 22        # keyframe
 
 
-cdef asarray(float * ptr, size_t size):
-    cdef float[:] view = <float[:size] > ptr
+cdef asarray(double * ptr, size_t size):
+    cdef double[:] view = <double[:size] > ptr
     return np.asarray(view)
 
-cdef get_vec(float * ptr, int size, int offset):
+cdef get_vec(double * ptr, int size, int offset):
     return asarray(ptr, offset + size)
     # return np.array([ptr[i] for i in range(offset, offset + size)])
 
-cdef get_vec3(float * ptr, int n):
-    return get_vec(ptr, size=3, offset=3 * n)
+cdef get_vec3(double * ptr, int n):
+    return asarray(ptr=ptr + n, size=3)
+
+
+cdef class Array(np.ndarray):
+    cdef double* data_ptr
+    cdef int size
+
+    cdef set_data(self, int size, double* data_ptr):
+        """ Set the data of the array """
+        self.data_ptr = data_ptr
+        self.size = size
+
+    def __array__(self):
+        cdef np.npy_intp shape[1]
+        shape[0] = <np.npy_intp> self.size
+        # Create a 1D array, of length 'size'
+        return np.PyArray_SimpleNewFromData(1, shape,
+                                               np.NPY_INT, self.data_ptr)
 
 
 cdef class Sim(object):
@@ -97,13 +116,16 @@ cdef class Sim(object):
     cdef mjModel * model
     cdef State state
 
-    cdef float _timestep
+    cdef double _timestep
     cdef int _nv
     cdef int _nu
     cdef np.ndarray _actuator_ctrlrange
     cdef np.ndarray _qpos
     cdef np.ndarray _qvel
     cdef np.ndarray _ctrl
+    cdef Array qpos
+    cdef Array qvel
+    cdef np.ndarray ctrl
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -113,8 +135,13 @@ cdef class Sim(object):
         self.model = self.state.m
         self.data = self.state.d
 
-        self._qpos = asarray( < float*> self.data.qpos, self.nq)
-        self._qvel = asarray( < float*> self.data.qvel, self.nv)
+        # self.ctrl = asarray(self.data.qpos, self.nq)
+        # self.qvel = Array()
+        self.ctrl = asarray(self.data.ctrl, self.nu)
+
+        # self.qpos.set_data(self.nq,<double*> self.data.qpos)
+        # self.qpos.set_data(self.nq,<double*> self.data.qpos)
+        # self.ctrl.set_data(self.nu,<double*> self.data.ctrl)
 
     def __enter__(self):
         pass
@@ -138,6 +165,12 @@ cdef class Sim(object):
 
     def step(self):
         mj_step(self.model, self.data)
+        print('read into list', [self.data.ctrl[i] for i in range(3)])
+        self.ctrl[1] = .7
+        # print(asarray(<double*> self.data.ctrl, 3))
+        self.data.ctrl[0] = .5
+        print('call to asarray', asarray(<double*> self.data.ctrl, 3))
+        print('read into list after assign', [self.data.ctrl[i] for i in range(3)])
 
     def reset(self):
         mj_resetData(self.model, self.data)
@@ -146,7 +179,7 @@ cdef class Sim(object):
         mj_forward(self.model, self.data)
 
     def get_id(self, obj_type, name):
-        assert type(obj_type) == ObjType, type(obj_type)
+        assert isinstance(obj_type, ObjType), type(obj_type)
         return mj_name2id(self.model, obj_type.value, encode(name))
 
     def key2id(self, key, obj=None):
@@ -163,13 +196,13 @@ cdef class Sim(object):
 
     def get_xpos(self, key):
         """ Need to call mj_forward first """
-        return get_vec3( < float*> self.data.xpos, self.key2id(key, ObjType.BODY))
+        return get_vec3( < double*> self.data.xpos, self.key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
-        return get_vec3( < float*> self.model.geom_size, self.key2id(key, ObjType.GEOM))
+        return get_vec3( < double*> self.model.geom_size, self.key2id(key, ObjType.GEOM))
 
     def get_geom_pos(self, key):
-        return get_vec3( < float*> self.model.geom_pos, self.key2id(key, ObjType.GEOM))
+        return get_vec3( < double*> self.model.geom_pos, self.key2id(key, ObjType.GEOM))
 
     @property
     def timestep(self):
@@ -191,26 +224,18 @@ cdef class Sim(object):
     def nu(self):
         return self.model.nu
 
-    @property
-    def actuator_ctrlrange(self):
-        return asarray( < float*> self.model.actuator_ctrlrange, self.model.nu).copy()
+    # @property
+    # def actuator_ctrlrange(self):
+        # return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu).copy()
 
-    @property
-    def qpos(self):
-        return self._qpos
+    # @property
+    # def qpos(self):
+        # return asarray( < double*> self.data.qpos, self.nq)
 
-    @qpos.setter
-    def qpos(self, value):
-        self._qpos[:] = value
+    # @property
+    # def qvel(self):
+        # return asarray( < double*> self.data.qvel, self.nv)
 
-    @property
-    def qvel(self):
-        return self._qvel
-
-    @qvel.setter
-    def qvel(self, value):
-        self._qvel[:] = value
-
-    @property
-    def ctrl(self):
-        return asarray( < float*> self.data.ctrl, self.nu)
+    # @property
+    # def ctrl(self):
+        # return asarray( < double*> self.data.ctrl, self.nu)

@@ -5,8 +5,8 @@ COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -std=c++11 -mavx
 
 default:
 	python setup.py build_ext --inplace
-	#python main.py
-	make random-agent
+	python main.py
+	#make random-agent
 
 random-agent:
 	cd ~/zero_shot; ls; python random_agent.py
