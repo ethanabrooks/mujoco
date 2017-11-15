@@ -5,8 +5,8 @@
 #include "glfw3.h"
 
 typedef struct render_context_t {
-  mjModel m;
-  mjData d;
+  mjModel* m;
+  mjData* d;
 	mjvScene scn;
 	mjrContext con;
 	mjvCamera cam;

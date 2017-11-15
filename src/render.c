@@ -194,9 +194,9 @@ int main(int argc, const char **argv)
 
 	GLFWwindow *window = initGlfw();
 	mj_activate(keypath);
-	m = loadModel(filepath);
-	d = mj_makeData(m);
-	initMujoco(m, d, &context);
+	context.m = loadModel(filepath);
+	context.d = mj_makeData(context.m);
+	initMujoco(context.m, context.d, &context);
 
   // install GLFW mouse and keyboard callbacks
   /*glfwSetWindowUserPointer(window, &context);*/
@@ -218,10 +218,10 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10; i++) {
-		renderOffscreen(0, rgb, H, W, m, d, &context);
+		renderOffscreen(0, rgb, H, W, context.m, context.d, &context);
 		fwrite(rgb, 3, H * W, fp);
-		renderOnscreen(-1, window, m, d, &context);
-		mj_step(m, d);
+		renderOnscreen(-1, window, context.m, context.d, &context);
+		mj_step(context.m, context.d);
 	}
 	printf
 	    ("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",
@@ -229,7 +229,7 @@ int main(int argc, const char **argv)
 
 	fclose(fp);
 	free(rgb);
-	closeMujoco(m, d, &context);
+	closeMujoco(context.m, context.d, &context);
 
 	return 0;
 }
