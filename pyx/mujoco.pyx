@@ -71,32 +71,6 @@ class ObjType(Enum):
     TUPLE = 21        # tuple
     KEY = 22        # keyframe
 
-class GeomTypes(Enum):
-    UNKNOWN = 0         # unknown object type
-    BODY = 1         # body
-    XBODY = 2         # body  used to access regular frame instead of i-frame
-    JOINT = 3         # joint
-    DOF = 4         # dof
-    GEOM = 5         # geom
-    SITE = 6         # site
-    CAMERA = 7         # camera
-    LIGHT = 8         # light
-    MESH = 9         # mesh
-    HFIELD = 10         # heightfield
-    TEXTURE = 11        # texture
-    MATERIAL = 12        # material for rendering
-    PAIR = 13        # geom pair to include
-    EXCLUDE = 14        # body pair to exclude
-    EQUALITY = 15        # equality constraint
-    TENDON = 16        # tendon
-    ACTUATOR = 17        # actuator
-    SENSOR = 18        # sensor
-    NUMERIC = 19        # numeric
-    TEXT = 20        # text
-    TUPLE = 21        # tuple
-    KEY = 22        # keyframe
-
-
 cdef asarray(float * ptr, size_t size):
     cdef float[:] view = <float[:size] > ptr
     return np.asarray(view)
@@ -113,14 +87,15 @@ cdef class Sim(object):
     cdef mjData * data
     cdef mjModel * model
     cdef RenderContext context
-    cdef float timesteps
-    cdef int nq
-    cdef int nv
-    cdef int nu
-    cdef np.ndarray actuator_ctrlrange
-    cdef np.ndarray qpos
-    cdef np.ndarray qvel
-    cdef np.ndarray ctrl
+
+    cdef float _timestep
+    cdef int _nq
+    cdef int _nv
+    cdef int _nu
+    cdef np.ndarray _actuator_ctrlrange
+    cdef np.ndarray _qpos
+    cdef np.ndarray _qvel
+    cdef np.ndarray _ctrl
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -130,35 +105,15 @@ cdef class Sim(object):
         self.data = mj_makeData(self.model)
         initMujoco(self.model, self.data, & self.context)
 
-        self.timesteps = self.model.opt.timestep
-        self.nq = self.model.nq
-        self.nv = self.model.nv
-        self.nu = self.model.nu
+        self._timestep = self.model.opt.timestep
+        self._nq = self.model.nq
+        self._nv = self.model.nv
+        self._nu = self.model.nu
         ptr = self.model.actuator_ctrlrange
-        self.actuator_ctrlrange = asarray( < float*> ptr, self.model.nu)
-        self.qpos = asarray( < float*> self.data.qpos, self.nq)
-        self.qvel = asarray( < float*> self.data.qvel, self.nv)
-        self.ctrl = asarray( < float*> self.data.ctrl, self.nu)
-
-    # @property
-    # def actuator_ctrlrange(self):
-        # return self._actuator_ctrlrange.copy()
-
-    # @property
-    # def qpos(self):
-        # return self._qpos.copy()
-
-    # @qpos.setter
-    # def qpos(self, value):
-        # return self._qpos[:] = value
-
-    # @property
-    # def qvel(self):
-        # return self._qvel.copy()
-
-    # @property
-    # def ctrl(self):
-        # return self._ctrl.copy()
+        self._actuator_ctrlrange = asarray( < float*> ptr, self.model.nu)
+        self._qpos = asarray( < float*> self.data.qpos, self.nq)
+        self._qvel = asarray( < float*> self.data.qvel, self.nv)
+        self._ctrl = asarray( < float*> self.data.ctrl, self.nu)
 
     def __enter__(self):
         pass
@@ -215,3 +170,39 @@ cdef class Sim(object):
 
     def get_geom_pos(self, key):
         return get_vec3( < float*> self.model.geom_pos, self.key2id(ObjType.GEOM, key))
+
+    @property
+    def timestep(self):
+        return self._timestep
+
+    @property
+    def nq(self):
+        return self._nq
+
+    @property
+    def nv(self):
+        return self._nv
+
+    @property
+    def nu(self):
+        return self._nu
+
+    @property
+    def actuator_ctrlrange(self):
+        return self._actuator_ctrlrange.copy()
+
+    @property
+    def qpos(self):
+        return self._qpos.copy()
+
+    # @qpos.setter
+    # def qpos(self, value):
+        # return self._qpos[:] = value
+
+    @property
+    def qvel(self):
+        return self._qvel.copy()
+
+    @property
+    def ctrl(self):
+        return self._ctrl.copy()
