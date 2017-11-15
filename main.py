@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from mujoco import Sim
+from mujoco import Sim, GeomType, ObjType
 
 sim = Sim("xml/humanoid.xml")
 # print(sim.get_xpos(MjtObj.BODY, 'worldbody'))

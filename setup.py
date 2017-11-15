@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # from distutils.core import setup, Extension
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 from os.path import join, expanduser
 
@@ -33,6 +33,7 @@ extensions = Extension(
 if __name__ == '__main__':
     setup(
         name=name,
+        packages=['mujoco'],
         ext_modules=cythonize(
             extensions,
             build_dir=build_dir,
