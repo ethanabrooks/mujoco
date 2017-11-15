@@ -13,7 +13,7 @@ random-agent:
 
 render:
 	$(MK_BUILD)
-	g++ $(COMMON) src/render.c src/lib.c -lmujoco150 -lGL -lglew $(MJ_DIR)/bin/libglfw.so.3 -o  $(BUILD)render
+	g++ $(COMMON) src/renderGlfw.c src/lib.c -lmujoco150 -lGL -lglew $(MJ_DIR)/bin/libglfw.so.3 -o  $(BUILD)render
 	$(BUILD)render
 	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 	vlc $(BUILD)video.mp4

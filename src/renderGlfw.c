@@ -1,6 +1,7 @@
 #include "render.h"
 #include "lib.h"
 #include "glfw3.h"
+#include "stdio.h"
 
 // keyboard callback
 void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)

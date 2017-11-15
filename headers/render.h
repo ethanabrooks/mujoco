@@ -6,5 +6,6 @@
 
 GLFWwindow *initGlfw(State *state);
 int renderOnscreen(int camid, GLFWwindow * window, State * state);
+int setCamera(int camid, State * state);
 
 #endif

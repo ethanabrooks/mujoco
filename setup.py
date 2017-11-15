@@ -13,7 +13,8 @@ extensions = Extension(
     name,
     sources=[
         "pyx/mujoco.pyx",
-        "src/render.c",
+        "src/lib.c",
+        "src/renderGlfw.c",
     ],
     include_dirs=[
         join(mjpro_path, 'include'),
