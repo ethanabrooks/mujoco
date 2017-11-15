@@ -17,11 +17,10 @@ typedef struct render_context_t {
 
 GLFWwindow *initGlfw();
 mjModel *loadModel(const char *filepath);
-int initMujoco(mjModel * m, mjData * d, RenderContext * context);
-int renderOffscreen(int camid, unsigned char *rgb, int height, int width,
-		    mjModel * m, mjData * d, RenderContext *);
-int renderOnscreen(int camid, GLFWwindow * window,
-		   mjModel * m, mjData * d, RenderContext * context);
-int closeMujoco(mjModel * m, mjData * d, RenderContext * context);
+int initMujoco(RenderContext * context);
+int renderOffscreen(int camid, unsigned char *rgb, 
+    int height, int width, RenderContext *);
+int renderOnscreen(int camid, GLFWwindow * window, RenderContext * context);
+int closeMujoco(RenderContext * context);
 
 #endif

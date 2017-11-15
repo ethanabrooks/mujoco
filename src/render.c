@@ -101,7 +101,7 @@ mjModel *loadModel(const char *filepath)
 	return m;
 }
 
-int initMujoco(mjModel * m, mjData * d, RenderContext * context)
+int initMujoco(RenderContext * context)
 {
 	/*mjvScene* scn, mjvCamera* cam, mjvOption* opt, mjrContext* con) { */
 	mj_forward(context->m, context->d);
@@ -109,10 +109,10 @@ int initMujoco(mjModel * m, mjData * d, RenderContext * context)
 	mjv_defaultCamera(&context->cam);
 	mjv_defaultOption(&context->opt);
 	mjr_defaultContext(&context->con);
-	mjr_makeContext(m, &context->con, 200);
+	mjr_makeContext(context->m, &context->con, 200);
 }
 
-int setCamera(int camid, mjModel * m, mjData * d, RenderContext * context)
+int setCamera(int camid, RenderContext * context)
 {
 	mjvScene *scn = &(context->scn);
 	mjvCamera *cam = &(context->cam);
@@ -128,11 +128,10 @@ int setCamera(int camid, mjModel * m, mjData * d, RenderContext * context)
 	mjv_updateScene(context->m, context->d, opt, NULL, cam, mjCAT_ALL, scn);
 }
 
-int renderOnscreen(int camid, GLFWwindow * window, mjModel * m, mjData * d,
-		   RenderContext * context)
+int renderOnscreen(int camid, GLFWwindow * window, RenderContext * context)
 {
 
-	setCamera(camid, context->m, context->d, context);
+	setCamera(camid, context);
 
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
@@ -148,10 +147,10 @@ int renderOnscreen(int camid, GLFWwindow * window, mjModel * m, mjData * d,
 	glfwSwapBuffers(window);
 }
 
-int renderOffscreen(int camid, unsigned char *rgb, int height, int width,
-		    mjModel * m, mjData * d, RenderContext * context)
+int renderOffscreen(int camid, unsigned char *rgb, 
+    int height, int width, RenderContext * context)
 {
-	setCamera(camid, context->m, context->d, context);
+	setCamera(camid, context);
 
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
@@ -168,7 +167,7 @@ int renderOffscreen(int camid, unsigned char *rgb, int height, int width,
 	mjr_readPixels(rgb, NULL, viewport, &con);
 }
 
-int closeMujoco(mjModel * m, mjData * d, RenderContext * context)
+int closeMujoco(RenderContext * context)
 {
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
@@ -196,7 +195,7 @@ int main(int argc, const char **argv)
 	mj_activate(keypath);
 	context.m = loadModel(filepath);
 	context.d = mj_makeData(context.m);
-	initMujoco(context.m, context.d, &context);
+	initMujoco(&context);
 
   // install GLFW mouse and keyboard callbacks
   /*glfwSetWindowUserPointer(window, &context);*/
@@ -218,9 +217,9 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10; i++) {
-		renderOffscreen(0, rgb, H, W, context.m, context.d, &context);
+		renderOffscreen(0, rgb, H, W, &context);
 		fwrite(rgb, 3, H * W, fp);
-		renderOnscreen(-1, window, context.m, context.d, &context);
+		renderOnscreen(-1, window, &context);
 		mj_step(context.m, context.d);
 	}
 	printf
@@ -229,7 +228,7 @@ int main(int argc, const char **argv)
 
 	fclose(fp);
 	free(rgb);
-	closeMujoco(context.m, context.d, &context);
+	closeMujoco(&context);
 
 	return 0;
 }
