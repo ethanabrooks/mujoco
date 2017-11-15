@@ -4,7 +4,7 @@
 #include "mujoco.h"
 #include "glfw3.h"
 
-typedef struct render_context_t {
+typedef struct state_t {
   mjModel* m;
   mjData* d;
 	mjvScene scn;
@@ -13,14 +13,14 @@ typedef struct render_context_t {
 	mjvOption opt;
 	int lastx;
 	int lasty;
-} RenderContext;
+} State;
 
 GLFWwindow *initGlfw();
 mjModel *loadModel(const char *filepath);
-int initMujoco(RenderContext * context);
+int initMujoco(State * state);
 int renderOffscreen(int camid, unsigned char *rgb, 
-    int height, int width, RenderContext *);
-int renderOnscreen(int camid, GLFWwindow * window, RenderContext * context);
-int closeMujoco(RenderContext * context);
+    int height, int width, State *);
+int renderOnscreen(int camid, GLFWwindow * window, State * state);
+int closeMujoco(State * state);
 
 #endif

@@ -61,9 +61,9 @@
 // scroll callback
 /*void scroll(GLFWwindow * window, double xoffset, double yoffset)*/
 /*{*/
-  /*RenderContext* context = (RenderContext*)glfwGetWindowUserPointer(window);*/
-  /*mjvScene scn = context->scn;*/
-  /*mjvCamera cam = context->cam;*/
+  /*State* state = (RenderContext*)glfwGetWindowUserPointer(window);*/
+  /*mjvScene scn = state->scn;*/
+  /*mjvCamera cam = state->cam;*/
 
   /*// emulate vertical mouse motion = 5% of window height*/
   /*mjv_moveCamera(m, mjMOUSE_ZOOM, 0, -0.05 * yoffset, &scn, &cam);*/
@@ -101,22 +101,22 @@ mjModel *loadModel(const char *filepath)
 	return m;
 }
 
-int initMujoco(RenderContext * context)
+int initMujoco(State * state)
 {
 	/*mjvScene* scn, mjvCamera* cam, mjvOption* opt, mjrContext* con) { */
-	mj_forward(context->m, context->d);
-	mjv_makeScene(&context->scn, 1000);
-	mjv_defaultCamera(&context->cam);
-	mjv_defaultOption(&context->opt);
-	mjr_defaultContext(&context->con);
-	mjr_makeContext(context->m, &context->con, 200);
+	mj_forward(state->m, state->d);
+	mjv_makeScene(&state->scn, 1000);
+	mjv_defaultCamera(&state->cam);
+	mjv_defaultOption(&state->opt);
+	mjr_defaultContext(&state->con);
+	mjr_makeContext(state->m, &state->con, 200);
 }
 
-int setCamera(int camid, RenderContext * context)
+int setCamera(int camid, State * state)
 {
-	mjvScene *scn = &(context->scn);
-	mjvCamera *cam = &(context->cam);
-	mjvOption *opt = &(context->opt);
+	mjvScene *scn = &(state->scn);
+	mjvCamera *cam = &(state->cam);
+	mjvOption *opt = &(state->opt);
 
 	cam->fixedcamid = camid;
 	if (camid == -1) {
@@ -125,18 +125,18 @@ int setCamera(int camid, RenderContext * context)
 		cam->type = mjCAMERA_FIXED;
 	}
 
-	mjv_updateScene(context->m, context->d, opt, NULL, cam, mjCAT_ALL, scn);
+	mjv_updateScene(state->m, state->d, opt, NULL, cam, mjCAT_ALL, scn);
 }
 
-int renderOnscreen(int camid, GLFWwindow * window, RenderContext * context)
+int renderOnscreen(int camid, GLFWwindow * window, State * state)
 {
 
-	setCamera(camid, context);
+	setCamera(camid, state);
 
-	mjvScene scn = context->scn;
-	mjrContext con = context->con;
-	mjvCamera cam = context->cam;
-	mjvOption opt = context->opt;
+	mjvScene scn = state->scn;
+	mjrContext con = state->con;
+	mjvCamera cam = state->cam;
+	mjvOption opt = state->opt;
 	mjrRect rect = { 0, 0, 0, 0 };
 	glfwGetFramebufferSize(window, &rect.width, &rect.height);
 
@@ -148,14 +148,14 @@ int renderOnscreen(int camid, GLFWwindow * window, RenderContext * context)
 }
 
 int renderOffscreen(int camid, unsigned char *rgb, 
-    int height, int width, RenderContext * context)
+    int height, int width, State * state)
 {
-	setCamera(camid, context);
+	setCamera(camid, state);
 
-	mjvScene scn = context->scn;
-	mjrContext con = context->con;
-	mjvCamera cam = context->cam;
-	mjvOption opt = context->opt;
+	mjvScene scn = state->scn;
+	mjrContext con = state->con;
+	mjvCamera cam = state->cam;
+	mjvOption opt = state->opt;
 	mjrRect viewport = { 0, 0, height, width };
 
 	// write offscreen-rendered pixels to file
@@ -167,13 +167,13 @@ int renderOffscreen(int camid, unsigned char *rgb,
 	mjr_readPixels(rgb, NULL, viewport, &con);
 }
 
-int closeMujoco(RenderContext * context)
+int closeMujoco(State * state)
 {
-	mjvScene scn = context->scn;
-	mjrContext con = context->con;
+	mjvScene scn = state->scn;
+	mjrContext con = state->con;
 
-	mj_deleteData(context->d);
-	mj_deleteModel(context->m);
+	mj_deleteData(state->d);
+	mj_deleteModel(state->m);
 	mjr_freeContext(&con);
 	mjv_freeScene(&scn);
 	mj_deactivate();
@@ -189,16 +189,16 @@ int main(int argc, const char **argv)
 	char const *keypath = "../.mujoco/mjkey.txt";
 	mjModel *m;
 	mjData *d;
-	RenderContext context;
+	State state;
 
 	GLFWwindow *window = initGlfw();
 	mj_activate(keypath);
-	context.m = loadModel(filepath);
-	context.d = mj_makeData(context.m);
-	initMujoco(&context);
+	state.m = loadModel(filepath);
+	state.d = mj_makeData(state.m);
+	initMujoco(&state);
 
   // install GLFW mouse and keyboard callbacks
-  /*glfwSetWindowUserPointer(window, &context);*/
+  /*glfwSetWindowUserPointer(window, &state);*/
   /*glfwSetKeyCallback(window, keyboard);*/
   /*glfwSetCursorPosCallback(window, mouse_move);*/
   /*glfwSetMouseButtonCallback(window, mouse_button);*/
@@ -217,10 +217,10 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10; i++) {
-		renderOffscreen(0, rgb, H, W, &context);
+		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
-		renderOnscreen(-1, window, &context);
-		mj_step(context.m, context.d);
+		renderOnscreen(-1, window, &state);
+		mj_step(state.m, state.d);
 	}
 	printf
 	    ("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",
@@ -228,7 +228,7 @@ int main(int argc, const char **argv)
 
 	fclose(fp);
 	free(rgb);
-	closeMujoco(&context);
+	closeMujoco(&state);
 
 	return 0;
 }
