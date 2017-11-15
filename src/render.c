@@ -92,18 +92,18 @@ GLFWwindow *initGlfw()
 	return window;
 }
 
-
-int initMujoco(const char* filepath, RenderContext * context)
+mjModel *loadModel(const char *filepath)
 {
 	char error[1000] = "Could not load xml model";
-  mjModel *m = &(context->m);
-  mjData *d = &(context->d);
-
-	m = mj_loadXML(filepath, 0, error, 1000);
+	mjModel *m = mj_loadXML(filepath, 0, error, 1000);
 	if (!m)
 		mju_error_s("Load model error: %s", error);
+	return m;
+}
 
-  d = mj_makeData(m);
+int initMujoco(mjModel * m, mjData * d, RenderContext * context)
+{
+	/*mjvScene* scn, mjvCamera* cam, mjvOption* opt, mjrContext* con) { */
 	mj_forward(m, d);
 	mjv_makeScene(&context->scn, 1000);
 	mjv_defaultCamera(&context->cam);
@@ -168,10 +168,8 @@ int renderOffscreen(int camid, unsigned char *rgb, int height, int width,
 	mjr_readPixels(rgb, NULL, viewport, &con);
 }
 
-int closeMujoco(RenderContext * context)
+int closeMujoco(mjModel * m, mjData * d, RenderContext * context)
 {
-  mjModel *m = &(context->m);
-  mjData *d = &(context->d);
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
 
@@ -190,14 +188,18 @@ int main(int argc, const char **argv)
 	int W = 800;
 	char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
+	mjModel *m;
+	mjData *d;
 	RenderContext context;
 
 	GLFWwindow *window = initGlfw();
 	mj_activate(keypath);
-	initMujoco(filepath, &context);
+	m = loadModel(filepath);
+	d = mj_makeData(m);
+	initMujoco(m, d, &context);
 
   // install GLFW mouse and keyboard callbacks
-  glfwSetWindowUserPointer(window, &context);
+  /*glfwSetWindowUserPointer(window, &context);*/
   /*glfwSetKeyCallback(window, keyboard);*/
   /*glfwSetCursorPosCallback(window, mouse_move);*/
   /*glfwSetMouseButtonCallback(window, mouse_button);*/
@@ -216,10 +218,10 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10; i++) {
-		renderOffscreen(0, rgb, H, W, &(context.m), &(context.d), &context);
+		renderOffscreen(0, rgb, H, W, m, d, &context);
 		fwrite(rgb, 3, H * W, fp);
-		renderOnscreen(-1, window, &(context.m), &(context.d), &context);
-		mj_step(&(context.m), &(context.d));
+		renderOnscreen(-1, window, m, d, &context);
+		mj_step(m, d);
 	}
 	printf
 	    ("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",
@@ -227,7 +229,7 @@ int main(int argc, const char **argv)
 
 	fclose(fp);
 	free(rgb);
-	closeMujoco(&context);
+	closeMujoco(m, d, &context);
 
 	return 0;
 }
