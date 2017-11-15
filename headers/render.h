@@ -11,9 +11,9 @@ typedef struct state_t {
 	mjrContext con;
 	mjvCamera cam;
 	mjvOption opt;
-  bool button_left = false;
-  bool button_middle = false;
-  bool button_right =  false;
+  int button_left;
+  int button_middle;
+  int button_right;
 	double lastx;
 	double lasty;
 } State;

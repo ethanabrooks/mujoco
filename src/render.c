@@ -56,7 +56,7 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 	glfwGetWindowSize(window, &width, &height);
 
 	// get shift key state 
-	bool mod_shift = (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
+	int mod_shift = (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
 			  || glfwGetKey(window,
 					GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
 
@@ -97,6 +97,10 @@ GLFWwindow *initGlfw(State *state)
 		mju_error("Could not create GLFW window");
 
 	glfwMakeContextCurrent(window);
+
+  state->button_left = 0;
+  state->button_middle = 0;
+  state->button_right = 0;
 
 	// install GLFW mouse and keyboard callbacks
 	glfwSetWindowUserPointer(window, state);

@@ -10,6 +10,7 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
+from libcpp cimport bool 
 
 
 # TODO: integrate with hsr_gym
@@ -27,14 +28,14 @@ cdef extern from "render.h":
         mjrContext con
         mjvCamera cam
         mjvOption opt
-        int button_left
-        int button_middle
-        int button_right
+        bool button_left
+        bool button_middle
+        bool button_right
         double lastx
         double lasty
 
     GLFWwindow * initGlfw(State * state)
-    int initMujoco(State * state)
+    int initMujoco(const char *fullpath, State * state)
     int renderOffscreen(int camid, unsigned char * rgb,
                         int height, int width, State * state)
     int renderOnscreen(int camid, GLFWwindow * window, State * state)
@@ -108,7 +109,7 @@ cdef class Sim(object):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
         self.window = initGlfw(&self.state)
-        initMujoco(& self.state)
+        initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
 
