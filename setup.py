@@ -7,9 +7,10 @@ from os.path import join, expanduser
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
+name = 'mujoco'
 
 extensions = Extension(
-    'mujoco',
+    name,
     sources=[
         "pyx/mujoco.pyx",
         "src/render.c",
@@ -31,6 +32,7 @@ extensions = Extension(
 
 if __name__ == '__main__':
     setup(
+        name=name,
         ext_modules=cythonize(
             extensions,
             build_dir=build_dir,

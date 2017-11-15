@@ -1,3 +1,4 @@
 build/
 mujoco.cpython-35m-x86_64-linux-gnu.so
 MUJOCO_LOG.TXT
+UNKNOWN.egg-info
