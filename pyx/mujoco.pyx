@@ -89,7 +89,6 @@ cdef class Sim(object):
     cdef RenderContext context
 
     cdef float _timestep
-    cdef int _nq
     cdef int _nv
     cdef int _nu
     cdef np.ndarray _actuator_ctrlrange
@@ -104,16 +103,6 @@ cdef class Sim(object):
         self.model = loadModel(encode(fullpath))
         self.data = mj_makeData(self.model)
         initMujoco(self.model, self.data, & self.context)
-
-        self._timestep = self.model.opt.timestep
-        self._nq = self.model.nq
-        self._nv = self.model.nv
-        self._nu = self.model.nu
-        ptr = self.model.actuator_ctrlrange
-        self._actuator_ctrlrange = asarray( < float*> ptr, self.model.nu)
-        self._qpos = asarray( < float*> self.data.qpos, self.nq)
-        self._qvel = asarray( < float*> self.data.qvel, self.nv)
-        self._ctrl = asarray( < float*> self.data.ctrl, self.nu)
 
     def __enter__(self):
         pass
@@ -173,27 +162,31 @@ cdef class Sim(object):
 
     @property
     def timestep(self):
-        return self._timestep
+        return self.model.opt.timestep
+
+    @property
+    def nbody(self):
+        return self.model.nbody
 
     @property
     def nq(self):
-        return self._nq
+        return self.model.nv
 
     @property
     def nv(self):
-        return self._nv
+        return self.model.nv
 
     @property
     def nu(self):
-        return self._nu
+        return self.model.nu
 
     @property
     def actuator_ctrlrange(self):
-        return self._actuator_ctrlrange.copy()
+        return asarray( < float*> self.model.actuator_ctrlrange, self.model.nu).copy()
 
     @property
     def qpos(self):
-        return self._qpos.copy()
+        return asarray( < float*> self.data.qpos, self.nq)
 
     # @qpos.setter
     # def qpos(self, value):
@@ -201,8 +194,8 @@ cdef class Sim(object):
 
     @property
     def qvel(self):
-        return self._qvel.copy()
+        return asarray( < float*> self.data.qvel, self.nv)
 
     @property
     def ctrl(self):
-        return self._ctrl.copy()
+        return asarray( < float*> self.data.ctrl, self.nu)
