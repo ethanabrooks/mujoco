@@ -15,14 +15,17 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: integrate with hsr_gym
 # TODO: get GPU working
+# TODO: fix duplicated floor bug
 
 cdef extern from "glfw3.h":
     ctypedef struct GLFWwindow
 
-
 cdef extern from "render.h":
+    GLFWwindow * initGlfw(State * state)
+    int renderOnscreen(int camid, GLFWwindow * window, State * state)
+
+cdef extern from "lib.h":
     ctypedef struct State:
         mjModel * m
         mjData * d
@@ -36,11 +39,9 @@ cdef extern from "render.h":
         double lastx
         double lasty
 
-    GLFWwindow * initGlfw(State * state)
     int initMujoco(const char *fullpath, State * state)
     int renderOffscreen(int camid, unsigned char * rgb,
                         int height, int width, State * state)
-    int renderOnscreen(int camid, GLFWwindow * window, State * state)
     int closeMujoco(State * state)
 
 
