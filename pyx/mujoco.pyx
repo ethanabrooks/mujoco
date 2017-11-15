@@ -169,6 +169,9 @@ cdef class Sim(object):
     def get_qpos(self, obj, key):
         return self.data.qpos[self.key2id(key)]
 
+    def get_geom_type(self, key):
+        return self.model.geom_type[self.key2id(key)]
+
     def get_xpos(self, key):
         """ Need to call mj_forward first """
         return get_vec3( < float*> self.data.xpos, self.key2id(Types.BODY, key))
