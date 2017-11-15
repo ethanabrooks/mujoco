@@ -2,7 +2,6 @@ from os.path import join, expanduser
 import numpy as np
 from codecs import encode
 from enum import Enum
-
 cimport numpy as np
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id, \
@@ -76,7 +75,8 @@ cdef asarray(float * ptr, size_t size):
     return np.asarray(view)
 
 cdef get_vec(float * ptr, int size, int offset):
-    return np.array([ptr[i] for i in range(offset, offset + size)])
+    return asarray(ptr, offset + size)
+    # return np.array([ptr[i] for i in range(offset, offset + size)])
 
 cdef get_vec3(float * ptr, int n):
     return get_vec(ptr, size=3, offset=3 * n)
@@ -103,6 +103,9 @@ cdef class Sim(object):
         self.model = loadModel(encode(fullpath))
         self.data = mj_makeData(self.model)
         initMujoco(self.model, self.data, & self.context)
+
+        self._qpos = asarray( < float*> self.data.qpos, self.nq)
+        self._qvel = asarray( < float*> self.data.qvel, self.nv)
 
     def __enter__(self):
         pass
@@ -138,7 +141,7 @@ cdef class Sim(object):
         assert type(obj_type) == ObjType, type(obj_type)
         return mj_name2id(self.model, obj_type.value, encode(name))
 
-    def key2id(self, obj, key):
+    def key2id(self, key, obj=None):
         assert type(key) in [int, str]
         if type(key) is str:
             return self.get_id(obj, key)
@@ -152,13 +155,13 @@ cdef class Sim(object):
 
     def get_xpos(self, key):
         """ Need to call mj_forward first """
-        return get_vec3( < float*> self.data.xpos, self.key2id(ObjType.BODY, key))
+        return get_vec3( < float*> self.data.xpos, self.key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
-        return get_vec3( < float*> self.model.geom_size, self.key2id(ObjType.GEOM, key))
+        return get_vec3( < float*> self.model.geom_size, self.key2id(key, ObjType.GEOM))
 
     def get_geom_pos(self, key):
-        return get_vec3( < float*> self.model.geom_pos, self.key2id(ObjType.GEOM, key))
+        return get_vec3( < float*> self.model.geom_pos, self.key2id(key, ObjType.GEOM))
 
     @property
     def timestep(self):
@@ -186,15 +189,19 @@ cdef class Sim(object):
 
     @property
     def qpos(self):
-        return asarray( < float*> self.data.qpos, self.nq)
+        return self._qpos
 
-    # @qpos.setter
-    # def qpos(self, value):
-        # return self._qpos[:] = value
+    @qpos.setter
+    def qpos(self, value):
+        self._qpos[:] = value
 
     @property
     def qvel(self):
-        return asarray( < float*> self.data.qvel, self.nv)
+        return self._qvel
+
+    @qvel.setter
+    def qvel(self, value):
+        self._qvel[:] = value
 
     @property
     def ctrl(self):
