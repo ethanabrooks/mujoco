@@ -104,7 +104,7 @@ mjModel *loadModel(const char *filepath)
 int initMujoco(mjModel * m, mjData * d, RenderContext * context)
 {
 	/*mjvScene* scn, mjvCamera* cam, mjvOption* opt, mjrContext* con) { */
-	mj_forward(m, d);
+	mj_forward(context->m, context->d);
 	mjv_makeScene(&context->scn, 1000);
 	mjv_defaultCamera(&context->cam);
 	mjv_defaultOption(&context->opt);
@@ -125,14 +125,14 @@ int setCamera(int camid, mjModel * m, mjData * d, RenderContext * context)
 		cam->type = mjCAMERA_FIXED;
 	}
 
-	mjv_updateScene(m, d, opt, NULL, cam, mjCAT_ALL, scn);
+	mjv_updateScene(context->m, context->d, opt, NULL, cam, mjCAT_ALL, scn);
 }
 
 int renderOnscreen(int camid, GLFWwindow * window, mjModel * m, mjData * d,
 		   RenderContext * context)
 {
 
-	setCamera(camid, m, d, context);
+	setCamera(camid, context->m, context->d, context);
 
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
@@ -151,7 +151,7 @@ int renderOnscreen(int camid, GLFWwindow * window, mjModel * m, mjData * d,
 int renderOffscreen(int camid, unsigned char *rgb, int height, int width,
 		    mjModel * m, mjData * d, RenderContext * context)
 {
-	setCamera(camid, m, d, context);
+	setCamera(camid, context->m, context->d, context);
 
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
@@ -173,8 +173,8 @@ int closeMujoco(mjModel * m, mjData * d, RenderContext * context)
 	mjvScene scn = context->scn;
 	mjrContext con = context->con;
 
-	mj_deleteData(d);
-	mj_deleteModel(m);
+	mj_deleteData(context->d);
+	mj_deleteModel(context->m);
 	mjr_freeContext(&con);
 	mjv_freeScene(&scn);
 	mj_deactivate();
