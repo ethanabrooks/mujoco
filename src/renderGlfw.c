@@ -1,6 +1,7 @@
 #include "render.h"
 #include "lib.h"
 #include "glfw3.h"
+#include "stdio.h"
 
 // keyboard callback
 void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
@@ -109,3 +110,22 @@ GLFWwindow *initGlfw(State * state)
 	return window;
 }
 
+int renderOnscreen(int camid, GLFWwindow * window, State * state)
+{
+
+	setCamera(camid, state);
+
+	mjvScene scn = state->scn;
+	mjrContext con = state->con;
+	mjvCamera cam = state->cam;
+	mjvOption opt = state->opt;
+	mjrRect rect = { 0, 0, 0, 0 };
+	glfwGetFramebufferSize(window, &rect.width, &rect.height);
+
+	mjr_setBuffer(mjFB_WINDOW, &con);
+	if (con.currentBuffer != mjFB_WINDOW)
+		printf("Warning: window rendering not supported\n");
+	mjr_render(rect, &scn, &con);
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+}
