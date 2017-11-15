@@ -163,13 +163,13 @@ cdef class Sim(object):
     def get_qpos(self, obj, name):
         return self.data.qpos[self.get_id(obj, name)]
 
-    def get_xpos(self, obj, name):
+    def get_xpos(self, name):
         """ Need to call mj_forward first """
-        return get_vec3(<float*> self.data.xpos, self.get_id(obj, name))
+        return get_vec3(<float*> self.data.xpos, self.get_id(Types.BODY, name))
 
-    def get_geom_size(self, obj, name):
-        """ Need to call mj_forward first """
-        return get_vec3(<float*> self.model.geom_size, self.get_id(obj, name))
+    def get_geom_size(self, name):
+        return get_vec3(<float*> self.model.geom_size, self.get_id(Types.GEOM, name))
 
-
+    def get_geom_pos(self, name):
+        return get_vec3(<float*> self.model.geom_pos, self.get_id(Types.GEOM, name))
 
