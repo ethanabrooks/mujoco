@@ -20,20 +20,26 @@ cdef extern from "glfw3.h":
 
 
 cdef extern from "render.h":
-    ctypedef struct RenderContext:
+    ctypedef struct State:
+        mjModel * m
+        mjData * d
         mjvScene scn
         mjrContext con
         mjvCamera cam
         mjvOption opt
+        int button_left
+        int button_middle
+        int button_right
+        double lastx
+        double lasty
 
-    GLFWwindow * initGlfw()
-    mjModel * loadModel(const char * filepath)
-    int initMujoco(mjModel * m, mjData * d, RenderContext * context)
-    int renderOffscreen(int camid, unsigned char * rgb, int height, int width,
-                        mjModel * m, mjData * d, RenderContext * context)
-    int renderOnscreen(int camid, GLFWwindow * window, mjModel * m, mjData * d,
-                       RenderContext * context)
-    int closeMujoco(mjModel * m, mjData * d, RenderContext * context)
+    GLFWwindow * initGlfw(State * state)
+    int initMujoco(State * state)
+    int renderOffscreen(int camid, unsigned char * rgb,
+                        int height, int width, State * state)
+    int renderOnscreen(int camid, GLFWwindow * window, State * state)
+    int closeMujoco(State * state)
+
 
 class GeomType(Enum):
     PLANE = 0
@@ -44,6 +50,7 @@ class GeomType(Enum):
     CYLINDER = 5
     BOX = 6
     MESH = 7
+
 
 class ObjType(Enum):
     UNKNOWN = 0         # unknown object type
@@ -70,6 +77,7 @@ class ObjType(Enum):
     TUPLE = 21        # tuple
     KEY = 22        # keyframe
 
+
 cdef asarray(float * ptr, size_t size):
     cdef float[:] view = <float[:size] > ptr
     return np.asarray(view)
@@ -86,7 +94,7 @@ cdef class Sim(object):
     cdef GLFWwindow * window
     cdef mjData * data
     cdef mjModel * model
-    cdef RenderContext context
+    cdef State state
 
     cdef float _timestep
     cdef int _nv
@@ -99,10 +107,10 @@ cdef class Sim(object):
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        self.window = initGlfw()
-        self.model = loadModel(encode(fullpath))
-        self.data = mj_makeData(self.model)
-        initMujoco(self.model, self.data, & self.context)
+        self.window = initGlfw(&self.state)
+        initMujoco(& self.state)
+        self.model = self.state.m
+        self.data = self.state.d
 
         self._qpos = asarray( < float*> self.data.qpos, self.nq)
         self._qvel = asarray( < float*> self.data.qvel, self.nv)
@@ -111,14 +119,13 @@ cdef class Sim(object):
         pass
 
     def __exit__(self, *args):
-        closeMujoco(self.model, self.data, & self.context)
+        closeMujoco(& self.state)
 
     def render_offscreen(self, height, width, camera_name):
         camid = self.get_id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        renderOffscreen(camid, & view[0], height, width, self.model, self.data,
-                        & self.context)
+        renderOffscreen(camid, & view[0], height, width, & self.state)
         return array.reshape(height, width, 3)
 
     def render(self, camera_name=None):
@@ -126,7 +133,7 @@ cdef class Sim(object):
             camid = -1
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
-        return renderOnscreen(camid, self.window, self.model, self.data, & self.context)
+        return renderOnscreen(camid, self.window, & self.state)
 
     def step(self):
         mj_step(self.model, self.data)
