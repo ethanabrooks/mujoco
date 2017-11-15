@@ -85,29 +85,9 @@ cdef asarray(double * ptr, size_t size):
     cdef double[:] view = <double[:size] > ptr
     return np.asarray(view)
 
-cdef get_vec(double * ptr, int size, int offset):
-    return asarray(ptr, offset + size)
-    # return np.array([ptr[i] for i in range(offset, offset + size)])
 
 cdef get_vec3(double * ptr, int n):
     return asarray(ptr=ptr + n, size=3)
-
-
-cdef class Array(np.ndarray):
-    cdef double* data_ptr
-    cdef int size
-
-    cdef set_data(self, int size, double* data_ptr):
-        """ Set the data of the array """
-        self.data_ptr = data_ptr
-        self.size = size
-
-    def __array__(self):
-        cdef np.npy_intp shape[1]
-        shape[0] = <np.npy_intp> self.size
-        # Create a 1D array, of length 'size'
-        return np.PyArray_SimpleNewFromData(1, shape,
-                                               np.NPY_INT, self.data_ptr)
 
 
 cdef class Sim(object):
@@ -116,16 +96,10 @@ cdef class Sim(object):
     cdef mjModel * model
     cdef State state
 
-    cdef double _timestep
-    cdef int _nv
-    cdef int _nu
     cdef np.ndarray _actuator_ctrlrange
     cdef np.ndarray _qpos
     cdef np.ndarray _qvel
     cdef np.ndarray _ctrl
-    cdef Array qpos
-    cdef Array qvel
-    cdef np.ndarray ctrl
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -135,13 +109,10 @@ cdef class Sim(object):
         self.model = self.state.m
         self.data = self.state.d
 
-        # self.ctrl = asarray(self.data.qpos, self.nq)
-        # self.qvel = Array()
-        self.ctrl = asarray(self.data.ctrl, self.nu)
-
-        # self.qpos.set_data(self.nq,<double*> self.data.qpos)
-        # self.qpos.set_data(self.nq,<double*> self.data.qpos)
-        # self.ctrl.set_data(self.nu,<double*> self.data.ctrl)
+        self._actuator_ctrlrange = asarray( < double*> self.model.actuator_ctrlrange, self.model.nu)
+        self._qpos = asarray( < double*> self.data.qpos, self.nq)
+        self._qvel = asarray( < double*> self.data.qvel, self.nv)
+        self._ctrl = asarray( < double*> self.data.ctrl, self.nu)
 
     def __enter__(self):
         pass
@@ -165,12 +136,6 @@ cdef class Sim(object):
 
     def step(self):
         mj_step(self.model, self.data)
-        print('read into list', [self.data.ctrl[i] for i in range(3)])
-        self.ctrl[1] = .7
-        # print(asarray(<double*> self.data.ctrl, 3))
-        self.data.ctrl[0] = .5
-        print('call to asarray', asarray(<double*> self.data.ctrl, 3))
-        print('read into list after assign', [self.data.ctrl[i] for i in range(3)])
 
     def reset(self):
         mj_resetData(self.model, self.data)
@@ -224,18 +189,18 @@ cdef class Sim(object):
     def nu(self):
         return self.model.nu
 
-    # @property
-    # def actuator_ctrlrange(self):
-        # return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu).copy()
+    @property
+    def actuator_ctrlrange(self):
+        return self._actuator_ctrlrange
 
-    # @property
-    # def qpos(self):
-        # return asarray( < double*> self.data.qpos, self.nq)
+    @property
+    def qpos(self):
+        return self._qpos
 
-    # @property
-    # def qvel(self):
-        # return asarray( < double*> self.data.qvel, self.nv)
+    @property
+    def qvel(self):
+        return self._qvel
 
-    # @property
-    # def ctrl(self):
-        # return asarray( < double*> self.data.ctrl, self.nu)
+    @property
+    def ctrl(self):
+        return self._ctrl
