@@ -15,8 +15,6 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: get rid of _qpos, etc.
-# TODO: fix duplicated floor bug
 # TODO: get GPU working
 
 cdef extern from "glfw3.h":
@@ -98,14 +96,6 @@ cdef class Sim(object):
     cdef mjModel * model
     cdef State state
 
-    cdef np.ndarray _actuator_ctrlrange
-    cdef np.ndarray _qpos
-    cdef np.ndarray _qvel
-    cdef np.ndarray _ctrl
-    cdef np.ndarray _xpos
-    cdef np.ndarray _geom_size
-    cdef np.ndarray _geom_pos
-
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
@@ -113,14 +103,6 @@ cdef class Sim(object):
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
-
-        self._actuator_ctrlrange = asarray( < double*> self.model.actuator_ctrlrange, self.model.nu)
-        self._qpos = asarray( < double*> self.data.qpos, self.nq)
-        self._qvel = asarray( < double*> self.data.qvel, self.nv)
-        self._ctrl = asarray( < double*> self.data.ctrl, self.nu)
-        self._xpos = asarray( < double*> self.data.xpos, self.nbody * 3)
-        self._geom_size = asarray( < double*> self.model.geom_size, self.ngeom * 3)
-        self._geom_pos = asarray( < double*> self.model.geom_pos, self.ngeom * 3)
 
     def __enter__(self):
         pass
@@ -211,28 +193,28 @@ cdef class Sim(object):
 
     @property
     def actuator_ctrlrange(self):
-        return self._actuator_ctrlrange
+        return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu)
 
     @property
     def qpos(self):
-        return self._qpos
+        return asarray( < double*> self.data.qpos, self.nq)
 
     @property
     def qvel(self):
-        return self._qvel
+        return asarray( < double*> self.data.qvel, self.nv)
 
     @property
     def ctrl(self):
-        return self._ctrl
+        return asarray( < double*> self.data.ctrl, self.nu)
 
     @property
     def xpos(self):
-        return self._xpos
+        return asarray( < double*> self.data.xpos, self.nbody * 3)
 
     @property
     def geom_size(self):
-        return self._geom_size
+        return asarray( < double*> self.model.geom_size, self.ngeom * 3)
 
     @property
     def geom_pos(self):
-        return self._geom_pos
+        return asarray( < double*> self.model.geom_pos, self.ngeom * 3)
