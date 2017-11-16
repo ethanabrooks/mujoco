@@ -15,9 +15,12 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: add variable to track whether forward has been called
+# TODO: TupleSpace
 # TODO: get GPU working
+# TODO: Better Visualizer
+# TODO: add variable to track whether forward has been called
 # TODO: get floats working?
+# TODO: b + w
 
 cdef extern from "glfw3.h":
     ctypedef struct GLFWwindow
