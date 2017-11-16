@@ -1,10 +1,10 @@
 from os.path import join, expanduser
-from codecs import encode
+from codecs import encode, decode
 from enum import Enum
 from libc.stdlib cimport free
 from cython cimport view
-from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_name2id, \
-    mj_resetData, mj_forward
+from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, \
+    mj_id2name, mj_name2id, mj_resetData, mj_forward
 from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
@@ -15,8 +15,9 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: get GPU working
+# TODO: get rid of _qpos, etc. 
 # TODO: fix duplicated floor bug
+# TODO: get GPU working
 
 cdef extern from "glfw3.h":
     ctypedef struct GLFWwindow
@@ -101,6 +102,9 @@ cdef class Sim(object):
     cdef np.ndarray _qpos
     cdef np.ndarray _qvel
     cdef np.ndarray _ctrl
+    cdef np.ndarray _xpos
+    cdef np.ndarray _geom_size
+    cdef np.ndarray _geom_pos
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -114,6 +118,9 @@ cdef class Sim(object):
         self._qpos = asarray( < double*> self.data.qpos, self.nq)
         self._qvel = asarray( < double*> self.data.qvel, self.nv)
         self._ctrl = asarray( < double*> self.data.ctrl, self.nu)
+        self._xpos = asarray( < double*> self.data.xpos, self.nbody)
+        self._geom_size = asarray( < double*> self.model.geom_size, self.ngeom)
+        self._geom_pos = asarray( < double*> self.model.geom_pos, self.ngeom)
 
     def __enter__(self):
         pass
@@ -145,14 +152,22 @@ cdef class Sim(object):
         mj_forward(self.model, self.data)
 
     def get_id(self, obj_type, name):
-        assert isinstance(obj_type, ObjType), type(obj_type)
+        assert isinstance(obj_type, ObjType)
         return mj_name2id(self.model, obj_type.value, encode(name))
 
-    def key2id(self, key, obj=None):
-        assert type(key) in [int, str]
+    def get_name(self, obj_type, id):
+        assert isinstance(obj_type, ObjType), type(obj_type)
+        buff = mj_id2name(self.model, obj_type.value, id)
+        if buff is not NULL:
+            return decode(buff)
+
+    def key2id(self, key, obj_type=None):
         if type(key) is str:
-            return self.get_id(obj, key)
-        return key
+            assert isinstance(obj_type, ObjType)
+            return self.get_id(obj_type, key)
+        else:
+            assert isinstance(key, int)
+            return key
 
     def get_qpos(self, obj, key):
         return self.data.qpos[self.key2id(key)]
@@ -161,8 +176,10 @@ cdef class Sim(object):
         return self.model.geom_type[self.key2id(key)]
 
     def get_xpos(self, key):
-        """ Need to call mj_forward first """
-        return get_vec3( < double*> self.data.xpos, self.key2id(key, ObjType.BODY))
+        self.forward()
+        # return get_vec3( < double*> self.data.xpos, self.key2id(key, ObjType.BODY))
+        return np.array([self.xpos[self.key2id(key, ObjType.BODY) + i] for i in
+            range(3)])
 
     def get_geom_size(self, key):
         return get_vec3( < double*> self.model.geom_size, self.key2id(key, ObjType.GEOM))
@@ -177,6 +194,10 @@ cdef class Sim(object):
     @property
     def nbody(self):
         return self.model.nbody
+
+    @property
+    def ngeom(self):
+        return self.model.ngeom
 
     @property
     def nq(self):
@@ -205,3 +226,15 @@ cdef class Sim(object):
     @property
     def ctrl(self):
         return self._ctrl
+
+    @property
+    def xpos(self):
+        return self._xpos
+
+    @property
+    def geom_size(self):
+        return self._geom_size
+
+    @property
+    def geom_pos(self):
+        return self._geom_pos
