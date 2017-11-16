@@ -118,9 +118,9 @@ cdef class Sim(object):
         self._qpos = asarray( < double*> self.data.qpos, self.nq)
         self._qvel = asarray( < double*> self.data.qvel, self.nv)
         self._ctrl = asarray( < double*> self.data.ctrl, self.nu)
-        self._xpos = asarray( < double*> self.data.xpos, self.nbody)
-        self._geom_size = asarray( < double*> self.model.geom_size, self.ngeom)
-        self._geom_pos = asarray( < double*> self.model.geom_pos, self.ngeom)
+        self._xpos = asarray( < double*> self.data.xpos, self.nbody * 3)
+        self._geom_size = asarray( < double*> self.model.geom_size, self.ngeom * 3)
+        self._geom_pos = asarray( < double*> self.model.geom_pos, self.ngeom * 3)
 
     def __enter__(self):
         pass
