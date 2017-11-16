@@ -15,7 +15,7 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: get rid of _qpos, etc. 
+# TODO: get rid of _qpos, etc.
 # TODO: fix duplicated floor bug
 # TODO: get GPU working
 
@@ -88,8 +88,8 @@ cdef asarray(double * ptr, size_t size):
     return np.asarray(view)
 
 
-cdef get_vec3(double * ptr, int n):
-    return asarray(ptr=ptr + n, size=3)
+def get_vec3(array, id):
+    return array[id * 3: (id + 1) * 3]
 
 
 cdef class Sim(object):
@@ -177,15 +177,13 @@ cdef class Sim(object):
 
     def get_xpos(self, key):
         self.forward()
-        # return get_vec3( < double*> self.data.xpos, self.key2id(key, ObjType.BODY))
-        return np.array([self.xpos[self.key2id(key, ObjType.BODY) + i] for i in
-            range(3)])
+        return get_vec3(self.xpos, self.key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
-        return get_vec3( < double*> self.model.geom_size, self.key2id(key, ObjType.GEOM))
+        return get_vec3(self.geom_size, self.key2id(key, ObjType.GEOM))
 
     def get_geom_pos(self, key):
-        return get_vec3( < double*> self.model.geom_pos, self.key2id(key, ObjType.GEOM))
+        return get_vec3(self.geom_pos, self.key2id(key, ObjType.GEOM))
 
     @property
     def timestep(self):
