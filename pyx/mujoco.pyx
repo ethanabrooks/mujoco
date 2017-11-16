@@ -15,7 +15,9 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
+# TODO: add variable to track whether forward has been called
 # TODO: get GPU working
+# TODO: get floats working?
 
 cdef extern from "glfw3.h":
     ctypedef struct GLFWwindow
@@ -85,9 +87,8 @@ cdef asarray(double * ptr, size_t size):
     cdef double[:] view = <double[:size] > ptr
     return np.asarray(view)
 
-
-def get_vec3(array, id):
-    return array[id * 3: (id + 1) * 3]
+def get_vec(size, array, n):
+    return array[n * size : (n + 1) * size]
 
 
 cdef class Sim(object):
@@ -159,13 +160,17 @@ cdef class Sim(object):
 
     def get_xpos(self, key):
         self.forward()
-        return get_vec3(self.xpos, self.key2id(key, ObjType.BODY))
+        return get_vec(3, self.xpos, self.key2id(key, ObjType.BODY))
+
+    def get_xquat(self, key):
+        self.forward()
+        return get_vec(4, self.xquat, self.key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
-        return get_vec3(self.geom_size, self.key2id(key, ObjType.GEOM))
+        return get_vec(3, self.geom_size, self.key2id(key, ObjType.GEOM))
 
     def get_geom_pos(self, key):
-        return get_vec3(self.geom_pos, self.key2id(key, ObjType.GEOM))
+        return get_vec(3, self.geom_pos, self.key2id(key, ObjType.GEOM))
 
     @property
     def timestep(self):
@@ -210,6 +215,10 @@ cdef class Sim(object):
     @property
     def xpos(self):
         return asarray( < double*> self.data.xpos, self.nbody * 3)
+
+    @property
+    def xquat(self):
+        return asarray( < double*> self.data.xquat, self.nbody * 4)
 
     @property
     def geom_size(self):
