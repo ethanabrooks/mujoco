@@ -1,3 +1,4 @@
+import os
 from os.path import join, expanduser
 from codecs import encode, decode
 from enum import Enum
@@ -9,6 +10,9 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
+from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
+if True:
+    from pxd.glfw cimport GLFWwindow, initGlfw, renderOnscreen
 from libcpp cimport bool
 
 cimport numpy as np
@@ -19,32 +23,6 @@ np.import_array()
 # TODO: Better Visualizer
 # TODO: get floats working?
 # TODO: b + w
-
-cdef extern from "glfw3.h":
-    ctypedef struct GLFWwindow
-
-cdef extern from "render.h":
-    GLFWwindow * initGlfw(State * state)
-    int renderOnscreen(int camid, GLFWwindow * window, State * state)
-
-cdef extern from "lib.h":
-    ctypedef struct State:
-        mjModel * m
-        mjData * d
-        mjvScene scn
-        mjrContext con
-        mjvCamera cam
-        mjvOption opt
-        bool button_left
-        bool button_middle
-        bool button_right
-        double lastx
-        double lasty
-
-    int initMujoco(const char * fullpath, State * state)
-    int renderOffscreen(int camid, unsigned char * rgb,
-                        int height, int width, State * state)
-    int closeMujoco(State * state)
 
 
 class GeomType(Enum):
