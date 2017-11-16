@@ -1,9 +1,11 @@
 #ifndef _LIB_H
 #define _LIB_H
 
+#include "glfw3.h"
 #include "mujoco.h"
 
 typedef struct state_t {
+  GLFWwindow *window;
 	mjModel *m;
 	mjData *d;
 	mjvScene scn;

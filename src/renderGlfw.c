@@ -81,13 +81,12 @@ void scroll(GLFWwindow * window, double xoffset, double yoffset)
 		       &(state->scn), &(state->cam));
 }
 
-GLFWwindow *initGlfw(State * state)
+int initGlfw(State * state)
 {
 	if (!glfwInit())
 		mju_error("Could not initialize GLFW");
 
-	// create visible window, double-buffered
-	glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+	// create visible window, double-buffered glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	GLFWwindow *window =
 	    glfwCreateWindow(800, 800, "Visible window", NULL, NULL);
@@ -107,10 +106,10 @@ GLFWwindow *initGlfw(State * state)
 	glfwSetMouseButtonCallback(window, mouse_button);
 	glfwSetScrollCallback(window, scroll);
 
-	return window;
+	state->window = window;
 }
 
-int renderOnscreen(int camid, GLFWwindow * window, State * state)
+int renderOnscreen(int camid, State * state)
 {
 
 	setCamera(camid, state);
@@ -120,12 +119,12 @@ int renderOnscreen(int camid, GLFWwindow * window, State * state)
 	mjvCamera cam = state->cam;
 	mjvOption opt = state->opt;
 	mjrRect rect = { 0, 0, 0, 0 };
-	glfwGetFramebufferSize(window, &rect.width, &rect.height);
+	glfwGetFramebufferSize(state->window, &rect.width, &rect.height);
 
 	mjr_setBuffer(mjFB_WINDOW, &con);
 	if (con.currentBuffer != mjFB_WINDOW)
 		printf("Warning: window rendering not supported\n");
 	mjr_render(rect, &scn, &con);
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(state->window);
 	glfwPollEvents();
 }
