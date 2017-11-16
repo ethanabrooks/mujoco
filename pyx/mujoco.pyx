@@ -9,7 +9,7 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
-from libcpp cimport bool 
+from libcpp cimport bool
 
 cimport numpy as np
 import numpy as np
@@ -39,7 +39,7 @@ cdef extern from "lib.h":
         double lastx
         double lasty
 
-    int initMujoco(const char *fullpath, State * state)
+    int initMujoco(const char * fullpath, State * state)
     int renderOffscreen(int camid, unsigned char * rgb,
                         int height, int width, State * state)
     int closeMujoco(State * state)
@@ -105,7 +105,7 @@ cdef class Sim(object):
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        self.window = initGlfw(&self.state)
+        self.window = initGlfw( & self.state)
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
