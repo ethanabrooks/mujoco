@@ -15,10 +15,8 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: TupleSpace
 # TODO: get GPU working
 # TODO: Better Visualizer
-# TODO: add variable to track whether forward has been called
 # TODO: get floats working?
 # TODO: b + w
 
@@ -99,6 +97,7 @@ cdef class Sim(object):
     cdef mjData * data
     cdef mjModel * model
     cdef State state
+    cdef int forward_called_this_step
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
@@ -107,6 +106,7 @@ cdef class Sim(object):
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
+        self.forward_called_this_step = False
 
     def __enter__(self):
         pass
@@ -130,12 +130,15 @@ cdef class Sim(object):
 
     def step(self):
         mj_step(self.model, self.data)
+        self.forward_called_this_step = False
 
     def reset(self):
         mj_resetData(self.model, self.data)
+        self.forward_called_this_step = False
 
     def forward(self):
         mj_forward(self.model, self.data)
+        self.forward_called_this_step = True
 
     def get_id(self, obj_type, name):
         assert isinstance(obj_type, ObjType)
@@ -162,11 +165,13 @@ cdef class Sim(object):
         return self.model.geom_type[self.key2id(key)]
 
     def get_xpos(self, key):
-        self.forward()
+        if not self.forward_called_this_step:
+            self.forward()
         return get_vec(3, self.xpos, self.key2id(key, ObjType.BODY))
 
     def get_xquat(self, key):
-        self.forward()
+        if not self.forward_called_this_step:
+            self.forward()
         return get_vec(4, self.xquat, self.key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
