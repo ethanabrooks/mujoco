@@ -84,8 +84,9 @@ char const *filepath = "../zero_shot/environment/models/navigate.xml"; // xml/hu
 	mjModel *m;
 	mjData *d;
 	State state;
+  GraphicsState window;
 
-	GraphicsState* window = initOpenGL(&state);
+	initOpenGL(&window, &state);
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);

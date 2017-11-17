@@ -4,9 +4,9 @@
 #include "glfw3.h"
 #include "lib.h"
 
-typedef struct GLFWwindow GraphicsState;
+typedef GLFWwindow* GraphicsState;
 
-GraphicsState* initOpenGL(State * state);
-int renderOnscreen(int camid, GraphicsState * window, State * state);
+int initOpenGL(GraphicsState *, State *);
+int renderOnscreen(int camid, GraphicsState window, State * state);
 
 #endif

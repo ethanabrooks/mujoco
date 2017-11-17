@@ -4,9 +4,7 @@ cdef extern from "glfw3.h":
     ctypedef struct GLFWwindow
 
 cdef extern from "renderGlfw.h":
-    ctypedef unsigned long ULong
-    ctypedef struct GraphicsState:
-        pass
+    ctypedef GLFWwindow* GraphicsState
 
-    GraphicsState* initOpenGL(State * state)
-    int renderOnscreen(int camid, GraphicsState * window, State * state)
+    int initOpenGL(GraphicsState *, State *)
+    int renderOnscreen(int camid, GraphicsState window, State * state)

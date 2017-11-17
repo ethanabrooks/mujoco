@@ -81,14 +81,14 @@ void scroll(GLFWwindow * window, double xoffset, double yoffset)
 		       &(state->scn), &(state->cam));
 }
 
-GraphicsState* initOpenGL(State * state)
+int initOpenGL(GraphicsState* graphicsState, State * state)
 {
 	if (!glfwInit())
 		mju_error("Could not initialize GLFW");
 
 	// create visible window, double-buffered glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-	GLFWwindow *window =
+	GLFWwindow* window =
 	    glfwCreateWindow(800, 800, "Visible window", NULL, NULL);
 	if (!window)
 		mju_error("Could not create GLFW window");
@@ -106,10 +106,10 @@ GraphicsState* initOpenGL(State * state)
 	glfwSetMouseButtonCallback(window, mouse_button);
 	glfwSetScrollCallback(window, scroll);
 
-	return window;
+  *graphicsState = window;
 }
 
-int renderOnscreen(int camid, GraphicsState * window, State * state)
+int renderOnscreen(int camid, GraphicsState window, State * state)
 {
 
 	setCamera(camid, state);

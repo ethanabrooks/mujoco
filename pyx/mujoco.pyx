@@ -1,5 +1,5 @@
-RENDER = True # os.environ.get('RENDER') is not None
- 
+RENDER = True  # os.environ.get('RENDER') is not None
+
 import os
 from os.path import join, expanduser
 from codecs import encode, decode
@@ -70,21 +70,22 @@ cdef asarray(double * ptr, size_t size):
     cdef double[:] view = <double[:size] > ptr
     return np.asarray(view)
 
+
 def get_vec(size, array, n):
-    return array[n * size : (n + 1) * size]
+    return array[n * size: (n + 1) * size]
 
 
 cdef class Sim(object):
     cdef mjData * data
     cdef mjModel * model
     cdef State state
-    cdef GraphicsState* graphics_state
+    cdef GraphicsState graphics_state
     cdef int forward_called_this_step
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        self.graphics_state = initOpenGL( & self.state)
+        initOpenGL( & self.graphics_state, & self.state)
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
@@ -94,7 +95,7 @@ cdef class Sim(object):
         pass
 
     def __exit__(self, *args):
-        closeMujoco(& self.state)
+        closeMujoco( & self.state)
 
     def render_offscreen(self, height, width, camera_name):
         camid = self.get_id(ObjType.CAMERA, camera_name)
@@ -188,32 +189,32 @@ cdef class Sim(object):
 
     @property
     def actuator_ctrlrange(self):
-        return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu)
+        return asarray(< double*> self.model.actuator_ctrlrange, self.model.nu)
 
     @property
     def qpos(self):
-        return asarray( < double*> self.data.qpos, self.nq)
+        return asarray(< double*> self.data.qpos, self.nq)
 
     @property
     def qvel(self):
-        return asarray( < double*> self.data.qvel, self.nv)
+        return asarray(< double*> self.data.qvel, self.nv)
 
     @property
     def ctrl(self):
-        return asarray( < double*> self.data.ctrl, self.nu)
+        return asarray(< double*> self.data.ctrl, self.nu)
 
     @property
     def xpos(self):
-        return asarray( < double*> self.data.xpos, self.nbody * 3)
+        return asarray(< double*> self.data.xpos, self.nbody * 3)
 
     @property
     def xquat(self):
-        return asarray( < double*> self.data.xquat, self.nbody * 4)
+        return asarray(< double*> self.data.xquat, self.nbody * 4)
 
     @property
     def geom_size(self):
-        return asarray( < double*> self.model.geom_size, self.ngeom * 3)
+        return asarray(< double*> self.model.geom_size, self.ngeom * 3)
 
     @property
     def geom_pos(self):
-        return asarray( < double*> self.model.geom_pos, self.ngeom * 3)
+        return asarray(< double*> self.model.geom_pos, self.ngeom * 3)
