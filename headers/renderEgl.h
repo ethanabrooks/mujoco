@@ -5,7 +5,6 @@
 #include "mujoco.h"
 
 typedef struct state_t {
-  GLFWwindow *window;
 	mjModel *m;
 	mjData *d;
 	mjvScene scn;

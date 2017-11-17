@@ -1,5 +1,5 @@
 #include "lib.h"
-#include "render.h"
+#include "renderGlfw.h"
 #include "mujoco.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -85,7 +85,7 @@ char const *filepath = "../zero_shot/environment/models/navigate.xml"; // xml/hu
 	mjData *d;
 	State state;
 
-	initOpenGL(&state);
+	GraphicsState* window = initOpenGL(&state);
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
@@ -104,7 +104,7 @@ char const *filepath = "../zero_shot/environment/models/navigate.xml"; // xml/hu
 	for (int i = 0; i < 10000; i++) {
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
-		renderOnscreen(-1, &state);
+		renderOnscreen(-1, window, &state);
     state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
 	}

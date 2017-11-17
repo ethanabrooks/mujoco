@@ -1,4 +1,4 @@
-#include "render.h"
+#include "renderGlfw.h"
 #include "lib.h"
 #include "glfw3.h"
 #include "stdio.h"
@@ -81,7 +81,7 @@ void scroll(GLFWwindow * window, double xoffset, double yoffset)
 		       &(state->scn), &(state->cam));
 }
 
-int initOpenGL(State * state)
+GraphicsState* initOpenGL(State * state)
 {
 	if (!glfwInit())
 		mju_error("Could not initialize GLFW");
@@ -106,10 +106,10 @@ int initOpenGL(State * state)
 	glfwSetMouseButtonCallback(window, mouse_button);
 	glfwSetScrollCallback(window, scroll);
 
-	state->window = window;
+	return window;
 }
 
-int renderOnscreen(int camid, State * state)
+int renderOnscreen(int camid, GraphicsState * window, State * state)
 {
 
 	setCamera(camid, state);
@@ -119,12 +119,12 @@ int renderOnscreen(int camid, State * state)
 	mjvCamera cam = state->cam;
 	mjvOption opt = state->opt;
 	mjrRect rect = { 0, 0, 0, 0 };
-	glfwGetFramebufferSize(state->window, &rect.width, &rect.height);
+	glfwGetFramebufferSize(window, &rect.width, &rect.height);
 
 	mjr_setBuffer(mjFB_WINDOW, &con);
 	if (con.currentBuffer != mjFB_WINDOW)
 		printf("Warning: window rendering not supported\n");
 	mjr_render(rect, &scn, &con);
-	glfwSwapBuffers(state->window);
+	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
