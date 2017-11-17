@@ -1,6 +1,9 @@
 #include "lib.h"
-/*#include "renderGlfw.h"*/
+#ifdef MJ_EGL
 #include "renderEgl.h"
+#else
+#include "renderGlfw.h"
+#endif
 #include "mujoco.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -79,14 +82,18 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-  /*char const *filepath = "../zero_shot/environment/models/navigate.xml";*/
-  char const *filepath = "xml/humanoid.xml";
+	/*char const *filepath = "../zero_shot/environment/models/navigate.xml"; */
+	char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	mjModel *m;
 	mjData *d;
 	State state;
-
-	initOpenGL(&state, &state);
+#ifdef MJ_EGL
+	initOpenGL();
+#else
+  GraphicsState window;
+	initOpenGL(&window, &state);
+#endif
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
@@ -105,7 +112,9 @@ int main(int argc, const char **argv)
 	for (int i = 0; i < 100; i++) {
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
-		/*renderOnscreen(-1, window, &state); */
+#ifndef MJ_EGL
+    renderOnscreen(-1, window, &state); 
+#endif
 		state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
 	}

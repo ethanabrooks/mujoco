@@ -1,9 +1,8 @@
 #include <EGL/egl.h>
-#include "lib.h"
 #include "mujoco.h"
 
 // create OpenGL context/window
-int initOpenGL(void*, State* state)
+int initOpenGL()
 {
 	// desired config
 	const EGLint configAttribs[] = {

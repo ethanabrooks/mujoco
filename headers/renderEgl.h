@@ -4,8 +4,8 @@
 #include "EGL/egl.h"
 #include "mujoco.h"
 
-typedef void GraphicsState;
+typedef int GraphicsState;
 
-int initOpenGL(GraphicsState *, State *);
+int initOpenGL();
 
 #endif
