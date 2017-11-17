@@ -1,5 +1,6 @@
 #include "lib.h"
-#include "renderGlfw.h"
+/*#include "renderGlfw.h"*/
+#include "renderEgl.h"
 #include "mujoco.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -38,7 +39,6 @@ int setCamera(int camid, State * state)
 
 	mjv_updateScene(state->m, state->d, opt, NULL, cam, mjCAT_ALL, scn);
 }
-
 
 int
 renderOffscreen(int camid, unsigned char *rgb,
@@ -79,14 +79,14 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-char const *filepath = "../zero_shot/environment/models/navigate.xml"; // xml/humanoid.xml";
+  /*char const *filepath = "../zero_shot/environment/models/navigate.xml";*/
+  char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	mjModel *m;
 	mjData *d;
 	State state;
-  GraphicsState window;
 
-	initOpenGL(&window, &state);
+	initOpenGL(&state, &state);
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
@@ -102,11 +102,11 @@ char const *filepath = "../zero_shot/environment/models/navigate.xml"; // xml/hu
 		mju_error("Could not open rgbfile for writing");
 
 	// main loop
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 100; i++) {
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
-		renderOnscreen(-1, window, &state);
-    state.d->ctrl[0] = 0.5;
+		/*renderOnscreen(-1, window, &state); */
+		state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
 	}
 	printf

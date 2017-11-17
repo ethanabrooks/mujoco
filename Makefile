@@ -11,16 +11,23 @@ default:
 random-agent:
 	cd ~/zero_shot; ls; python random_agent.py
 
-render:
+glfw:
 	$(MK_BUILD)
 	g++ $(COMMON) src/renderGlfw.c src/lib.c -lmujoco150 -lGL -lglew $(MJ_DIR)/bin/libglfw.so.3 -o  $(BUILD)render
 	$(BUILD)render
 	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 	vlc $(BUILD)video.mp4
 
-egl:	
+egl:
 	$(MK_BUILD)
-	g++ $(COMMON) -L/usr/lib/nvidia-384 -DMJ_EGL lib.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o $(BUILD)renderegl
+	g++ $(COMMON) -L/usr/lib/nvidia-384 src/renderEgl.c src/lib.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)renderegl
+	$(BUILD)renderegl
+	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
+	vlc $(BUILD)video.mp4
+
+#egl:	
+	#$(MK_BUILD)
+	#g++ $(COMMON) -L/usr/lib/nvidia-384 -DMJ_EGL lib.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o $(BUILD)renderegl
 
 clean:
 	rm -f MUJOCO_LOG.txt *.so 
