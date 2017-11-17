@@ -3,9 +3,11 @@
 
 #include "EGL/egl.h"
 #include "mujoco.h"
+#include "lib.h"
 
 typedef int GraphicsState;
 
 int initOpenGL();
+int renderOnscreen(int camid, GraphicsState window, State * state);
 
 #endif

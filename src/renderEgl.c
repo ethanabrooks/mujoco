@@ -1,5 +1,7 @@
 #include <EGL/egl.h>
 #include "mujoco.h"
+#include "renderEgl.h"
+#include "lib.h"
 
 // create OpenGL context/window
 int initOpenGL()
@@ -77,4 +79,7 @@ void closeOpenGL(void)
 
 	// terminate display
 	eglTerminate(eglDpy);
+}
+
+int renderOnscreen(int camid, GraphicsState window, State * state) {
 }

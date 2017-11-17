@@ -16,7 +16,7 @@ from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
 # if RENDER:
     # from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
 # else:
-from pxd.renderEgl cimport initOpenGL
+from pxd.renderEgl cimport GraphicsState, initOpenGL, renderOnscreen
 from libcpp cimport bool
 
 cimport numpy as np
