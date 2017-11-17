@@ -9,13 +9,13 @@ from os.path import join, expanduser
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
-name = 'mujoco'
+name = 'mujoco.sim'
 
 
 extensions = Extension(
     name,
     sources=[
-        "pyx/mujoco.pyx",
+        "mujoco/sim.pyx",
         "src/lib.c",
     ],
     include_dirs=[
