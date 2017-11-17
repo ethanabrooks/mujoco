@@ -14,9 +14,9 @@ from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
 if RENDER:
-    from pxd.glfw cimport GLFWwindow, initGlfw, renderOnscreen
-else:
-    from pxd.egl cimport initOpenGL
+    from pxd.glfw cimport GLFWwindow, initOpenGL, renderOnscreen
+# else:
+    # from pxd.egl cimport initOpenGL
 from libcpp cimport bool
 
 cimport numpy as np
@@ -75,7 +75,6 @@ def get_vec(size, array, n):
 
 
 cdef class Sim(object):
-    cdef GLFWwindow * window
     cdef mjData * data
     cdef mjModel * model
     cdef State state
@@ -84,7 +83,7 @@ cdef class Sim(object):
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        self.window = initGlfw( & self.state)
+        initOpenGL( & self.state)
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
@@ -108,7 +107,7 @@ cdef class Sim(object):
             camid = -1
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
-        return renderOnscreen(camid, self.window, & self.state)
+        return renderOnscreen(camid, & self.state)
 
     def step(self):
         mj_step(self.model, self.data)

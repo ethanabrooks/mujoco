@@ -81,7 +81,7 @@ void scroll(GLFWwindow * window, double xoffset, double yoffset)
 		       &(state->scn), &(state->cam));
 }
 
-int initGlfw(State * state)
+int initOpenGL(State * state)
 {
 	if (!glfwInit())
 		mju_error("Could not initialize GLFW");
