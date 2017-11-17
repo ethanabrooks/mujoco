@@ -1,4 +1,4 @@
-RENDER = True  # os.environ.get('RENDER') is not None
+RENDER = False #os.environ.get('RENDER') is not None
 
 import os
 from os.path import join, expanduser
@@ -13,10 +13,10 @@ from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
-if RENDER:
-    from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
+# if RENDER:
+    # from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
 # else:
-    # from pxd.egl cimport initOpenGL
+from pxd.renderEgl cimport initOpenGL
 from libcpp cimport bool
 
 cimport numpy as np
@@ -79,13 +79,13 @@ cdef class Sim(object):
     cdef mjData * data
     cdef mjModel * model
     cdef State state
-    cdef GraphicsState graphics_state
+    # cdef GraphicsState graphics_state
     cdef int forward_called_this_step
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        initOpenGL( & self.graphics_state, & self.state)
+        initOpenGL()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
@@ -105,11 +105,12 @@ cdef class Sim(object):
         return array.reshape(height, width, 3)
 
     def render(self, camera_name=None):
-        if camera_name is None:
-            camid = -1
-        else:
-            camid = self.get_id(ObjType.CAMERA, camera_name)
-        return renderOnscreen(camid, self.graphics_state, & self.state)
+        raise NotImplemented
+        # if camera_name is None:
+            # camid = -1
+        # else:
+            # camid = self.get_id(ObjType.CAMERA, camera_name)
+        # return renderOnscreen(camid, self.graphics_state, & self.state)
 
     def step(self):
         mj_step(self.model, self.data)
