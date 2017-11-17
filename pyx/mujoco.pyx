@@ -1,3 +1,5 @@
+RENDER = True # os.environ.get('RENDER') is not None
+ 
 import os
 from os.path import join, expanduser
 from codecs import encode, decode
@@ -11,8 +13,10 @@ from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
-if True:
+if RENDER:
     from pxd.glfw cimport GLFWwindow, initGlfw, renderOnscreen
+else:
+    from pxd.egl cimport initOpenGL
 from libcpp cimport bool
 
 cimport numpy as np
