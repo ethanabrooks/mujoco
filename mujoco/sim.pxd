@@ -1,6 +1,6 @@
 include "../pxd/renderGlfw.pxd"
 
-cdef class Sim(object):
+cdef class BaseSim(object):
     cdef GraphicsState graphics_state
     cdef mjData * data
     cdef mjModel * model

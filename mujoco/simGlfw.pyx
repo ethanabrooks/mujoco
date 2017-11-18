@@ -1,8 +1,8 @@
-from mujoco.sim cimport Sim
+from mujoco.sim cimport BaseSim
 from mujoco.sim import ObjType
 from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen
 
-cdef class Child(Sim):
+cdef class Sim(BaseSim):
     cdef GraphicsState graphics_state2
 
     def init_opengl(self):

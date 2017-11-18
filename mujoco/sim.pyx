@@ -73,7 +73,7 @@ cdef asarray(double * ptr, size_t size):
 def get_vec(size, array, n):
     return array[n * size: (n + 1) * size]
 
-cdef class Sim(object):
+cdef class BaseSim(object):
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
