@@ -1,5 +1,3 @@
-RENDER = False #os.environ.get('RENDER') is not None
-
 import os
 from os.path import join, expanduser
 from codecs import encode, decode

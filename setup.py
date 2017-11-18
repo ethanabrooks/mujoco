@@ -6,7 +6,7 @@ from Cython.Build import cythonize
 from os.path import join, expanduser
 import os
 
-RENDER = True  # os.environ.get('RENDER') is not None
+RENDER = os.environ.get('RENDER') is not None
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"

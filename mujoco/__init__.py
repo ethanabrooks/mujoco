@@ -1,7 +1,11 @@
 #! /usr/bin/env python
 
+import os
 from mujoco.sim import GeomType, ObjType
-from mujoco.simGlfw import Sim
+if os.environ.get('RENDER') is None:
+    from mujoco.simEgl import Sim
+else:
+    from mujoco.simGlfw import Sim
 
 
 # Public API:
