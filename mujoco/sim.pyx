@@ -15,6 +15,7 @@ from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
 # if RENDER:
 from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
+from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
 # else:
 # from pxd.renderEgl cimport GraphicsState, initOpenGL, renderOnscreen
 from libcpp cimport bool
@@ -27,18 +28,6 @@ np.import_array()
 # TODO: Better Visualizer
 # TODO: get floats working?
 # TODO: b + w
-
-
-class GeomType(Enum):
-    PLANE = 0
-    HFIELD = 1
-    SPHERE = 2
-    CAPSULE = 3
-    ELLIPSOID = 4
-    CYLINDER = 5
-    BOX = 6
-    MESH = 7
-
 
 class ObjType(Enum):
     UNKNOWN = 0         # unknown object type
@@ -64,6 +53,17 @@ class ObjType(Enum):
     TEXT = 20        # text
     TUPLE = 21        # tuple
     KEY = 22        # keyframe
+
+
+class GeomType(Enum):
+    PLANE = 0
+    HFIELD = 1
+    SPHERE = 2
+    CAPSULE = 3
+    ELLIPSOID = 4
+    CYLINDER = 5
+    BOX = 6
+    MESH = 7
 
 
 cdef asarray(double * ptr, size_t size):
