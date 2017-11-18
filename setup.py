@@ -13,7 +13,7 @@ build_dir = "build"
 name = 'mujoco.sim'
 
 
-def make_extension(name, libraries, render_file):
+def make_extension(name, libraries, render_file, define_macros):
     return Extension(
         name,
         sources=[
@@ -34,6 +34,7 @@ def make_extension(name, libraries, render_file):
         ],
         extra_link_args=['-fopenmp',
                          join(mjpro_path, 'bin', 'libglfw.so.3')],
+        define_macros=define_macros,
         language='c')
 
 
@@ -42,12 +43,17 @@ if RENDER:
     libraries = ['mujoco150', 'GL', 'glew']
     names += ["mujoco.simGlfw"]
     render_file = "src/renderGlfw.c"
+    define_macros = [('MJ_EGL', 1)]
 else:
     libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
     names += ["mujoco.simEgl"]
     render_file = "src/renderEgl.c"
+    define_macros = []
 
-extensions = [make_extension(name, libraries, render_file) for name in names]
+extensions = [
+    make_extension(name, libraries, render_file, define_macros)
+    for name in names
+]
 
 if __name__ == '__main__':
     setup(

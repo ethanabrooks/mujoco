@@ -1,7 +1,6 @@
-include "../pxd/renderGlfw.pxd"
+include "../pxd/lib.pxd"
 
 cdef class BaseSim(object):
-    cdef GraphicsState graphics_state
     cdef mjData * data
     cdef mjModel * model
     cdef State state

@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 import os
 from mujoco.sim import GeomType, ObjType
 if os.environ.get('RENDER') is None:
