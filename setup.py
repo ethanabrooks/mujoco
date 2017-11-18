@@ -8,10 +8,6 @@ import numpy as np
 import sys
 import os
 
-os.environ["CC"] = "/usr/local/bin/gcc-7"
-os.environ["CXX"] = "/usr/local/bin/g++-7"
-RENDER = os.environ.get('RENDER') is not None
-
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
 name = 'mujoco.sim'
@@ -44,12 +40,15 @@ def make_extension(name, render_file, libraries, extra_link_args,
 
 
 if sys.platform == "darwin":
+    os.environ["CC"] = "/usr/local/bin/gcc-7"
+    os.environ["CXX"] = "/usr/local/bin/g++-7"
+
     libraries = ['mujoco150', 'glfw.3']
     names = ["mujoco.sim", "mujoco.simGlfw"]
     render_file = "src/renderGlfw.c"
     extra_link_args = []
     define_macros = []
-elif RENDER:
+elif os.environ.get('RENDER') is not None:
     libraries = ['mujoco150', 'GL', 'glew']
     names = ["mujoco.sim", "mujoco.simGlfw"]
     render_file = "src/renderGlfw.c"
