@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-
 # from distutils.core import setup, Extension
 from setuptools import setup, Extension
 from Cython.Build import cythonize
@@ -14,11 +13,12 @@ build_dir = "build"
 name = 'mujoco.sim'
 
 
-def make_extension(name, libraries):
+def make_extension(name, libraries, render_file):
     return Extension(
         name,
         sources=[
             name.replace('.', os.sep) + '.pyx',
+            render_file,
             "src/lib.c",
         ],
         include_dirs=[
@@ -41,11 +41,13 @@ names = ["mujoco.sim"]
 if RENDER:
     libraries = ['mujoco150', 'GL', 'glew']
     names += ["mujoco.simGlfw"]
+    render_file = "src/renderGlfw.c"
 else:
     libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
     names += ["mujoco.simEgl"]
+    render_file = "src/renderEgl.c"
 
-extensions = [make_extension(name, libraries) for name in names]
+extensions = [make_extension(name, libraries, render_file) for name in names]
 
 if __name__ == '__main__':
     setup(
