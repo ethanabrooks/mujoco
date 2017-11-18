@@ -7,9 +7,11 @@ default:
 	python setup.py build_ext --inplace
 	#python main.py
 	make random-agent
+	#cd ~/zero_shot; ls; python remote_control_pick_and_place.py 8000
 
 random-agent:
 	cd ~/zero_shot; ls; python random_agent.py
+
 
 glfw:
 	$(MK_BUILD)
