@@ -13,10 +13,6 @@ from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
-# if RENDER:
-from pxd.renderGlfw cimport initOpenGL, renderOnscreen
-# else:
-# from pxd.renderEgl cimport GraphicsState, initOpenGL, renderOnscreen
 from libcpp cimport bool
 
 cimport numpy as np
@@ -90,22 +86,12 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco( & self.state)
 
-    def init_opengl(self):
-        initOpenGL(&self.graphics_state, &self.state)
-
     def render_offscreen(self, height, width, camera_name):
         camid = self.get_id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         renderOffscreen(camid, & view[0], height, width, & self.state)
         return array.reshape(height, width, 3)
-
-    def render(self, camera_name=None):
-        if camera_name is None:
-            camid = -1
-        else:
-            camid = self.get_id(ObjType.CAMERA, camera_name)
-        return renderOnscreen(camid, self.graphics_state, & self.state)
 
     def step(self):
         mj_step(self.model, self.data)

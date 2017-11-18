@@ -1,10 +1,7 @@
 #! /usr/bin/env python
 
-import mujoco
-from mujoco.sim import GeomType, ObjType, BaseSim
-print('dir(mujoco.simGlfw)', dir(mujoco))
+from mujoco.sim import GeomType, ObjType
 from mujoco.simGlfw import Sim
-# from mujoco.simGlfw import Sim
 
 
 # Public API:
