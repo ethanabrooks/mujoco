@@ -75,10 +75,6 @@ def get_vec(size, array, n):
     return array[n * size: (n + 1) * size]
 
 cdef class Sim(object):
-    cdef mjData * data
-    cdef mjModel * model
-    cdef State state
-    cdef int forward_called_this_step
 
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
