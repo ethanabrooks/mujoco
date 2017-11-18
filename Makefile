@@ -5,13 +5,8 @@ COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -std=c++11 -mavx
 
 default:
 	python setup.py build_ext --inplace
-	#python main.py
-	make random-agent
-	#cd ~/zero_shot; ls; python remote_control_pick_and_place.py 8000
 
-random-agent:
-	cd ~/zero_shot; ls; python random_agent.py
-
+# glfw and egl build a simple test example to ensure that the underlying c code works
 
 glfw:
 	$(MK_BUILD)
@@ -26,10 +21,6 @@ egl:
 	$(BUILD)renderegl
 	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 	vlc $(BUILD)video.mp4
-
-#egl:	
-	#$(MK_BUILD)
-	#g++ $(COMMON) -L/usr/lib/nvidia-384 -DMJ_EGL lib.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o $(BUILD)renderegl
 
 clean:
 	rm -f mujoco/*.so

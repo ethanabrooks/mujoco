@@ -2,3 +2,15 @@ build/
 mujoco.cpython-35m-x86_64-linux-gnu.so
 MUJOCO_LOG.TXT
 UNKNOWN.egg-info
+docs/Makefile
+docs/_build
+docs/_static
+docs/_templates
+docs/conf.py
+docs/index.rst
+docs/Makefile
+docs/_build
+docs/_static
+docs/_templates
+docs/conf.py
+docs/index.rst

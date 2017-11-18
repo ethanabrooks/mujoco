@@ -17,12 +17,16 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: get GPU working
+# TODO: docs
 # TODO: Better Visualizer
 # TODO: get floats working?
 # TODO: b + w
 
 class ObjType(Enum):
+    """ 
+    `enum` of different MuJoCo object types (corresponds to `mjtObj`). 
+    Some of `Sim`'s getter methods take this as an argument e.g. `get_name` and `get_id`.
+    """
     UNKNOWN = 0         # unknown object type
     BODY = 1         # body
     XBODY = 2         # body  used to access regular frame instead of i-frame
@@ -49,6 +53,9 @@ class ObjType(Enum):
 
 
 class GeomType(Enum):
+    """ 
+    `enum` of different MuJoCo `geom` types (corresponds to `mjtGeom`). 
+    """
     PLANE = 0
     HFIELD = 1
     SPHERE = 2
@@ -68,8 +75,14 @@ def get_vec(size, array, n):
     return array[n * size: (n + 1) * size]
 
 cdef class BaseSim(object):
+    """ Base class for the EGL `Sim` and the GLFW `Sim` to inherit from. """
 
     def __cinit__(self, str fullpath):
+        """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.
+
+        Args:
+            fullpath (str): full path to model xml file.
+        """
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
         self.init_opengl()
@@ -85,6 +98,16 @@ cdef class BaseSim(object):
         closeMujoco( & self.state)
 
     def render_offscreen(self, height, width, camera_name):
+        """
+        Args:
+            height (int): height of image to return.
+            width (int): width of image to return.
+            camera_name (str): Name of camera, as specified in xml file.
+
+        Returns:
+            ``height`` x ``width`` image from camera with name ``camera_name`` 
+        """
+
         camid = self.get_id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array

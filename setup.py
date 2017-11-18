@@ -4,8 +4,12 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 from os.path import join, expanduser
+import numpy as np
+import sys
 import os
 
+os.environ["CC"] = "/usr/local/bin/gcc-7"
+os.environ["CXX"] = "/usr/local/bin/g++-7"
 RENDER = os.environ.get('RENDER') is not None
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
@@ -13,7 +17,8 @@ build_dir = "build"
 name = 'mujoco.sim'
 
 
-def make_extension(name, libraries, render_file, define_macros):
+def make_extension(name, render_file, libraries, extra_link_args,
+                   define_macros):
     return Extension(
         name,
         sources=[
@@ -23,6 +28,7 @@ def make_extension(name, libraries, render_file, define_macros):
         ],
         include_dirs=[
             join(mjpro_path, 'include'),
+            np.get_include(),
             'headers',
             'pxd',
         ],
@@ -32,27 +38,33 @@ def make_extension(name, libraries, render_file, define_macros):
             '-fopenmp',  # needed for OpenMP
             '-w',  # suppress numpy compilation warnings
         ],
-        extra_link_args=['-fopenmp',
-                         join(mjpro_path, 'bin', 'libglfw.so.3')],
+        extra_link_args=extra_link_args,
         define_macros=define_macros,
         language='c')
 
 
-names = ["mujoco.sim"]
-if RENDER:
-    libraries = ['mujoco150', 'GL', 'glew']
-    names += ["mujoco.simGlfw"]
+if sys.platform == "darwin":
+    libraries = ['mujoco150', 'glfw.3']
+    names = ["mujoco.sim", "mujoco.simGlfw"]
     render_file = "src/renderGlfw.c"
-    define_macros = [('MJ_EGL', 1)]
+    extra_link_args = []
+    define_macros = []
+elif RENDER:
+    libraries = ['mujoco150', 'GL', 'glew']
+    names = ["mujoco.sim", "mujoco.simGlfw"]
+    render_file = "src/renderGlfw.c"
+    extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
+    define_macros = []
 else:
     libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
-    names += ["mujoco.simEgl"]
+    names = ["mujoco.sim", "mujoco.simEgl"]
     render_file = "src/renderEgl.c"
-    define_macros = []
+    extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
+    define_macros = [('MJ_EGL', 1)]
 
 extensions = [
-    make_extension(name, libraries, render_file, define_macros)
-    for name in names
+    make_extension(name, render_file, libraries, extra_link_args,
+                   define_macros) for name in names
 ]
 
 if __name__ == '__main__':
@@ -61,7 +73,8 @@ if __name__ == '__main__':
         packages=['mujoco'],
         ext_modules=cythonize(
             extensions,
-            build_dir=build_dir, ),
+            build_dir=build_dir,
+        ),
         install_requires=[
             'Cython',
             'Numpy',

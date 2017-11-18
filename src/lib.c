@@ -9,8 +9,6 @@
 #include "stdlib.h"
 #include "string.h"
 
-//-------------------------------- global data ------------------------------------------
-
 int initMujoco(const char *filepath, State * state)
 {
 	char error[1000] = "Could not load xml model";
