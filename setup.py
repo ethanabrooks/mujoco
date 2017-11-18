@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-RENDER = False #os.environ.get('RENDER') is not None
+RENDER = True #os.environ.get('RENDER') is not None
 
 # from distutils.core import setup, Extension
 from setuptools import setup, Extension, find_packages
@@ -15,6 +15,7 @@ name = 'mujoco.sim'
 extensions = Extension(
     name,
     sources=[
+        "mujoco/simGlfw.pyx",
         "mujoco/sim.pyx",
         "src/lib.c",
     ],

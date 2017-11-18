@@ -14,9 +14,9 @@ from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
 # if RENDER:
-    # from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
+from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
 # else:
-from pxd.renderEgl cimport GraphicsState, initOpenGL, renderOnscreen
+# from pxd.renderEgl cimport GraphicsState, initOpenGL, renderOnscreen
 from libcpp cimport bool
 
 cimport numpy as np
@@ -79,7 +79,7 @@ cdef class Sim(object):
     def __cinit__(self, str fullpath):
         key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
         mj_activate(encode(key_path))
-        initOpenGL()
+        self.init_opengl()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
@@ -91,6 +91,9 @@ cdef class Sim(object):
     def __exit__(self, *args):
         closeMujoco( & self.state)
 
+    def init_opengl(self):
+        initOpenGL(&self.graphics_state, &self.state)
+
     def render_offscreen(self, height, width, camera_name):
         camid = self.get_id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
@@ -99,12 +102,11 @@ cdef class Sim(object):
         return array.reshape(height, width, 3)
 
     def render(self, camera_name=None):
-        raise NotImplemented
-        # if camera_name is None:
-            # camid = -1
-        # else:
-            # camid = self.get_id(ObjType.CAMERA, camera_name)
-        # return renderOnscreen(camid, self.graphics_state, & self.state)
+        if camera_name is None:
+            camid = -1
+        else:
+            camid = self.get_id(ObjType.CAMERA, camera_name)
+        return renderOnscreen(camid, self.graphics_state, & self.state)
 
     def step(self):
         mj_step(self.model, self.data)
