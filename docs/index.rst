@@ -12,7 +12,10 @@ Contents:
    :maxdepth: 2
 
 .. automodule:: mujoco
-   :undoc-members:
+  :members:
+  :undoc-members:
+  :inherited-members:
+  :show-inheritance: 
 
 
 Indices and tables
