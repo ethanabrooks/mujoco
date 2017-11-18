@@ -74,12 +74,10 @@ cdef asarray(double * ptr, size_t size):
 def get_vec(size, array, n):
     return array[n * size: (n + 1) * size]
 
-
 cdef class Sim(object):
     cdef mjData * data
     cdef mjModel * model
     cdef State state
-    # cdef GraphicsState graphics_state
     cdef int forward_called_this_step
 
     def __cinit__(self, str fullpath):
