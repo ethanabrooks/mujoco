@@ -1,10 +1,14 @@
-.. mujoco documentation master file, created by
-   sphinx-quickstart on Sat Nov 18 08:50:12 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to mujoco's documentation!
 ==================================
+
+This is a simple python wrapper around the MuJoCo physics simulation.
+
+Installation
+------------
+
+.. code-block:: bash
+
+  pip install mujoco
 
 Contents:
 
@@ -18,10 +22,6 @@ Contents:
   :show-inheritance: 
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
 
