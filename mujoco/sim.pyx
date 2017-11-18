@@ -14,8 +14,7 @@ from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
 # if RENDER:
-from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
-from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen, GLFWwindow
+from pxd.renderGlfw cimport initOpenGL, renderOnscreen
 # else:
 # from pxd.renderEgl cimport GraphicsState, initOpenGL, renderOnscreen
 from libcpp cimport bool
