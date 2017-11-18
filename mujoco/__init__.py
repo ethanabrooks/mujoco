@@ -7,4 +7,4 @@ else:
 
 
 # Public API:
-__all__ = ['Sim', 'GeomType', 'ObjType', '__version__']
+__all__ = ['Sim', 'GeomType', 'ObjType']
