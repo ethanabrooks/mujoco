@@ -1,3 +1,1 @@
 Make sure that readthedocs is property processing docs.
-Make pypi point to readthedocs.org
-add readthedocs.org to GitHub page.
