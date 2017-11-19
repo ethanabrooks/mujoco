@@ -14,7 +14,7 @@ cdef class Sim(BaseSim):
 
     def close_opengl(self):
         """ Does nothing, because glfwTerminate has a bug. """
-        void
+        pass
 
     def render(self, camera_name=None):
         """
