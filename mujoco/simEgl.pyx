@@ -1,5 +1,5 @@
 from mujoco.sim cimport BaseSim
-from pxd.renderEgl cimport initOpenGL
+from pxd.renderEgl cimport initOpenGL, closeOpenGL
 
 cdef class Sim(BaseSim):
     """ 
