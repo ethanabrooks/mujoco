@@ -7,6 +7,7 @@ from os.path import join, expanduser
 import numpy as np
 import sys
 import os
+import subprocess
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
@@ -41,10 +42,12 @@ def make_extension(name, render_file, libraries, extra_link_args,
 if sys.platform == "darwin":
     os.environ["CC"] = "/usr/local/bin/gcc-7"
     os.environ["CXX"] = "/usr/local/bin/g++-7"
+    os.environ["DYLD_LIBRARY_PATH"] = "DYLD_LIBRARY_PATH"
 
     libraries = ['mujoco150', 'glfw.3']
     names = ["mujoco.sim", "mujoco.simGlfw"]
     render_file = "src/renderGlfw.c"
+    extra_link_args = []
     define_macros = []
 elif sys.platform in ["linux", "linux2"]:
     if os.environ.get('RENDER'):  # `RENDER` is defined in environment
@@ -54,6 +57,7 @@ elif sys.platform in ["linux", "linux2"]:
         extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
         define_macros = []
     else:
+        os.environ["EGL"] = 1
         libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
         names = ["mujoco.sim", "mujoco.simEgl"]
         render_file = "src/renderEgl.c"
@@ -99,4 +103,13 @@ if __name__ == '__main__':
         install_requires=[
             'Cython==0.27.3',
             'numpy==1.13.3',
+        ])
+
+if sys.platform == "darwin":
+    for extension in ['sim', 'simGlfw']:
+        subprocess.check_call([
+            'install_name_tool', '-change',
+            '@executable_path/libmujoco150.dylib',
+            '{}/bin/libmujoco150.dylib'.format(mjpro_path),
+            'mujoco/{}.cpython-36m-darwin.so'.format(extension)
         ])
