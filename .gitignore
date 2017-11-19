@@ -18,3 +18,4 @@ mujoco/__pycache__
 mujoco/*.so
 dist/
 *.egg-info
+.eggs/
