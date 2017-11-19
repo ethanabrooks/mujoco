@@ -106,10 +106,11 @@ if __name__ == '__main__':
         ])
 
 if sys.platform == "darwin":
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     for extension in ['sim', 'simGlfw']:
         subprocess.check_call([
             'install_name_tool', '-change',
             '@executable_path/libmujoco150.dylib',
             '{}/bin/libmujoco150.dylib'.format(mjpro_path),
-            'mujoco/{}.cpython-36m-darwin.so'.format(extension)
+            '{}/mujoco/{}.cpython-36m-darwin.so'.format(dir_path, extension)
         ])

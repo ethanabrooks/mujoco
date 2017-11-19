@@ -95,7 +95,7 @@ cdef class BaseSim(object):
         self.forward_called_this_step = False
 
     def __enter__(self):
-        pass
+        return self
 
     def __exit__(self, *args):
         closeMujoco(& self.state)
