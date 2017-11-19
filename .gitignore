@@ -16,3 +16,5 @@ docs/conf.py
 docs/index.rst
 mujoco/__pycache__
 mujoco/*.so
+dist/
+*.egg-info
