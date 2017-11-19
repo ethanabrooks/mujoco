@@ -76,8 +76,8 @@ with open('README.rst') as f:
 
 if __name__ == '__main__':
     setup(
-        name='mujoco.sim',
-        version='1.0.2',
+        name='mujoco',
+        version='1.0.5',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,
         url='https://github.com/lobachevzky/mujoco',
@@ -94,7 +94,7 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 3',
         ],
         keywords='physics mujoco wrapper python-wrapper physics-simulation',
-        py_modules='mujoco',
+        py_modules=['mujoco.sim'],
         packages=['mujoco'],
         ext_modules=cythonize(
             extensions,
