@@ -57,7 +57,7 @@ elif sys.platform in ["linux", "linux2"]:
         extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
         define_macros = []
     else:
-        os.environ["EGL"] = 1
+        os.environ["EGL"] = '1'
         libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
         names = ["mujoco.sim", "mujoco.simEgl"]
         render_file = "src/renderEgl.c"
