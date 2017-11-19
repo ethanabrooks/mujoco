@@ -50,8 +50,8 @@ clean:
 
 .PHONY: html
 html:
-	@cd ..; python setup.py build_ext --inplace
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@cd ..; RENDER=1 python setup.py build_ext --inplace
+	RENDER=1 $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
