@@ -69,15 +69,36 @@ extensions = [
                    define_macros) for name in names
 ]
 
+with open('README.rst') as f:
+    long_description = f.read()
+
 if __name__ == '__main__':
     setup(
         name=name,
+        version='1.0.4',
+        description='Python wrapper for MuJoCo physics simulation.',
+        long_description=long_description,       
+        url='https://github.com/lobachevzky/mujoco',
+        author='Ethan Brooks',
+        author_email='ethanbrooks@gmail.com',
+        license='MIT',
+        classifiers=[
+          'Development Status :: 3 - Alpha',
+          'Intended Audience :: Developers',
+          'Topic :: Scientific/Engineering :: Visualization',
+          'Topic :: Scientific/Engineering :: Physics',
+          'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 3',
+      ],
+        keywords='physics mujoco wrapper python-wrapper physics-simulation',
+        py_modules='mujoco',
         packages=['mujoco'],
         ext_modules=cythonize(
             extensions,
             build_dir=build_dir,
         ),
         install_requires=[
-            'Cython',
-            'Numpy',
+            'Cython==0.27.3',
+            'numpy==1.13.3',
         ])
