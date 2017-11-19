@@ -23,7 +23,5 @@ egl:
 	vlc $(BUILD)video.mp4
 
 clean:
-	rm -f mujoco/*.so
-	rm -rf mujoco/__pycache__/ 
-	rm -f MUJOCO_LOG.txt
-	rm -rf build/ *.egg-info
+	rm -f mujoco/*.so MUJOCO_LOG.txt
+	rm -rf mujoco/__pycache__/ build/ *.egg-info dist/
