@@ -107,6 +107,7 @@ int initOpenGL(GraphicsState* graphicsState, State * state)
 	glfwSetScrollCallback(window, scroll);
 
   *graphicsState = window;
+  return 0;
 }
 
 int renderOnscreen(int camid, GraphicsState window, State * state)
@@ -127,4 +128,5 @@ int renderOnscreen(int camid, GraphicsState window, State * state)
 	mjr_render(rect, &scn, &con);
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+  return 0;
 }

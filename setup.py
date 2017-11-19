@@ -10,7 +10,6 @@ import os
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
-name = 'mujoco.sim'
 
 
 def make_extension(name, render_file, libraries, extra_link_args,
@@ -46,7 +45,6 @@ if sys.platform == "darwin":
     libraries = ['mujoco150', 'glfw.3']
     names = ["mujoco.sim", "mujoco.simGlfw"]
     render_file = "src/renderGlfw.c"
-    extra_link_args = []
     define_macros = []
 elif sys.platform in ["linux", "linux2"]:
     if os.environ.get('RENDER'):  # `RENDER` is defined in environment
@@ -74,7 +72,7 @@ with open('README.rst') as f:
 
 if __name__ == '__main__':
     setup(
-        name=name,
+        name='mujoco.sim',
         version='1.0.1',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,

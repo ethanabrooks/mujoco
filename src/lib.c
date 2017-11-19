@@ -23,6 +23,7 @@ int initMujoco(const char *filepath, State * state)
 	mjv_defaultOption(&state->opt);
 	mjr_defaultContext(&state->con);
 	mjr_makeContext(state->m, &state->con, 200);
+  return 0;
 }
 
 int setCamera(int camid, State * state)
@@ -39,6 +40,7 @@ int setCamera(int camid, State * state)
 	}
 
 	mjv_updateScene(state->m, state->d, opt, NULL, cam, mjCAT_ALL, scn);
+  return 0;
 }
 
 int
@@ -60,6 +62,7 @@ renderOffscreen(int camid, unsigned char *rgb,
 		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
 	mjr_render(viewport, &scn, &con);
 	mjr_readPixels(rgb, NULL, viewport, &con);
+  return 0;
 }
 
 int closeMujoco(State * state)
@@ -72,6 +75,7 @@ int closeMujoco(State * state)
 	mjr_freeContext(&con);
 	mjv_freeScene(&scn);
 	mj_deactivate();
+  return 0;
 }
 
 //-------------------------------- main function ----------------------------------------
