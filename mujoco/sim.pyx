@@ -100,7 +100,7 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco(& self.state)
 
-    def render_offscreen(self, height, width, camera_name):
+    def render_offscreen(self, height, width, camera_name, grayscale=False):
         """
         Args:
             height (int): height of image to return.
@@ -115,7 +115,11 @@ cdef class BaseSim(object):
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         renderOffscreen(camid, & view[0], height, width, & self.state)
-        return array.reshape(height, width, 3)
+        array = array.reshape(height, width, 3)
+        if grayscale:
+            return array.mean(axis=2)
+        else:
+            return array
 
     def step(self):
         """ Advance simulation one timestep. """
