@@ -51,8 +51,6 @@ renderOffscreen(int camid, unsigned char *rgb,
 
 	mjvScene scn = state->scn;
 	mjrContext con = state->con;
-	mjvCamera cam = state->cam;
-	mjvOption opt = state->opt;
 	mjrRect viewport = { 0, 0, height, width };
 
 	// write offscreen-rendered pixels to file
@@ -87,8 +85,6 @@ int main(int argc, const char **argv)
 	/*char const *filepath = "../zero_shot/environment/models/navigate.xml"; */
 	char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
-	mjModel *m;
-	mjData *d;
 	State state;
 #ifdef MJ_EGL
 	initOpenGL();

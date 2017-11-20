@@ -117,8 +117,6 @@ int renderOnscreen(int camid, GraphicsState window, State * state)
 
 	mjvScene scn = state->scn;
 	mjrContext con = state->con;
-	mjvCamera cam = state->cam;
-	mjvOption opt = state->opt;
 	mjrRect rect = { 0, 0, 0, 0 };
 	glfwGetFramebufferSize(window, &rect.width, &rect.height);
 

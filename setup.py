@@ -30,18 +30,18 @@ def make_extension(name, render_file, libraries, extra_link_args,
         ],
         libraries=libraries,
         library_dirs=[join(mjpro_path, 'bin'), "/usr/lib/nvidia-384"],
-        extra_compile_args=[
-            '-fopenmp',  # needed for OpenMP
-            '-w',  # suppress numpy compilation warnings
-        ],
+        # extra_compile_args=[
+            # '-fopenmp',  # needed for OpenMP
+            # '-w',  # suppress numpy compilation warnings
+        # ],
         extra_link_args=extra_link_args,
         define_macros=define_macros,
         language='c')
 
 
 if sys.platform == "darwin":
-    os.environ["CC"] = "/usr/local/bin/gcc-7"
-    os.environ["CXX"] = "/usr/local/bin/g++-7"
+    # os.environ["CC"] = "/usr/local/bin/gcc-7"
+    # os.environ["CXX"] = "/usr/local/bin/g++-7"
 
     libraries = ['mujoco150', 'glfw.3']
     names = ["mujoco.sim", "mujoco.simGlfw"]
