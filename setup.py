@@ -7,6 +7,7 @@ from os.path import join, expanduser
 import numpy as np
 import sys
 import os
+import config
 import subprocess
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
@@ -49,18 +50,18 @@ if sys.platform == "darwin":
     extra_link_args = []
     define_macros = []
 elif sys.platform in ["linux", "linux2"]:
-    if os.environ.get('RENDER'):  # `RENDER` is defined in environment
-        libraries = ['mujoco150', 'GL', 'glew']
-        names = ["mujoco.sim", "mujoco.simGlfw"]
-        render_file = "src/renderGlfw.c"
-        extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
-        define_macros = []
-    else:
+    if config.use_egl():
         libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
         names = ["mujoco.sim", "mujoco.simEgl"]
         render_file = "src/renderEgl.c"
         extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
         define_macros = [('MJ_EGL', 1)]
+    else:
+        libraries = ['mujoco150', 'GL', 'glew']
+        names = ["mujoco.sim", "mujoco.simGlfw"]
+        render_file = "src/renderGlfw.c"
+        extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
+        define_macros = []
 else:
     raise SystemError("We don't support Windows!")
 
