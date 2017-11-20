@@ -57,15 +57,16 @@ int initOpenGL()
 	    EGL_TRUE)
 		mju_error_i("Could not make EGL context current, error 0x%x\n",
 			    eglGetError());
+  return 0;
 }
 
 // close OpenGL context/window
-void closeOpenGL(void)
+int closeOpenGL(void)
 {
 	// get current display
 	EGLDisplay eglDpy = eglGetCurrentDisplay();
 	if (eglDpy == EGL_NO_DISPLAY)
-		return;
+		return 1;
 
 	// get current context
 	EGLContext eglCtx = eglGetCurrentContext();
@@ -79,7 +80,9 @@ void closeOpenGL(void)
 
 	// terminate display
 	eglTerminate(eglDpy);
+  return 0;
 }
 
 int renderOnscreen(int camid, GraphicsState window, State * state) {
+  return 0;
 }

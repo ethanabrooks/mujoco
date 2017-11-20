@@ -7,6 +7,7 @@
 typedef GLFWwindow* GraphicsState;
 
 int initOpenGL(GraphicsState *, State *);
+int closeOpenGL(void);
 int renderOnscreen(int camid, GraphicsState window, State * state);
 
 #endif
