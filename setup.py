@@ -42,7 +42,6 @@ def make_extension(name, render_file, libraries, extra_link_args,
 if sys.platform == "darwin":
     os.environ["CC"] = "/usr/local/bin/gcc-7"
     os.environ["CXX"] = "/usr/local/bin/g++-7"
-    os.environ["DYLD_LIBRARY_PATH"] = "DYLD_LIBRARY_PATH"
 
     libraries = ['mujoco150', 'glfw.3']
     names = ["mujoco.sim", "mujoco.simGlfw"]
