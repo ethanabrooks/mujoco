@@ -7,7 +7,8 @@
 
 typedef int GraphicsState;
 
-int initOpenGL();
+int initOpenGL(void);
+int closeOpenGL(void);
 int renderOnscreen(int camid, GraphicsState window, State * state);
 
 #endif

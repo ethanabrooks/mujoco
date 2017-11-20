@@ -112,7 +112,6 @@ int initOpenGL(GraphicsState* graphicsState, State * state)
 
 int renderOnscreen(int camid, GraphicsState window, State * state)
 {
-
 	setCamera(camid, state);
 
 	mjvScene scn = state->scn;
