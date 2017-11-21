@@ -15,6 +15,9 @@ cdef extern from "lib.h":
         int button_right
         double lastx
         double lasty
+        double dx
+        double dy
+        char lastkey
 
     int initMujoco(const char * fullpath, State * state)
     int renderOffscreen(int camid, unsigned char * rgb,

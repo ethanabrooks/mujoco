@@ -16,6 +16,9 @@ typedef struct state_t {
   int button_right;
 	double lastx;
 	double lasty;
+	double dx;
+	double dy;
+  char lastkey;
 } State;
 
 int initMujoco(const char *filepath, State * state);

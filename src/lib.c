@@ -107,7 +107,7 @@ int main(int argc, const char **argv)
 		mju_error("Could not open rgbfile for writing");
 
 	// main loop
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 10000; i++) {
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL

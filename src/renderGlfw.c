@@ -2,16 +2,60 @@
 #include "lib.h"
 #include "glfw3.h"
 #include "stdio.h"
+#define CAPTURE(keyname) if (key == GLFW_KEY_ ## keyname) { state->lastkey = (#keyname)[0]; printf("%c\n", state->lastkey); }
 
 // keyboard callback
 void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
 {
 	State *state = (State *) glfwGetWindowUserPointer(window);
 	// backspace: reset simulation
-	if (act == GLFW_PRESS && key == GLFW_KEY_BACKSPACE) {
-		mj_resetData(state->m, state->d);
-		mj_forward(state->m, state->d);
+	if (act == GLFW_PRESS) {
+    if (key == GLFW_KEY_BACKSPACE) {
+      mj_resetData(state->m, state->d);
+      mj_forward(state->m, state->d);
+    }
+    if (key == GLFW_KEY_SPACE) { 
+      state->lastkey = ' ';
+    }
+    CAPTURE(0)
+    CAPTURE(1)
+    CAPTURE(2)
+    CAPTURE(3)
+    CAPTURE(4)
+    CAPTURE(5)
+    CAPTURE(6)
+    CAPTURE(7)
+    CAPTURE(8)
+    CAPTURE(9)
+    CAPTURE(Q)
+    CAPTURE(W)
+    CAPTURE(E)
+    CAPTURE(R)
+    CAPTURE(T)
+    CAPTURE(Y)
+    CAPTURE(U)
+    CAPTURE(I)
+    CAPTURE(O)
+    CAPTURE(P)
+    CAPTURE(A)
+    CAPTURE(S)
+    CAPTURE(D)
+    CAPTURE(F)
+    CAPTURE(G)
+    CAPTURE(H)
+    CAPTURE(J)
+    CAPTURE(K)
+    CAPTURE(L)
+    CAPTURE(Z)
+    CAPTURE(X)
+    CAPTURE(Y)
+    CAPTURE(C)
+    CAPTURE(V)
+    CAPTURE(B)
+    CAPTURE(N)
+    CAPTURE(M)
 	}
+
 }
 
 // mouse button callback
@@ -45,6 +89,8 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 	// compute mouse displacement, save 
 	double dx = xpos - state->lastx;
 	double dy = ypos - state->lasty;
+	state->dx = dx;
+	state->dy = dy;
 	state->lastx = xpos;
 	state->lasty = ypos;
 
@@ -101,10 +147,10 @@ int initOpenGL(GraphicsState* graphicsState, State * state)
 
 	// install GLFW mouse and keyboard callbacks
 	glfwSetWindowUserPointer(window, state);
-	glfwSetKeyCallback(window, keyboard);
-	glfwSetCursorPosCallback(window, mouse_move);
-	glfwSetMouseButtonCallback(window, mouse_button);
-	glfwSetScrollCallback(window, scroll);
+  glfwSetKeyCallback(window, keyboard);
+  glfwSetCursorPosCallback(window, mouse_move);
+  glfwSetMouseButtonCallback(window, mouse_button);
+  glfwSetScrollCallback(window, scroll);
 
   *graphicsState = window;
   return 0;
