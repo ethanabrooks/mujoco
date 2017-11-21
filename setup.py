@@ -68,7 +68,7 @@ with open('README.rst') as f:
 if __name__ == '__main__':
     setup(
         name='mujoco',
-        version='1.0.9',
+        version='1.0.10',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,
         url='https://github.com/lobachevzky/mujoco',
@@ -94,14 +94,4 @@ if __name__ == '__main__':
         install_requires=[
             'Cython==0.27.3',
             'numpy==1.13.3',
-        ])
-
-if sys.platform == "darwin":
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    for extension in ['sim', 'simGlfw']:
-        subprocess.check_call([
-            'install_name_tool', '-change',
-            '@executable_path/libmujoco150.dylib',
-            '{}/bin/libmujoco150.dylib'.format(mjpro_path),
-            '{}/mujoco/{}.cpython-36m-darwin.so'.format(dir_path, extension)
         ])

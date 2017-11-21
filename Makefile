@@ -5,15 +5,14 @@ COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -mavx
 
 default:
 	python setup.py build_ext --inplace
-	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin cd ~/zero_shot; python random_agent.py
 
 # glfw and egl build a simple test example to ensure that the underlying c code works
 
 osx:
-	#clang $(COMMON) $(MJ_DIR)/sample/basic.cpp -lmujoco150 -lglfw.3 -o $(BUILD)basic
-	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)/basic $(MJ_DIR)/model/humanoid.xml
+	$(MK_BUILD)
 	clang $(COMMON) src/renderGlfw.c -DMJ_GLFW src/lib.c -lmujoco150 -lglfw.3 -o $(BUILD)renderosx
-	DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)renderosx
+	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)renderosx
+	$(BUILD)renderosx
 
 glfw:
 	$(MK_BUILD)
@@ -28,6 +27,9 @@ egl:
 	$(BUILD)renderegl
 	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 	vlc $(BUILD)video.mp4
+
+package:
+	python setup.py bdist_wheel
 
 clean:
 	rm -f mujoco/*.so MUJOCO_LOG.txt
