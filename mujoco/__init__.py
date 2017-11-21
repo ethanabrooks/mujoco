@@ -1,7 +1,8 @@
-import config
+import sys
+import os
 
 from mujoco.sim import GeomType, ObjType
-if config.use_egl():
+if sys.platform in ['linux', 'linux2'] and not os.environ.get('RENDER'):
     from mujoco.simEgl import Sim
 else:
     from mujoco.simGlfw import Sim

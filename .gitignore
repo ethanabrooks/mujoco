@@ -20,3 +20,5 @@ dist/
 *.egg-info
 .eggs/
 __pycache__
+*.dylib
+fixed_wheels

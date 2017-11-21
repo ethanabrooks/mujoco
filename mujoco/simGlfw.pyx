@@ -27,7 +27,7 @@ cdef class Sim(BaseSim):
         return renderOnscreen(camid, self.graphics_state, & self.state)
 
     def lastkey(self):
-        if self.state.lastkey:
+        if self.state.lastKeyPress:
             key = chr(self.state.lastKeyPress)
             self.state.lastKeyPress = 0
             return key

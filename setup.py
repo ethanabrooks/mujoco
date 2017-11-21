@@ -7,7 +7,6 @@ from os.path import join, expanduser
 import numpy as np
 import sys
 import os
-import config
 import subprocess
 
 mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
@@ -43,7 +42,7 @@ if sys.platform == "darwin":
     extra_link_args = []
     define_macros = []
 elif sys.platform in ["linux", "linux2"]:
-    if config.use_egl():
+    if sys.platform in ['linux', 'linux2'] and not os.environ.get('RENDER'):
         libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
         names = ["mujoco.sim", "mujoco.simEgl"]
         render_file = "src/renderEgl.c"
@@ -69,7 +68,7 @@ with open('README.rst') as f:
 if __name__ == '__main__':
     setup(
         name='mujoco',
-        version='1.0.5',
+        version='1.0.9',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,
         url='https://github.com/lobachevzky/mujoco',
