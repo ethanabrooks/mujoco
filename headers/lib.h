@@ -11,14 +11,14 @@ typedef struct state_t {
 	mjrContext con;
 	mjvCamera cam;
 	mjvOption opt;
-  int button_left;
-  int button_middle;
-  int button_right;
-	double lastx;
-	double lasty;
-	double dx;
-	double dy;
-  char lastkey;
+  int buttonLeft;
+  int buttonMiddle;
+  int buttonRight;
+	double mouseLastX;
+	double mouseLastY;
+	double mouseDx;
+	double mouseDy;
+  char lastKeyPress;
 } State;
 
 int initMujoco(const char *filepath, State * state);

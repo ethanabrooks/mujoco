@@ -2,7 +2,9 @@
 #include "lib.h"
 #include "glfw3.h"
 #include "stdio.h"
-#define CAPTURE(keyname) if (key == GLFW_KEY_ ## keyname) { state->lastkey = (#keyname)[0]; printf("%c\n", state->lastkey); }
+#define CAPTURE(keyname) if (key == GLFW_KEY_ ## keyname) { \
+  state->lastKeyPress = (#keyname)[0]; \
+}
 
 // keyboard callback
 void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
@@ -15,7 +17,7 @@ void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
       mj_forward(state->m, state->d);
     }
     if (key == GLFW_KEY_SPACE) { 
-      state->lastkey = ' ';
+      state->lastKeyPress = ' ';
     }
     CAPTURE(0)
     CAPTURE(1)
@@ -64,16 +66,16 @@ void mouse_button(GLFWwindow * window, int button, int act, int mods)
 	State *state = (State *) glfwGetWindowUserPointer(window);
 
 	// update button state 
-	state->button_left =
+	state->buttonLeft =
 	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
-	state->button_middle =
+	state->buttonMiddle =
 	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) ==
 	     GLFW_PRESS);
-	state->button_right =
+	state->buttonRight =
 	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
 
 	// update mouse position 
-	glfwGetCursorPos(window, &(state->lastx), &(state->lasty));
+	glfwGetCursorPos(window, &(state->mouseLastX), &(state->mouseLastY));
 }
 
 // mouse move callback
@@ -81,18 +83,18 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 {
 	State *state = (State *) glfwGetWindowUserPointer(window);
 
-	// no buttons down: nothing to do 
-	if (!state->button_left && !state->button_middle
-	    && !state->button_right)
-		return;
-
 	// compute mouse displacement, save 
-	double dx = xpos - state->lastx;
-	double dy = ypos - state->lasty;
-	state->dx = dx;
-	state->dy = dy;
-	state->lastx = xpos;
-	state->lasty = ypos;
+	double dx = xpos - state->mouseLastX;
+	double dy = ypos - state->mouseLastY;
+	state->mouseDx = dx;
+	state->mouseDy = dy;
+	state->mouseLastX = xpos;
+	state->mouseLastY = ypos;
+
+	// no buttons down: nothing to do 
+	if (!state->buttonLeft && !state->buttonMiddle
+	    && !state->buttonRight)
+		return;
 
 	// get current window size 
 	int width, height;
@@ -105,9 +107,9 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 
 	// determine action based on mouse button 
 	mjtMouse action;
-	if (state->button_right)
+	if (state->buttonRight)
 		action = mod_shift ? mjMOUSE_MOVE_H : mjMOUSE_MOVE_V;
-	else if (state->button_left)
+	else if (state->buttonLeft)
 		action = mod_shift ? mjMOUSE_ROTATE_H : mjMOUSE_ROTATE_V;
 	else
 		action = mjMOUSE_ZOOM;
@@ -141,9 +143,14 @@ int initOpenGL(GraphicsState* graphicsState, State * state)
 
 	glfwMakeContextCurrent(window);
 
-	state->button_left = 0;
-	state->button_middle = 0;
-	state->button_right = 0;
+	state->buttonLeft = 0;
+	state->buttonMiddle = 0;
+	state->buttonRight = 0;
+	state->mouseLastX = 0;
+	state->mouseLastY = 0;
+	state->mouseDx = 0;
+	state->mouseDy = 0;
+	state->lastKeyPress = 0;
 
 	// install GLFW mouse and keyboard callbacks
 	glfwSetWindowUserPointer(window, state);

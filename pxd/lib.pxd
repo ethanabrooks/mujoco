@@ -10,14 +10,14 @@ cdef extern from "lib.h":
         mjrContext con
         mjvCamera cam
         mjvOption opt
-        int button_left
-        int button_middle
-        int button_right
-        double lastx
-        double lasty
-        double dx
-        double dy
-        char lastkey
+        int buttonLeft
+        int buttonMiddle
+        int buttonRight
+        double mouseLastX
+        double mouseLastY
+        double mouseDx
+        double mouseDy
+        char lastKeyPress
 
     int initMujoco(const char * fullpath, State * state)
     int renderOffscreen(int camid, unsigned char * rgb,

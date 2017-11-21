@@ -26,14 +26,16 @@ cdef class Sim(BaseSim):
             camid = self.get_id(ObjType.CAMERA, camera_name)
         return renderOnscreen(camid, self.graphics_state, & self.state)
 
-    @property
     def lastkey(self):
-        return self.state.lastkey
+        if self.state.lastkey:
+            key = chr(self.state.lastKeyPress)
+            self.state.lastKeyPress = 0
+            return key
 
     @property
     def dx(self):
-        return self.state.dx
+        return self.state.mouseDx
 
     @property
     def dy(self):
-        return self.state.dy
+        return self.state.mouseDx
