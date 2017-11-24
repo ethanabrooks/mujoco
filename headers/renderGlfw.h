@@ -3,11 +3,26 @@
 
 #include "glfw3.h"
 #include "lib.h"
+#include "pthread.h"
 
-typedef GLFWwindow* GraphicsState;
+typedef struct graphics_state_t {
+  State* state;
+  GLFWwindow* window;
+  pthread_mutex_t mutex;
+  int buttonLeft;
+  int buttonMiddle;
+  int buttonRight;
+	double mouseLastX;
+	double mouseLastY;
+	double mouseDx;
+	double mouseDy;
+  char lastKeyPress;
+} GraphicsState;
+
+//typedef GLFWwindow* GraphicsState;
 
 int initOpenGL(GraphicsState *, State *);
 int closeOpenGL(void);
-int renderOnscreen(int camid, GraphicsState window, State * state);
+int renderOnscreen(int camid, GraphicsState* state);
 
 #endif

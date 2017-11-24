@@ -9,12 +9,13 @@
 // keyboard callback
 void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
 {
-	State *state = (State *) glfwGetWindowUserPointer(window);
+	GraphicsState *state = (GraphicsState *) glfwGetWindowUserPointer(window);
 	// backspace: reset simulation
 	if (act == GLFW_PRESS) {
+    pthread_mutex_lock(&(state->mutex));
     if (key == GLFW_KEY_BACKSPACE) {
-      mj_resetData(state->m, state->d);
-      mj_forward(state->m, state->d);
+      mj_resetData(state->state->m, state->state->d);
+      mj_forward(state->state->m, state->state->d);
     }
     if (key == GLFW_KEY_SPACE) { 
       state->lastKeyPress = ' ';
@@ -56,6 +57,7 @@ void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
     CAPTURE(B)
     CAPTURE(N)
     CAPTURE(M)
+    pthread_mutex_unlock(&(state->mutex));
 	}
 
 }
@@ -63,7 +65,8 @@ void keyboard(GLFWwindow * window, int key, int scancode, int act, int mods)
 // mouse button callback
 void mouse_button(GLFWwindow * window, int button, int act, int mods)
 {
-	State *state = (State *) glfwGetWindowUserPointer(window);
+	GraphicsState *state = (GraphicsState *) glfwGetWindowUserPointer(window);
+  pthread_mutex_lock(&(state->mutex));
 
 	// update button state 
 	state->buttonLeft =
@@ -76,12 +79,14 @@ void mouse_button(GLFWwindow * window, int button, int act, int mods)
 
 	// update mouse position 
 	glfwGetCursorPos(window, &(state->mouseLastX), &(state->mouseLastY));
+  pthread_mutex_lock(&(state->mutex));
 }
 
 // mouse move callback
 void mouse_move(GLFWwindow * window, double xpos, double ypos)
 {
-	State *state = (State *) glfwGetWindowUserPointer(window);
+	GraphicsState *state = (GraphicsState *) glfwGetWindowUserPointer(window);
+  pthread_mutex_lock(&(state->mutex));
 
 	// compute mouse displacement, save 
 	double dx = xpos - state->mouseLastX;
@@ -115,24 +120,28 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 		action = mjMOUSE_ZOOM;
 
 	// move camera 
-	mjv_moveCamera(state->m, action, dx / height, dy / height,
-		       &(state->scn), &(state->cam));
+	mjv_moveCamera(state->state->m, action, dx / height, dy / height,
+		       &(state->state->scn), &(state->state->cam));
+  pthread_mutex_unlock(&(state->mutex));
 }
 
 // scroll callback
 void scroll(GLFWwindow * window, double xoffset, double yoffset)
 {
-	State *state = (State *) glfwGetWindowUserPointer(window);
+	GraphicsState *state = (GraphicsState *) glfwGetWindowUserPointer(window);
 
 	// emulate vertical mouse motion = 5% of window height
-	mjv_moveCamera(state->m, mjMOUSE_ZOOM, 0, -0.05 * yoffset,
-		       &(state->scn), &(state->cam));
+	mjv_moveCamera(state->state->m, mjMOUSE_ZOOM, 0, -0.05 * yoffset,
+		       &(state->state->scn), &(state->state->cam));
 }
 
-int initOpenGL(GraphicsState* graphicsState, State * state)
+int initOpenGL(GraphicsState* graphicsState, State* state)
 {
-	if (!glfwInit())
+	if (!glfwInit()) {
 		mju_error("Could not initialize GLFW");
+  }
+
+	graphicsState->state = state;
 
 	// create visible window, double-buffered glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
@@ -140,43 +149,43 @@ int initOpenGL(GraphicsState* graphicsState, State * state)
 	    glfwCreateWindow(800, 800, "Visible window", NULL, NULL);
 	if (!window)
 		mju_error("Could not create GLFW window");
-
 	glfwMakeContextCurrent(window);
 
-	state->buttonLeft = 0;
-	state->buttonMiddle = 0;
-	state->buttonRight = 0;
-	state->mouseLastX = 0;
-	state->mouseLastY = 0;
-	state->mouseDx = 0;
-	state->mouseDy = 0;
-	state->lastKeyPress = 0;
-
 	// install GLFW mouse and keyboard callbacks
-	glfwSetWindowUserPointer(window, state);
+	glfwSetWindowUserPointer(window, graphicsState);
   glfwSetKeyCallback(window, keyboard);
   glfwSetCursorPosCallback(window, mouse_move);
   glfwSetMouseButtonCallback(window, mouse_button);
   glfwSetScrollCallback(window, scroll);
 
-  *graphicsState = window;
+	graphicsState->window = window;
+  pthread_mutex_lock(&(graphicsState->mutex));
+	graphicsState->buttonLeft = 0;
+	graphicsState->buttonMiddle = 0;
+	graphicsState->buttonRight = 0;
+	graphicsState->mouseLastX = 0;
+	graphicsState->mouseLastY = 0;
+	graphicsState->mouseDx = 0;
+	graphicsState->mouseDy = 0;
+	graphicsState->lastKeyPress = '\0';
   return 0;
 }
 
-int renderOnscreen(int camid, GraphicsState window, State * state)
+int renderOnscreen(int camid, GraphicsState* state)
 {
-	setCamera(camid, state);
+	setCamera(camid, state->state);
 
-	mjvScene scn = state->scn;
-	mjrContext con = state->con;
+	mjvScene scn = state->state->scn;
+	mjrContext con = state->state->con;
 	mjrRect rect = { 0, 0, 0, 0 };
-	glfwGetFramebufferSize(window, &rect.width, &rect.height);
+	glfwGetFramebufferSize(state->window, &rect.width, &rect.height);
 
 	mjr_setBuffer(mjFB_WINDOW, &con);
-	if (con.currentBuffer != mjFB_WINDOW)
+	if (con.currentBuffer != mjFB_WINDOW) {
 		printf("Warning: window rendering not supported\n");
+  }
 	mjr_render(rect, &scn, &con);
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(state->window);
 	glfwPollEvents();
   return 0;
 }

@@ -29,7 +29,7 @@ cdef class Sim(BaseSim):
     def last_key_pressed(self):
         if self.state.lastKeyPress:
             key = chr(self.state.lastKeyPress)
-            self.state.lastKeyPress = 0
+            # self.state.lastKeyPress = 0
             return key
 
     @property

@@ -89,8 +89,8 @@ int main(int argc, const char **argv)
 #ifdef MJ_EGL
 	initOpenGL();
 #else
-  GraphicsState window;
-	initOpenGL(&window, &state);
+  GraphicsState graphicsState;
+	initOpenGL(&graphicsState, &state);
 #endif
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
@@ -111,7 +111,7 @@ int main(int argc, const char **argv)
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
-    renderOnscreen(-1, window, &state); 
+    renderOnscreen(-1, &graphicsState);
 #endif
 		state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
