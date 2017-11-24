@@ -1,6 +1,6 @@
 from mujoco.sim cimport BaseSim
 from mujoco.sim import ObjType
-from pxd.renderGlfw cimport GraphicsState, initOpenGL, renderOnscreen
+from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, renderOnscreen
 
 cdef class Sim(BaseSim):
     """ 
@@ -14,7 +14,7 @@ cdef class Sim(BaseSim):
 
     def close_opengl(self):
         """ Does nothing, because glfwTerminate has a bug. """
-        pass
+        closeOpenGL()
 
     def render(self, camera_name=None):
         """
@@ -24,18 +24,18 @@ cdef class Sim(BaseSim):
             camid = -1
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
-        return renderOnscreen(camid, self.graphics_state, & self.state)
+        return renderOnscreen(camid, &self.graphics_state)
 
     def last_key_pressed(self):
-        if self.state.lastKeyPress:
-            key = chr(self.state.lastKeyPress)
+        if self.graphics_state.lastKeyPress:
+            key = chr(self.graphics_state.lastKeyPress)
             # self.state.lastKeyPress = 0
             return key
 
     @property
     def mouse_dx(self):
-        return self.state.mouseDx
+        return self.graphics_state.mouseDx
 
     @property
     def mouse_dy(self):
-        return self.state.mouseDx
+        return self.graphics_state.mouseDx

@@ -76,19 +76,19 @@ void mouse_button(GLFWwindow * window, int button, int act, int mods)
 	     GLFW_PRESS);
 	state->buttonRight =
 	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+  pthread_mutex_unlock(&(state->mutex));
 
 	// update mouse position 
 	glfwGetCursorPos(window, &(state->mouseLastX), &(state->mouseLastY));
-  pthread_mutex_lock(&(state->mutex));
 }
 
 // mouse move callback
 void mouse_move(GLFWwindow * window, double xpos, double ypos)
 {
 	GraphicsState *state = (GraphicsState *) glfwGetWindowUserPointer(window);
-  pthread_mutex_lock(&(state->mutex));
 
 	// compute mouse displacement, save 
+  pthread_mutex_lock(&(state->mutex));
 	double dx = xpos - state->mouseLastX;
 	double dy = ypos - state->mouseLastY;
 	state->mouseDx = dx;
@@ -98,8 +98,11 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 
 	// no buttons down: nothing to do 
 	if (!state->buttonLeft && !state->buttonMiddle
-	    && !state->buttonRight)
+	    && !state->buttonRight) {
+    pthread_mutex_unlock(&(state->mutex));
 		return;
+  }
+
 
 	// get current window size 
 	int width, height;
@@ -112,12 +115,13 @@ void mouse_move(GLFWwindow * window, double xpos, double ypos)
 
 	// determine action based on mouse button 
 	mjtMouse action;
-	if (state->buttonRight)
+	if (state->buttonRight) {
 		action = mod_shift ? mjMOUSE_MOVE_H : mjMOUSE_MOVE_V;
-	else if (state->buttonLeft)
+  } else if (state->buttonLeft) {
 		action = mod_shift ? mjMOUSE_ROTATE_H : mjMOUSE_ROTATE_V;
-	else
+  } else {
 		action = mjMOUSE_ZOOM;
+  }
 
 	// move camera 
 	mjv_moveCamera(state->state->m, action, dx / height, dy / height,
@@ -159,7 +163,7 @@ int initOpenGL(GraphicsState* graphicsState, State* state)
   glfwSetScrollCallback(window, scroll);
 
 	graphicsState->window = window;
-  pthread_mutex_lock(&(graphicsState->mutex));
+  pthread_mutex_init(&(graphicsState->mutex), NULL);
 	graphicsState->buttonLeft = 0;
 	graphicsState->buttonMiddle = 0;
 	graphicsState->buttonRight = 0;
@@ -168,6 +172,11 @@ int initOpenGL(GraphicsState* graphicsState, State* state)
 	graphicsState->mouseDx = 0;
 	graphicsState->mouseDy = 0;
 	graphicsState->lastKeyPress = '\0';
+  return 0;
+}
+
+int closeOpenGL() {
+  glfwTerminate();
   return 0;
 }
 
@@ -189,3 +198,4 @@ int renderOnscreen(int camid, GraphicsState* state)
 	glfwPollEvents();
   return 0;
 }
+
