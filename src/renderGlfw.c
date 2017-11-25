@@ -72,14 +72,13 @@ void mouse_button(GLFWwindow * window, int button, int act, int mods)
 	state->buttonLeft =
 	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
 	state->buttonMiddle =
-	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) ==
-	     GLFW_PRESS);
+	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS);
 	state->buttonRight =
 	    (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
-  pthread_mutex_unlock(&(state->mutex));
 
 	// update mouse position 
 	glfwGetCursorPos(window, &(state->mouseLastX), &(state->mouseLastY));
+  pthread_mutex_unlock(&(state->mutex));
 }
 
 // mouse move callback
@@ -137,6 +136,27 @@ void scroll(GLFWwindow * window, double xoffset, double yoffset)
 	// emulate vertical mouse motion = 5% of window height
 	mjv_moveCamera(state->state->m, mjMOUSE_ZOOM, 0, -0.05 * yoffset,
 		       &(state->state->scn), &(state->state->cam));
+}
+
+int clearLastKey(GraphicsState* state) {
+  pthread_mutex_lock(&(state->mutex));
+  state->lastKeyPress = '\0';
+  pthread_mutex_unlock(&(state->mutex));
+  return 0;
+}
+
+int clearMouseDx(GraphicsState* state) {
+  pthread_mutex_lock(&(state->mutex));
+  state->mouseDx = 0;
+  pthread_mutex_unlock(&(state->mutex));
+  return 0;
+}
+
+int clearMouseDy(GraphicsState* state) {
+  pthread_mutex_lock(&(state->mutex));
+  state->mouseDy = 0;
+  pthread_mutex_unlock(&(state->mutex));
+  return 0;
 }
 
 int initOpenGL(GraphicsState* graphicsState, State* state)

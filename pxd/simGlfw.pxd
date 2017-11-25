@@ -21,6 +21,9 @@ cdef extern from "renderGlfw.h":
         double mouseDy
         char lastKeyPress
 
+    int clearLastKey(GraphicsState* state)
+    int clearMouseDx(GraphicsState* state)
+    int clearMouseDy(GraphicsState* state)
     int initOpenGL(GraphicsState *, State *)
     int closeOpenGL()
     int renderOnscreen(int camid, GraphicsState* state)

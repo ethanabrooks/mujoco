@@ -82,8 +82,8 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-	/*char const *filepath = "../zero_shot/environment/models/navigate.xml"; */
-	char const *filepath = "xml/humanoid.xml";
+  char const *filepath = "../zero_shot/environment/models/pick_and_place.xml"; 
+	/*char const *filepath = "xml/humanoid.xml";*/
 	char const *keypath = "../.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
@@ -95,6 +95,7 @@ int main(int argc, const char **argv)
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
+  mj_resetDataKeyframe(state.m, state.d, 0);
 
 	// allocate rgb and depth buffers
 	unsigned char *rgb = (unsigned char *)malloc(3 * H * W);

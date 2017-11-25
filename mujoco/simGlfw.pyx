@@ -1,6 +1,6 @@
 from mujoco.sim cimport BaseSim
 from mujoco.sim import ObjType
-from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, renderOnscreen
+from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, renderOnscreen, clearLastKey, clearMouseDy, clearMouseDx
 
 cdef class Sim(BaseSim):
     """ 
@@ -26,16 +26,18 @@ cdef class Sim(BaseSim):
             camid = self.get_id(ObjType.CAMERA, camera_name)
         return renderOnscreen(camid, &self.graphics_state)
 
-    def last_key_pressed(self):
+    def get_last_key_pressed(self):
         if self.graphics_state.lastKeyPress:
             key = chr(self.graphics_state.lastKeyPress)
-            # self.state.lastKeyPress = 0
+            clearLastKey(&self.graphics_state)
             return key
 
-    @property
-    def mouse_dx(self):
-        return self.graphics_state.mouseDx
+    def get_mouse_dx(self):
+        mouse_dx = self.graphics_state.mouseDx
+        clearMouseDx(&self.graphics_state)
+        return mouse_dx
 
-    @property
-    def mouse_dy(self):
-        return self.graphics_state.mouseDx
+    def get_mouse_dy(self):
+        mouse_dy = self.graphics_state.mouseDy
+        clearMouseDy(&self.graphics_state)
+        return mouse_dy
