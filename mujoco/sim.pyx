@@ -147,12 +147,12 @@ cdef class BaseSim(object):
         """
         assert isinstance(
             obj_type, ObjType), '`obj_type` must be an instance of `ObjType`'
-        return mj_name2id(self.model, obj_type.value, encode(name))
+        return mj_name2id(self.model, obj_type.value - 1, encode(name))
 
     def get_name(self, obj_type, id):
         """ Get name corresponding to object id. """
         assert isinstance(obj_type, ObjType), type(obj_type)
-        buff = mj_id2name(self.model, obj_type.value, id)
+        buff = mj_id2name(self.model, obj_type.value - 1, id)
         if buff is not NULL:
             return decode(buff)
 
