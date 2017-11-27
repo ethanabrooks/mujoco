@@ -116,6 +116,7 @@ int main(int argc, const char **argv)
 #endif
 		state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
+    printf("%f\n", state.d->sensordata[0]);
 	}
 	printf
 	    ("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",

@@ -17,54 +17,55 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
-# TODO: docs
-# TODO: Better Visualizer
 # TODO: get floats working?
-# TODO: b + w
+# TODO: docs
 
 
-class ObjType(Enum):
-    """ 
-    ``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
-    Some of ``Sim``'s getter methods take this as an argument e.g. ``get_name`` and ``get_id``.
-    """
-    UNKNOWN = 0         # unknown object type
-    BODY = 1         # body
-    XBODY = 2         # body  used to access regular frame instead of i-frame
-    JOINT = 3         # joint
-    DOF = 4         # dof
-    GEOM = 5         # geom
-    SITE = 6         # site
-    CAMERA = 7         # camera
-    LIGHT = 8         # light
-    MESH = 9         # mesh
-    HFIELD = 10         # heightfield
-    TEXTURE = 11        # texture
-    MATERIAL = 12        # material for rendering
-    PAIR = 13        # geom pair to include
-    EXCLUDE = 14        # body pair to exclude
-    EQUALITY = 15        # equality constraint
-    TENDON = 16        # tendon
-    ACTUATOR = 17        # actuator
-    SENSOR = 18        # sensor
-    NUMERIC = 19        # numeric
-    TEXT = 20        # text
-    TUPLE = 21        # tuple
-    KEY = 22        # keyframe
+""" 
+``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
+Some of ``Sim``'s getter methods take this as an argument e.g. ``get_name`` and ``get_id``.
+"""
+ObjType = Enum('ObjType', (
+     ' UNKNOWN'  # unknown object type
+     ' BODY'     # body
+     ' XBODY'    # body  used to access regular frame instead of i-frame
+     ' JOINT'    # joint
+     ' DOF'      # dof
+     ' GEOM'     # geom
+     ' SITE'     # site
+     ' CAMERA'   # camera
+     ' LIGHT'    # light
+     ' MESH'     # mesh
+     ' HFIELD'   # heightfield
+     ' TEXTURE'  # texture
+     ' MATERIAL' # material for rendering
+     ' PAIR'     # geom pair to include
+     ' EXCLUDE'  # body pair to exclude
+     ' EQUALITY' # equality constraint
+     ' TENDON'   # tendon
+     ' ACTUATOR' # actuator
+     ' SENSOR'   # sensor
+     ' NUMERIC'  # numeric
+     ' TEXT'     # text
+     ' TUPLE'    # tuple
+     ' KEY'      # keyframe
+     ),
+     module=__name__,
+     qualname='mujoco.ObjType')   
 
-
-class GeomType(Enum):
-    """ 
-    ``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``). 
-    """
-    PLANE = 0
-    HFIELD = 1
-    SPHERE = 2
-    CAPSULE = 3
-    ELLIPSOID = 4
-    CYLINDER = 5
-    BOX = 6
-    MESH = 7
+""" 
+``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``). 
+"""
+GeomType = Enum('GeomType', (
+    'PLANE'
+    'HFIELD'
+    'SPHERE'
+    'CAPSULE'
+    'ELLIPSOID'
+    'CYLINDER'
+    'BOX'
+    'MESH'
+))
 
 
 cdef asarray(double * ptr, size_t size):
@@ -140,7 +141,7 @@ cdef class BaseSim(object):
         """ 
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
-        assert isinstance(obj_type, ObjType)
+        assert isinstance(obj_type, ObjType), '`obj_type` must be an instance of `ObjType`'
         return mj_name2id(self.model, obj_type.value, encode(name))
 
     def get_name(self, obj_type, id):
@@ -224,6 +225,11 @@ cdef class BaseSim(object):
         return self.model.nu
 
     @property
+    def nsensordata(self):
+        """ Number of actuators/controls. """
+        return self.model.nsensordata
+
+    @property
     def actuator_ctrlrange(self):
         """ Range of controls (low, high). """
         return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu * 2)
@@ -252,6 +258,11 @@ cdef class BaseSim(object):
     def xquat(self):
         """ Quaternions of bodies. """
         return asarray( < double*> self.data.xquat, self.nbody * 4)
+
+    @property
+    def sensordata(self):
+        """ Quaternions of bodies. """
+        return asarray( < double*> self.data.sensordata, self.nsensordata)
 
     @property
     def geom_size(self):
