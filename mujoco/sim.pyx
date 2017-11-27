@@ -25,47 +25,51 @@ np.import_array()
 ``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
 Some of ``Sim``'s getter methods take this as an argument e.g. ``get_name`` and ``get_id``.
 """
-ObjType = Enum('ObjType', (
-     ' UNKNOWN'  # unknown object type
-     ' BODY'     # body
-     ' XBODY'    # body  used to access regular frame instead of i-frame
-     ' JOINT'    # joint
-     ' DOF'      # dof
-     ' GEOM'     # geom
-     ' SITE'     # site
-     ' CAMERA'   # camera
-     ' LIGHT'    # light
-     ' MESH'     # mesh
-     ' HFIELD'   # heightfield
-     ' TEXTURE'  # texture
-     ' MATERIAL' # material for rendering
-     ' PAIR'     # geom pair to include
-     ' EXCLUDE'  # body pair to exclude
-     ' EQUALITY' # equality constraint
-     ' TENDON'   # tendon
-     ' ACTUATOR' # actuator
-     ' SENSOR'   # sensor
-     ' NUMERIC'  # numeric
-     ' TEXT'     # text
-     ' TUPLE'    # tuple
-     ' KEY'      # keyframe
-     ),
-     module=__name__,
-     qualname='mujoco.ObjType')   
+ObjType = Enum('ObjType',
+               (
+                   ' UNKNOWN'  # unknown object type
+                   ' BODY'  # body
+                   ' XBODY'  # body  used to access regular frame instead of i-frame
+                   ' JOINT'  # joint
+                   ' DOF'  # dof
+                   ' GEOM'  # geom
+                   ' SITE'  # site
+                   ' CAMERA'  # camera
+                   ' LIGHT'  # light
+                   ' MESH'  # mesh
+                   ' HFIELD'  # heightfield
+                   ' TEXTURE'  # texture
+                   ' MATERIAL'  # material for rendering
+                   ' PAIR'  # geom pair to include
+                   ' EXCLUDE'  # body pair to exclude
+                   ' EQUALITY'  # equality constraint
+                   ' TENDON'  # tendon
+                   ' ACTUATOR'  # actuator
+                   ' SENSOR'  # sensor
+                   ' NUMERIC'  # numeric
+                   ' TEXT'  # text
+                   ' TUPLE'  # tuple
+                   ' KEY'  # keyframe
+                ),
+               module=__name__,
+               qualname='mujoco.ObjType')
 
 """ 
 ``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``). 
 """
-GeomType = Enum('GeomType', (
-    'PLANE'
-    'HFIELD'
-    'SPHERE'
-    'CAPSULE'
-    'ELLIPSOID'
-    'CYLINDER'
-    'BOX'
-    'MESH'
-))
+GeomType = Enum('GeomType',
+                (
+                    ' PLANE'
+                    ' HFIELD'
+                    ' SPHERE'
+                    ' CAPSULE'
+                    ' ELLIPSOID'
+                    ' CYLINDER'
+                    ' BOX'
+                    ' MESH'
+                ),
+                module=__name__,
+                qualname='mujoco.GeomType')
 
 
 cdef asarray(double * ptr, size_t size):
@@ -141,7 +145,8 @@ cdef class BaseSim(object):
         """ 
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
-        assert isinstance(obj_type, ObjType), '`obj_type` must be an instance of `ObjType`'
+        assert isinstance(
+            obj_type, ObjType), '`obj_type` must be an instance of `ObjType`'
         return mj_name2id(self.model, obj_type.value, encode(name))
 
     def get_name(self, obj_type, id):
