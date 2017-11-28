@@ -26,7 +26,7 @@ cdef class Sim(BaseSim):
             camid = self.get_id(ObjType.CAMERA, camera_name)
         return renderOnscreen(camid, &self.graphics_state)
 
-    def get_last_key_pressed(self):
+    def get_last_key_press(self):
         if self.graphics_state.lastKeyPress:
             key = chr(self.graphics_state.lastKeyPress)
             clearLastKey(&self.graphics_state)
