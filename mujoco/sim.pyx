@@ -97,7 +97,6 @@ cdef class BaseSim(object):
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
-        self.forward_called_this_step = False
 
     def __enter__(self):
         return self
@@ -129,17 +128,14 @@ cdef class BaseSim(object):
     def step(self):
         """ Advance simulation one timestep. """
         mj_step(self.model, self.data)
-        self.forward_called_this_step = False
 
     def reset(self):
         """ Reset simulation to starting state. """
         mj_resetData(self.model, self.data)
-        self.forward_called_this_step = False
 
     def forward(self):
         """ Calculate forward kinematics. """
         mj_forward(self.model, self.data)
-        self.forward_called_this_step = True
 
     def get_id(self, obj_type, name):
         """ 
@@ -165,31 +161,31 @@ cdef class BaseSim(object):
             id of object
         """
         if type(key) is str:
-            assert isinstance(obj_type, ObjType)
+            assert isinstance(obj_type, ObjType), '2nd argument must have type `ObjType`'
             return self.get_id(obj_type, key)
         else:
-            assert isinstance(key, int)
+            assert isinstance(key, int), 'If 2nd argument is None, 1st argument must be `int`'
             return key
 
-    def get_qpos(self, key):
+    def get_joint_qpos(self, key):
         """ Get qpos (joint values) of object corresponding to key. """
-        return self.data.qpos[self._key2id(key)]
+        return self.data.qpos[self._key2id(key, ObjType.JOINT)]
+
+    def get_joint_qvel(self, key):
+        """ Get qvel (joint velocities) of object corresponding to key. """
+        return self.data.qvel[self._key2id(key, ObjType.JOINT)]
 
     def get_geom_type(self, key):
         """ Get type of geom corresponding to key. """
-        return self.model.geom_type[self._key2id(key)]
+        return self.model.geom_type[self._key2id(key, ObjType.JOINT)]
 
-    def get_xpos(self, key):
+    def get_body_xpos(self, key):
         """ Get xpos (cartesian coordinates) of body corresponding to key. """
-        if not self.forward_called_this_step:
-            self.forward()
-        return get_vec(3, self.xpos, self._key2id(key, ObjType.BODY))
+        return get_vec(3, self.body_xpos, self._key2id(key, ObjType.BODY))
 
-    def get_xquat(self, key):
+    def get_body_xquat(self, key):
         """ Get quaternion of body corresponding to key. """
-        if not self.forward_called_this_step:
-            self.forward()
-        return get_vec(4, self.xquat, self._key2id(key, ObjType.BODY))
+        return get_vec(4, self.body_xquat, self._key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
         """ Get size of geom corresponding to key. """
@@ -216,7 +212,7 @@ cdef class BaseSim(object):
 
     @property
     def nq(self):
-        """ Number of position coordinates. """
+        """ Number of generalized coordinates. """
         return self.model.nq
 
     @property
@@ -240,27 +236,27 @@ cdef class BaseSim(object):
         return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu * 2)
 
     @property
-    def qpos(self):
+    def joint_qpos(self):
         """ Joint positions. """
         return asarray( < double*> self.data.qpos, self.nq)
 
     @property
-    def qvel(self):
+    def joint_qvel(self):
         """ Joint velocities. """
         return asarray( < double*> self.data.qvel, self.nv)
 
     @property
-    def ctrl(self):
+    def actuator_ctrl(self):
         """ Joint actuations. """
         return asarray( < double*> self.data.ctrl, self.nu)
 
     @property
-    def xpos(self):
+    def body_xpos(self):
         """ Cartesian coordinates of bodies. """
         return asarray( < double*> self.data.xpos, self.nbody * 3)
 
     @property
-    def xquat(self):
+    def body_xquat(self):
         """ Quaternions of bodies. """
         return asarray( < double*> self.data.xquat, self.nbody * 4)
 

@@ -23,3 +23,4 @@ __pycache__
 *.dylib
 fixed_wheels
 .idea
+main.py
