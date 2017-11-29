@@ -5,7 +5,7 @@ from enum import Enum
 from libc.stdlib cimport free
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, \
-    mj_id2name, mj_name2id, mj_resetData, mj_forward
+    mj_id2name, mj_name2id, mj_resetData, mj_forward, mj_fwdPosition
 from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
@@ -136,6 +136,15 @@ cdef class BaseSim(object):
     def forward(self):
         """ Calculate forward kinematics. """
         mj_forward(self.model, self.data)
+
+    def qpos_to_xpos(self, qpos):
+        old_qpos = self.joint_qpos.copy()
+        self.joint_qpos[:] = qpos
+        mj_fwdPosition(self.model, self.data)
+        xpos = self.body_xpos.copy()
+        self.joint_qpos[:] = old_qpos
+        self.forward()
+        return xpos
 
     def get_id(self, obj_type, name):
         """ 
