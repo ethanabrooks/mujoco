@@ -23,7 +23,7 @@ int initMujoco(const char *filepath, State * state)
 	mjv_defaultOption(&state->opt);
 	mjr_defaultContext(&state->con);
 	mjr_makeContext(state->m, &state->con, 200);
-  return 0;
+	return 0;
 }
 
 int setCamera(int camid, State * state)
@@ -40,7 +40,7 @@ int setCamera(int camid, State * state)
 	}
 
 	mjv_updateScene(state->m, state->d, opt, NULL, cam, mjCAT_ALL, scn);
-  return 0;
+	return 0;
 }
 
 int
@@ -60,7 +60,7 @@ renderOffscreen(int camid, unsigned char *rgb,
 		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
 	mjr_render(viewport, &scn, &con);
 	mjr_readPixels(rgb, NULL, viewport, &con);
-  return 0;
+	return 0;
 }
 
 int closeMujoco(State * state)
@@ -73,7 +73,7 @@ int closeMujoco(State * state)
 	mjr_freeContext(&con);
 	mjv_freeScene(&scn);
 	mj_deactivate();
-  return 0;
+	return 0;
 }
 
 //-------------------------------- main function ----------------------------------------
@@ -82,20 +82,20 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-  /*char const *filepath = "../zero_shot/environment/models/pick_and_place.xml"; */
-  char const *filepath = "xml/humanoid.xml";
+	/*char const *filepath = "../zero_shot/environment/models/pick_and_place.xml"; */
+	char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
 	initOpenGL();
 #else
-  GraphicsState graphicsState;
+	GraphicsState graphicsState;
 	initOpenGL(&graphicsState, &state);
 #endif
 	mj_activate(keypath);
 	// install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
-  mj_resetDataKeyframe(state.m, state.d, 0);
+	mj_resetDataKeyframe(state.m, state.d, 0);
 
 	// allocate rgb and depth buffers
 	unsigned char *rgb = (unsigned char *)malloc(3 * H * W);
@@ -109,14 +109,14 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10000; i++) {
-    printf("\r");
-    for (int j = 0; j < state.m->nbody; j++) {
-      printf("%f ", state.d->xpos[j]);
-    }
+		printf("\r");
+		for (int j = 0; j < state.m->nbody; j++) {
+			printf("%f ", state.d->xpos[j]);
+		}
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
-    renderOnscreen(-1, &graphicsState);
+		renderOnscreen(-1, &graphicsState);
 #endif
 		state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
