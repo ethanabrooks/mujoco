@@ -82,8 +82,8 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-	/*char const *filepath = "../zero_shot/environment/models/pick_and_place.xml"; */
-	char const *filepath = "xml/humanoid.xml";
+  char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; 
+	/*char const *filepath = "xml/humanoid.xml";*/
 	char const *keypath = "../.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
@@ -109,10 +109,6 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10000; i++) {
-		printf("\r");
-		for (int j = 0; j < state.m->nbody; j++) {
-			printf("%f ", state.d->xpos[j]);
-		}
 		renderOffscreen(0, rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
