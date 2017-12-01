@@ -41,19 +41,24 @@ if sys.platform == "darwin":
     render_file = "src/renderGlfw.c"
     extra_link_args = []
     define_macros = []
+    extensions = [make_extension(name, render_file, libraries, extra_link_args,
+                                 define_macros) for name in names]
 elif sys.platform in ["linux", "linux2"]:
-    if sys.platform in ['linux', 'linux2'] and not os.environ.get('RENDER'):
-        libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
-        names = ["mujoco.sim", "mujoco.simEgl"]
-        render_file = "src/renderEgl.c"
-        extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
-        define_macros = [('MJ_EGL', 1)]
-    else:
+    libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
+    names = ["mujoco.sim", "mujoco.simEgl"]
+    render_file = "src/renderEgl.c"
+    extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
+    define_macros = [('MJ_EGL', 1)]
+    extensions = [make_extension(name, render_file, libraries, extra_link_args,
+                                 define_macros) for name in names]
+    if os.environ.get('RENDER'):
         libraries = ['mujoco150', 'GL', 'glew']
-        names = ["mujoco.sim", "mujoco.simGlfw"]
+        name = "mujoco.simGlfw"
         render_file = "src/renderGlfw.c"
         extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
         define_macros = []
+        extensions += [make_extension(name, render_file, libraries,
+                                      extra_link_args, define_macros)]
 else:
     raise SystemError("We don't support Windows!")
 

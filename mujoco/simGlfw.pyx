@@ -2,7 +2,7 @@ from mujoco.sim cimport BaseSim
 from mujoco.sim import ObjType
 from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, renderOnscreen, clearLastKey, clearMouseDy, clearMouseDx
 
-cdef class Sim(BaseSim):
+cdef class SimGlfw(BaseSim):
     """ 
     Sim that uses GLFW functionality, which supports both offscreen and onscreen rendering.
     """

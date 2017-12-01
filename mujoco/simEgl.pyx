@@ -1,7 +1,7 @@
 from mujoco.sim cimport BaseSim
 from pxd.simEgl cimport initOpenGL, closeOpenGL
 
-cdef class Sim(BaseSim):
+cdef class SimEgl(BaseSim):
     """ 
     Sim that uses EGL functionality (faster on the Nvidia GPUs).  Currently supports offscreen but not onscreen rendering.
     """
