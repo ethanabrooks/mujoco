@@ -176,9 +176,14 @@ cdef class BaseSim(object):
             assert isinstance(key, int), 'If 2nd argument is None, 1st argument must be `int`'
             return key
 
+    def get_joint_id(self, key):
+        if type(key) is str:
+            key = self.get_id(ObjType.JOINT, key)
+        return self.model.jnt_qposadr[key]
+
     def get_joint_qpos(self, key):
         """ Get qpos (joint values) of object corresponding to key. """
-        return self.data.qpos[self._key2id(key, ObjType.JOINT)]
+        return self.data.qpos[self.get_joint_id(key)]
 
     def get_joint_qvel(self, key):
         """ Get qvel (joint velocities) of object corresponding to key. """
