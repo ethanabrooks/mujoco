@@ -11,6 +11,8 @@ This is a simple python wrapper around the MuJoCo physics simulation. I wrote it
 Installation
 ------------
 
+Working on getting a `pypi` script working. In the mean time, install from source:
+
 .. code-block:: bash
 
-  pip install mujoco
+  pip install -e /path/to/cloned/directory
