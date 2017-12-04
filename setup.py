@@ -13,13 +13,14 @@ mjpro_path = join(expanduser('~'), '.mujoco', 'mjpro150')
 build_dir = "build"
 
 
-def make_extension(name, render_file, libraries, extra_link_args,
-                   define_macros):
+# name.replace('.', os.sep) + '.pyx',
+
+def make_extension(name, main_source, render_file, libraries,
+                   extra_link_args, define_macros):
     return Extension(
         name,
-        sources=[
-            name.replace('.', os.sep) + '.pyx',
-            render_file,
+        sources=([render_file] if render_file else []) + [
+            main_source,
             "src/lib.c",
         ],
         include_dirs=[
@@ -37,35 +38,41 @@ def make_extension(name, render_file, libraries, extra_link_args,
 
 if sys.platform == "darwin":
     libraries = ['mujoco150', 'glfw.3']
-    names = ["mujoco.sim", "mujoco.simGlfw"]
+    names = ["mujoco.sim", "glfw.sim"]
+    sources = ["mujoco/sim.pyx", "glfw/sim.pyx"]
     render_file = "src/renderGlfw.c"
     extra_link_args = []
     define_macros = []
-    extensions = [make_extension(name, render_file, libraries, extra_link_args,
-                                 define_macros) for name in names]
+    extensions = [make_extension(name, main_source, render_file, libraries,
+                                 extra_link_args, define_macros)
+                  for name, main_source in zip(names, sources)]
 elif sys.platform in ["linux", "linux2"]:
-    libraries = ["mujoco150", "OpenGL", "EGL", "glewegl"]
-    names = ["mujoco.sim", "mujoco.simEgl"]
-    render_file = "src/renderEgl.c"
     extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
-    define_macros = [('MJ_EGL', 1)]
-    extensions = [make_extension(name, render_file, libraries, extra_link_args,
-                                 define_macros) for name in names]
-    if os.environ.get('RENDER'):
-        libraries = ['mujoco150', 'GL', 'glew']
-        name = "mujoco.simGlfw"
-        render_file = "src/renderGlfw.c"
-        extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
-        define_macros = []
-        extensions += [make_extension(name, render_file, libraries,
-                                      extra_link_args, define_macros)]
+    extensions = [
+        make_extension(name="mujoco.sim",
+                       main_source='mujoco/sim.pyx',
+                       render_file=None,
+                       libraries=['mujoco150', "OpenGL", "EGL", "glewegl"], # 'GL', 'glew'],
+                       extra_link_args=extra_link_args,
+                       define_macros=[]
+                       ),
+        make_extension(name="mujoco.egl",
+                       main_source='mujoco/egl.pyx',
+                       render_file='src/renderEgl.c',
+                       libraries=["mujoco150", "OpenGL", "EGL", "glewegl"],
+                       extra_link_args=extra_link_args,
+                       define_macros=[('MJ_EGL', 1)]
+                       ),
+        # make_extension(name="mujoco.glfw",
+        #                main_source='mujoco/glfw.pyx',
+        #                render_file='src/renderGlfw.c',
+        #                libraries=['mujoco150', 'GL', 'glew'],
+        #                extra_link_args=extra_link_args,
+        #                define_macros=[]
+        #                ),
+    ]
 else:
     raise SystemError("We don't support Windows!")
-
-extensions = [
-    make_extension(name, render_file, libraries, extra_link_args,
-                   define_macros) for name in names
-]
 
 with open('README.rst') as f:
     long_description = f.read()

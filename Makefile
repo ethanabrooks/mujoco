@@ -32,5 +32,7 @@ package:
 	python setup.py bdist_wheel
 
 clean:
+	rm -f egl/*.so MUJOCO_LOG.txt
+	rm -f glfw/*.so MUJOCO_LOG.txt
 	rm -f mujoco/*.so MUJOCO_LOG.txt
 	rm -rf mujoco/__pycache__/ build/ *.egg-info dist/

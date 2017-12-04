@@ -22,7 +22,6 @@ np.import_array()
 # TODO: get floats working?
 # TODO: docs
 
-
 """ 
 ``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
 Some of ``Sim``'s getter methods take this as an argument e.g. ``get_name`` and ``get_id``.
@@ -148,33 +147,33 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    def add_geom(self):
-        if self.state.scn.ngeom >= self.state.scn.maxgeom:
-            raise RuntimeError('Ran out of geoms. maxgeom: %d' % self.state.scn.maxgeom)
+    # def add_geom(self):
+        # if self.state.scn.ngeom >= self.state.scn.maxgeom:
+            # raise RuntimeError('Ran out of geoms. maxgeom: %d' % self.state.scn.maxgeom)
 
-        cdef mjvGeom *g = self.state.scn.geoms + self.state.scn.ngeom
+        # cdef mjvGeom *g = self.state.scn.geoms + self.state.scn.ngeom
 
-        # default values.
-        g.dataid = -1
-        g.objtype = const.OBJ_UNKNOWN
-        g.objid = -1
-        g.category = const.CAT_DECOR
-        g.texid = -1
-        g.texuniform = 0
-        g.texrepeat[0] = 1
-        g.texrepeat[1] = 1
-        g.emission = 0
-        g.specular = 0.5
-        g.shininess = 0.5
-        g.reflectance = 0
-        g.type = const.GEOM_BOX
-        g.size[:] = np.ones(3) * 0.1
-        g.mat[:] = np.eye(3).flatten()
-        g.rgba[:] = np.ones(4)
-        self.state.scn.ngeom += 1
+        # # default values.
+        # g.dataid = -1
+        # g.objtype = const.OBJ_UNKNOWN
+        # g.objid = -1
+        # g.category = const.CAT_DECOR
+        # g.texid = -1
+        # g.texuniform = 0
+        # g.texrepeat[0] = 1
+        # g.texrepeat[1] = 1
+        # g.emission = 0
+        # g.specular = 0.5
+        # g.shininess = 0.5
+        # g.reflectance = 0
+        # g.type = const.GEOM_BOX
+        # g.size[:] = np.ones(3) * 0.1
+        # g.mat[:] = np.eye(3).flatten()
+        # g.rgba[:] = np.ones(4)
+        # self.state.scn.ngeom += 1
 
-    def set_label(geom, label):
-        strncpy(geom.label, value.encode(), 100)
+    # def set_label(geom, label):
+        # strncpy(geom.label, value.encode(), 100)
 
     def add_marker(self, label):
         pass
