@@ -17,6 +17,8 @@ cimport numpy as np
 import numpy as np
 np.import_array()
 
+# TODO: make access synchronized
+# TODO: fix RENDER compilation issues
 # TODO: get floats working?
 # TODO: docs
 
@@ -145,6 +147,38 @@ cdef class BaseSim(object):
         self.joint_qpos[:] = old_qpos
         self.forward()
         return xpos
+
+    def add_geom(self):
+        if self.state.scn.ngeom >= self.state.scn.maxgeom:
+            raise RuntimeError('Ran out of geoms. maxgeom: %d' % self.state.scn.maxgeom)
+
+        cdef mjvGeom *g = self.state.scn.geoms + self.state.scn.ngeom
+
+        # default values.
+        g.dataid = -1
+        g.objtype = const.OBJ_UNKNOWN
+        g.objid = -1
+        g.category = const.CAT_DECOR
+        g.texid = -1
+        g.texuniform = 0
+        g.texrepeat[0] = 1
+        g.texrepeat[1] = 1
+        g.emission = 0
+        g.specular = 0.5
+        g.shininess = 0.5
+        g.reflectance = 0
+        g.type = const.GEOM_BOX
+        g.size[:] = np.ones(3) * 0.1
+        g.mat[:] = np.eye(3).flatten()
+        g.rgba[:] = np.ones(4)
+        self.state.scn.ngeom += 1
+
+    def set_label(geom, label):
+        strncpy(geom.label, value.encode(), 100)
+
+    def add_marker(self, label):
+        pass
+        
 
     def get_id(self, obj_type, name):
         """ 
