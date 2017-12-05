@@ -1,4 +1,5 @@
 #include "lib.h"
+	setCamera(camid, state->state);
 #ifdef MJ_EGL
 #include "renderEgl.h"
 #else

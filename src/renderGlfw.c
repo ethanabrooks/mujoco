@@ -246,13 +246,7 @@ int renderOnscreen(int camid, GraphicsState * state)
 
 	mjvScene scn = state->state->scn;
 	mjrContext con = state->state->con;
-	mjrRect rect = { 0, 0, 0, 0 };
-	glfwGetFramebufferSize(state->window, &rect.width, &rect.height);
 
-	mjr_setBuffer(mjFB_WINDOW, &con);
-	if (con.currentBuffer != mjFB_WINDOW) {
-		printf("Warning: window rendering not supported\n");
-	}
 
   State* s = state->state;
   mjv_updateScene(s->m, s->d, &s->opt, NULL, &s->cam, mjCAT_ALL, &s->scn);
@@ -261,9 +255,7 @@ int renderOnscreen(int camid, GraphicsState * state)
     printf("Warning: reached max geoms %d\n", scn.maxgeom);
     return 1;
   }
-
   double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-
   mjvGeom *g = scn.geoms + scn.ngeom++;
   g->type = 104;  // label geom
   g->dataid = -1; // None
@@ -283,6 +275,15 @@ int renderOnscreen(int camid, GraphicsState * state)
   memset(g->rgba, 1, 4);
   memcpy(g->mat, mat, 9); // cartesian orientation
   strncpy(g->label, "HELLO", 100);
+
+
+	mjrRect rect = { 0, 0, 0, 0 };
+	glfwGetFramebufferSize(state->window, &rect.width, &rect.height);
+
+	mjr_setBuffer(mjFB_WINDOW, &con);
+	if (con.currentBuffer != mjFB_WINDOW) {
+		printf("Warning: window rendering not supported\n");
+	}
 
 
 	mjr_render(rect, &scn, &con);
