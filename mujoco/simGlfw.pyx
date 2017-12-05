@@ -1,4 +1,5 @@
 from mujoco.sim cimport BaseSim
+from codecs import encode
 from mujoco.sim import ObjType
 from pxd.lib cimport setCamera
 from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
@@ -18,7 +19,7 @@ cdef class Sim(BaseSim):
         """ Does nothing, because glfwTerminate has a bug. """
         closeOpenGL()
 
-    def render(self, camera_name=None):
+    def render(self, camera_name=None, labels=None):
         """
         Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window. 
         """
@@ -27,7 +28,10 @@ cdef class Sim(BaseSim):
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
         setCamera(camid, &self.state)
-        addLabel("HEEEELLLLO", &self.state)
+        if labels:
+            assert isinstance(labels, list), '`labels` must be a list.'
+            for label in labels:
+                addLabel(encode(label), &self.state)
         return renderOnscreen(&self.graphics_state)
 
     def get_last_key_press(self):
