@@ -149,40 +149,6 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    def addLabel(self, label, name=None):
-        if self.state.scn.ngeom >= self.state.scn.maxgeom:
-            raise RuntimeError('Ran out of geoms. maxgeom: %d' %
-                               self.state.scn.maxgeom)
-        self.state.scn.ngeom += 1
-        if name is None:
-            name = label
-
-        cdef mjvGeom *geom = self.state.scn.geoms + self.state.scn.ngeom
-        geom.dataid = -1
-        geom.objtype = ObjType.TEXT.value
-        geom.objid = -1
-        geom.category = 4  # decorative geom
-        geom.texid = -1
-        geom.texuniform = 0
-        geom.texrepeat[0] = 1
-        geom.texrepeat[1] = 1
-        geom.emission = 0
-        geom.specular = 0.5
-        geom.shininess = 0.5
-        geom.reflectance = 0
-        geom.type = 6  # box geom
-        geom.size[:] = np.ones(3) * 0.1
-        geom.mat[:] = np.eye(3).flatten()
-        geom.rgba[:] = np.ones(4)
-        self.state.scn.ngeom += 1
-        strncpy(geom.label, label.encode(), 100)
-
-    def set_label_pos(self, pos, i):
-        cdef int j = <int> i
-        cdef mjvGeom *geom = self.state.scn.geoms + j
-        geom.pos[:] = pos
-
-
     def get_id(self, obj_type, name):
         """ 
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.

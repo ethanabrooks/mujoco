@@ -1,3 +1,5 @@
+import numpy as np
+from cython cimport view
 from mujoco.sim cimport BaseSim
 from codecs import encode
 from mujoco.sim import ObjType
@@ -23,15 +25,19 @@ cdef class Sim(BaseSim):
         """
         Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window. 
         """
+        cdef float[::view.contiguous] view
         if camera_name is None:
             camid = -1
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
         setCamera(camid, &self.state)
+
         if labels:
-            assert isinstance(labels, list), '`labels` must be a list.'
-            for label in labels:
-                addLabel(encode(label), &self.state)
+            assert isinstance(labels, dict), '`labels` must be a dict.'
+            for label, pos in labels.items():
+                assert pos.shape == (3,), 'shape of `pos` must be (3,).'
+                view = pos.astype(np.float32)
+                addLabel(encode(label), &view[0], &self.state)
         return renderOnscreen(&self.graphics_state)
 
     def get_last_key_press(self):
