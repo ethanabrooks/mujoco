@@ -21,12 +21,12 @@ typedef struct graphics_state_t {
 
 //typedef GLFWwindow* GraphicsState;
 
-int add_label(mjvScene *scn, const char* label);
+int add_label(const char* label, State* s);
 int clearLastKey(GraphicsState* state);
 int clearMouseDx(GraphicsState* state);
 int clearMouseDy(GraphicsState* state);
 int initOpenGL(GraphicsState *, State *);
 int closeOpenGL(void);
-int renderOnscreen(int camid, GraphicsState* state);
+int renderOnscreen(GraphicsState* state);
 
 #endif

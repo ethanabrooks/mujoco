@@ -240,23 +240,18 @@ int add_label(mjvScene *scn, const char* label)
   strncpy(g->label, label, 100);
 }
 
-int renderOnscreen(int camid, GraphicsState * state)
+int add_label(const char* label, State* s)
 {
-	setCamera(camid, state->state);
-
-	mjvScene scn = state->state->scn;
-	mjrContext con = state->state->con;
-
-
-  State* s = state->state;
-  mjv_updateScene(s->m, s->d, &s->opt, NULL, &s->cam, mjCAT_ALL, &s->scn);
-  if (scn.ngeom >= scn.maxgeom)
+	mjvScene* scn = &(s->scn);
+  
+  mjv_updateScene(s->m, s->d, &s->opt, NULL, &s->cam, mjCAT_ALL, scn);
+  if (scn->ngeom >= scn->maxgeom)
   {
-    printf("Warning: reached max geoms %d\n", scn.maxgeom);
+    printf("Warning: reached max geoms %d\n", scn->maxgeom);
     return 1;
   }
   double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-  mjvGeom *g = scn.geoms + scn.ngeom++;
+  mjvGeom *g = scn->geoms + scn->ngeom++;
   g->type = 104;  // label geom
   g->dataid = -1; // None
   g->objtype = 0; // unknown
@@ -274,7 +269,14 @@ int renderOnscreen(int camid, GraphicsState * state)
   memset(g->size, 0.1, 3);
   memset(g->rgba, 1, 4);
   memcpy(g->mat, mat, 9); // cartesian orientation
-  strncpy(g->label, "HELLO", 100);
+  strncpy(g->label, label, 100);
+}
+
+
+int renderOnscreen(GraphicsState * state)
+{
+	mjvScene scn = state->state->scn;
+	mjrContext con = state->state->con;
 
 
 	mjrRect rect = { 0, 0, 0, 0 };

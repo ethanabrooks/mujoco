@@ -1,5 +1,4 @@
 #include "lib.h"
-	setCamera(camid, state->state);
 #ifdef MJ_EGL
 #include "renderEgl.h"
 #else
@@ -45,11 +44,9 @@ int setCamera(int camid, State * state)
 }
 
 int
-renderOffscreen(int camid, unsigned char *rgb,
+renderOffscreen(unsigned char *rgb,
 		int height, int width, State * state)
 {
-	setCamera(camid, state);
-
 	mjvScene scn = state->scn;
 	mjrContext con = state->con;
 	mjrRect viewport = { 0, 0, height, width };
@@ -83,8 +80,8 @@ int main(int argc, const char **argv)
 {
 	int H = 800;
 	int W = 800;
-  char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; 
-	/*char const *filepath = "xml/humanoid.xml";*/
+  /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
+  char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
@@ -109,11 +106,14 @@ int main(int argc, const char **argv)
 		mju_error("Could not open rgbfile for writing");
 
 	// main loop
-	for (int i = 0; i < 10000; i++) {
-		renderOffscreen(0, rgb, H, W, &state);
+	for (int i = 0; i < 100; i++) {
+    setCamera(-1, &state);
+		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
-		renderOnscreen(-1, &graphicsState);
+    setCamera(0, &state);
+    add_label("HOWDY", &state);
+		renderOnscreen(&graphicsState);
 #endif
 		state.d->ctrl[0] = 0.5;
 		mj_step(state.m, state.d);
