@@ -209,37 +209,6 @@ int closeOpenGL()
 	return 0;
 }
 
-int add_label(mjvScene *scn, const char* label) 
-{
-  if (scn->ngeom >= scn->maxgeom)
-  {
-    printf("Warning: reached max geoms %d\n", scn->maxgeom);
-    return 1;
-  }
-
-  double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-
-  mjvGeom *g = scn->geoms + scn->ngeom++;
-  g->type = 104;  // label geom
-  g->dataid = -1; // None
-  g->objtype = 0; // unknown
-  g->objid = -1;  // decor
-  g->category = 4;  // decorative geom
-  g->texid = -1; // no texture
-  g->texuniform = 0;
-  g->texrepeat[0] = 1;
-  g->texrepeat[1] = 1;
-  g->emission = 0;
-  g->specular = 0.5;
-  g->shininess = 0.5;
-  g->reflectance = 0;
-  memset(g->pos, 0, 3);
-  memset(g->size, 0.1, 3);
-  memset(g->rgba, 1, 4);
-  memcpy(g->mat, mat, 9); // cartesian orientation
-  strncpy(g->label, label, 100);
-}
-
 int add_label(const char* label, State* s)
 {
 	mjvScene* scn = &(s->scn);
@@ -270,6 +239,7 @@ int add_label(const char* label, State* s)
   memset(g->rgba, 1, 4);
   memcpy(g->mat, mat, 9); // cartesian orientation
   strncpy(g->label, label, 100);
+  return 0;
 }
 
 

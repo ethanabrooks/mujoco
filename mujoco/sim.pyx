@@ -120,7 +120,8 @@ cdef class BaseSim(object):
         camid = self.get_id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        renderOffscreen(camid, & view[0], height, width, & self.state)
+        setCamera(camid, & self.state)
+        renderOffscreen(& view[0], height, width, & self.state)
         array = array.reshape(height, width, 3)
         if grayscale:
             return array.mean(axis=2)

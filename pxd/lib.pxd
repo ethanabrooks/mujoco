@@ -19,8 +19,8 @@ cdef extern from "lib.h":
         double mouseDy
         char lastKeyPress
 
-    int initMujoco(const char * fullpath, State * state)
-    int renderOffscreen(int camid, unsigned char * rgb,
-                        int height, int width, State * state)
-    int closeMujoco(State * state)
+    int initMujoco(const char *filepath, State * state);
+    int setCamera(int camid, State * state);
+    int renderOffscreen(unsigned char *rgb, int height, int width, State *);
+    int closeMujoco(State * state);
 

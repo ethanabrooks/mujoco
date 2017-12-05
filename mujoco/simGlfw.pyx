@@ -1,5 +1,6 @@
 from mujoco.sim cimport BaseSim
 from mujoco.sim import ObjType
+from pxd.lib cimport setCamera
 from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, renderOnscreen, clearLastKey, clearMouseDy, clearMouseDx
 
 cdef class Sim(BaseSim):
@@ -24,7 +25,8 @@ cdef class Sim(BaseSim):
             camid = -1
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
-        return renderOnscreen(camid, &self.graphics_state)
+        setCamera(camid, &self.state)
+        return renderOnscreen(&self.graphics_state)
 
     def get_last_key_press(self):
         if self.graphics_state.lastKeyPress:
