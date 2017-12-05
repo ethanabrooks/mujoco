@@ -2,7 +2,7 @@ import os
 from os.path import join, expanduser
 from codecs import encode, decode
 from enum import Enum
-from libc.stdlib cimport free
+from libc.string cimport strncpy
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, \
     mj_id2name, mj_name2id, mj_resetData, mj_forward, mj_fwdPosition
@@ -52,7 +52,7 @@ ObjType = Enum('ObjType',
                    ' TEXT'  # text
                    ' TUPLE'  # tuple
                    ' KEY'  # keyframe
-                ),
+               ),
                module=__name__,
                qualname='mujoco.ObjType')
 
@@ -148,37 +148,39 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    # def add_geom(self):
-        # if self.state.scn.ngeom >= self.state.scn.maxgeom:
-            # raise RuntimeError('Ran out of geoms. maxgeom: %d' % self.state.scn.maxgeom)
+    def add_label(self, label, name=None):
+        if self.state.scn.ngeom >= self.state.scn.maxgeom:
+            raise RuntimeError('Ran out of geoms. maxgeom: %d' %
+                               self.state.scn.maxgeom)
+        self.state.scn.ngeom += 1
+        if name is None:
+            name = label
 
-        # cdef mjvGeom *g = self.state.scn.geoms + self.state.scn.ngeom
+        cdef mjvGeom *geom = self.state.scn.geoms + self.state.scn.ngeom
+        geom.dataid = -1
+        geom.objtype = ObjType.TEXT.value
+        geom.objid = -1
+        geom.category = 4  # decorative geom
+        geom.texid = -1
+        geom.texuniform = 0
+        geom.texrepeat[0] = 1
+        geom.texrepeat[1] = 1
+        geom.emission = 0
+        geom.specular = 0.5
+        geom.shininess = 0.5
+        geom.reflectance = 0
+        geom.type = 6  # box geom
+        geom.size[:] = np.ones(3) * 0.1
+        geom.mat[:] = np.eye(3).flatten()
+        geom.rgba[:] = np.ones(4)
+        self.state.scn.ngeom += 1
+        strncpy(geom.label, label.encode(), 100)
 
-        # # default values.
-        # g.dataid = -1
-        # g.objtype = const.OBJ_UNKNOWN
-        # g.objid = -1
-        # g.category = const.CAT_DECOR
-        # g.texid = -1
-        # g.texuniform = 0
-        # g.texrepeat[0] = 1
-        # g.texrepeat[1] = 1
-        # g.emission = 0
-        # g.specular = 0.5
-        # g.shininess = 0.5
-        # g.reflectance = 0
-        # g.type = const.GEOM_BOX
-        # g.size[:] = np.ones(3) * 0.1
-        # g.mat[:] = np.eye(3).flatten()
-        # g.rgba[:] = np.ones(4)
-        # self.state.scn.ngeom += 1
+    def set_label_pos(self, pos, i):
+        cdef int j = <int> i
+        cdef mjvGeom *geom = self.state.scn.geoms + j
+        geom.pos[:] = pos
 
-    # def set_label(geom, label):
-        # strncpy(geom.label, value.encode(), 100)
-
-    # def add_marker(self, label):
-        # pass
-        
 
     def get_id(self, obj_type, name):
         """ 
@@ -204,10 +206,12 @@ cdef class BaseSim(object):
             id of object
         """
         if type(key) is str:
-            assert isinstance(obj_type, ObjType), '2nd argument must have type `ObjType`'
+            assert isinstance(
+                obj_type, ObjType), '2nd argument must have type `ObjType`'
             return self.get_id(obj_type, key)
         else:
-            assert isinstance(key, int), 'If 2nd argument is None, 1st argument must be `int`'
+            assert isinstance(
+                key, int), 'If 2nd argument is None, 1st argument must be `int`'
             return key
 
     def get_joint_id(self, key):
