@@ -149,7 +149,7 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    def add_label(self, label, name=None):
+    def addLabel(self, label, name=None):
         if self.state.scn.ngeom >= self.state.scn.maxgeom:
             raise RuntimeError('Ran out of geoms. maxgeom: %d' %
                                self.state.scn.maxgeom)

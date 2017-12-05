@@ -21,7 +21,7 @@ typedef struct graphics_state_t {
 
 //typedef GLFWwindow* GraphicsState;
 
-int add_label(const char* label, State* s);
+int addLabel(const char* label, State* s);
 int clearLastKey(GraphicsState* state);
 int clearMouseDx(GraphicsState* state);
 int clearMouseDy(GraphicsState* state);

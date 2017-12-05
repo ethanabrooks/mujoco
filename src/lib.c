@@ -112,7 +112,7 @@ int main(int argc, const char **argv)
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
     setCamera(0, &state);
-    add_label("HOWDY", &state);
+    addLabel("HOWDY", &state);
 		renderOnscreen(&graphicsState);
 #endif
 		state.d->ctrl[0] = 0.5;

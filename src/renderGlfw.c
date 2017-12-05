@@ -209,7 +209,7 @@ int closeOpenGL()
 	return 0;
 }
 
-int add_label(const char* label, State* s)
+int addLabel(const char* label, State* s)
 {
 	mjvScene* scn = &(s->scn);
   

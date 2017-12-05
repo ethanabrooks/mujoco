@@ -1,7 +1,8 @@
 from mujoco.sim cimport BaseSim
 from mujoco.sim import ObjType
 from pxd.lib cimport setCamera
-from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, renderOnscreen, clearLastKey, clearMouseDy, clearMouseDx
+from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
+        renderOnscreen, addLabel, clearLastKey, clearMouseDy, clearMouseDx
 
 cdef class Sim(BaseSim):
     """ 
