@@ -4,7 +4,7 @@ from mujoco.sim cimport BaseSim
 from codecs import encode
 from mujoco.sim import ObjType
 from pxd.lib cimport setCamera
-from pxd.simGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
+from pxd.renderGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
         renderOnscreen, addLabel, clearLastKey, clearMouseDy, clearMouseDx
 
 cdef class Sim(BaseSim):
@@ -26,6 +26,7 @@ cdef class Sim(BaseSim):
         Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window. 
         """
         cdef float[::view.contiguous] view
+
         if camera_name is None:
             camid = -1
         else:
@@ -38,6 +39,7 @@ cdef class Sim(BaseSim):
                 assert pos.shape == (3,), 'shape of `pos` must be (3,).'
                 view = pos.astype(np.float32)
                 addLabel(encode(label), &view[0], &self.state)
+
         return renderOnscreen(&self.graphics_state)
 
     def get_last_key_press(self):
