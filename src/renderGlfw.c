@@ -209,7 +209,7 @@ int closeOpenGL()
 	return 0;
 }
 
-int addLabel(const char* label, State* s)
+int addLabel(const char* label, const float* pos, State* s)
 {
 	mjvScene* scn = &(s->scn);
   
@@ -234,10 +234,10 @@ int addLabel(const char* label, State* s)
   g->specular = 0.5;
   g->shininess = 0.5;
   g->reflectance = 0;
-  memset(g->pos, 0, 3);
-  memset(g->size, 0.1, 3);
-  memset(g->rgba, 1, 4);
-  memcpy(g->mat, mat, 9); // cartesian orientation
+  memcpy(g->pos, pos, 3 * sizeof(float));
+  memset(g->size, 0.1, 3 * sizeof(float));
+  memset(g->rgba, 1, 4 * sizeof(float));
+  memcpy(g->mat, mat, 9 * sizeof(float)); // cartesian orientation
   strncpy(g->label, label, 100);
   return 0;
 }

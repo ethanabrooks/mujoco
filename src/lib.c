@@ -105,6 +105,8 @@ int main(int argc, const char **argv)
 	if (!fp)
 		mju_error("Could not open rgbfile for writing");
 
+    float pos[] = {0, 0, 0};
+
 	// main loop
 	for (int i = 0; i < 100; i++) {
     setCamera(-1, &state);
@@ -112,7 +114,10 @@ int main(int argc, const char **argv)
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
     setCamera(0, &state);
-    addLabel("HOWDY", &state);
+    addLabel("HOWDY", pos, &state);
+    mjvGeom *g = state.scn.geoms + state.scn.ngeom;
+    float *p = g->pos;
+    /*printf("%f %f %f\n", p[0], p[1], p[2]);*/
 		renderOnscreen(&graphicsState);
 #endif
 		state.d->ctrl[0] = 0.5;
