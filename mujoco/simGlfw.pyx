@@ -27,6 +27,7 @@ cdef class Sim(BaseSim):
         else:
             camid = self.get_id(ObjType.CAMERA, camera_name)
         setCamera(camid, &self.state)
+        addLabel("HEEEELLLLO", &self.state)
         return renderOnscreen(&self.graphics_state)
 
     def get_last_key_press(self):
