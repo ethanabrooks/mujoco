@@ -34,9 +34,11 @@ cdef class Sim(BaseSim):
         setCamera(camid, &self.state)
 
         if labels:
-            assert isinstance(labels, dict), '`labels` must be a dict.'
+            assert isinstance(labels, dict), \
+                    '`labels` must be a dict not a {}.'.format(type(labels))
             for label, pos in labels.items():
-                assert pos.shape == (3,), 'shape of `pos` must be (3,).'
+                assert pos.shape == (3,), \
+                        'shape of `pos` must be (3,) not {}.'.format(pos.shape)
                 view = pos.astype(np.float32)
                 addLabel(encode(label), &view[0], &self.state)
 

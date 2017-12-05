@@ -219,9 +219,7 @@ int addLabel(const char* label, const float* pos, State* s)
     return 1;
   }
   double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-    printf("before %s %d\n", label, scn->ngeom);
   mjvGeom *g = scn->geoms + scn->ngeom++;
-    printf("after %s %d\n", label, scn->ngeom);
   g->type = 104;  // label geom
   g->dataid = -1; // None
   g->objtype = 0; // unknown
