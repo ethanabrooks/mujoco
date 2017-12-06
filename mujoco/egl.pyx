@@ -1,5 +1,8 @@
-from mujoco.sim cimport BaseSim
+include "mujoco/sim.pyx"
+
 from pxd.renderEgl cimport initOpenGL, closeOpenGL
+from codecs import encode, decode
+
 
 cdef class SimEgl(BaseSim):
     """ 

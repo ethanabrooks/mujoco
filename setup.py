@@ -49,13 +49,13 @@ if sys.platform == "darwin":
 elif sys.platform in ["linux", "linux2"]:
     extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
     extensions = [
-        make_extension(name="mujoco.sim",
-                       main_source='mujoco/sim.pyx',
-                       render_file=None,
-                       libraries=['mujoco150', "OpenGL", "EGL", "glewegl"], # 'GL', 'glew'],
-                       extra_link_args=extra_link_args,
-                       define_macros=[]
-                       ),
+        # make_extension(name="mujoco.sim",
+                       # main_source='mujoco/sim.pyx',
+                       # render_file=None,
+                       # libraries=['mujoco150', "OpenGL", "EGL", "glewegl"], # 'GL', 'glew'],
+                       # extra_link_args=extra_link_args,
+                       # define_macros=[]
+                       # ),
         make_extension(name="mujoco.egl",
                        main_source='mujoco/egl.pyx',
                        render_file='src/renderEgl.c',
@@ -63,13 +63,13 @@ elif sys.platform in ["linux", "linux2"]:
                        extra_link_args=extra_link_args,
                        define_macros=[('MJ_EGL', 1)]
                        ),
-        # make_extension(name="mujoco.glfw",
-        #                main_source='mujoco/glfw.pyx',
-        #                render_file='src/renderGlfw.c',
-        #                libraries=['mujoco150', 'GL', 'glew'],
-        #                extra_link_args=extra_link_args,
-        #                define_macros=[]
-        #                ),
+        make_extension(name="mujoco.glfw",
+                       main_source='mujoco/glfw.pyx',
+                       render_file='src/renderGlfw.c',
+                       libraries=['mujoco150', 'GL', 'glew'],
+                       extra_link_args=extra_link_args,
+                       define_macros=[]
+                       ),
     ]
 else:
     raise SystemError("We don't support Windows!")

@@ -10,7 +10,7 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
-from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco
+from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera
 from libcpp cimport bool
 
 cimport numpy as np
@@ -86,6 +86,11 @@ def get_vec(size, array, n):
 
 cdef class BaseSim(object):
     """ Base class for the EGL `Sim` and the GLFW `Sim` to inherit from. """
+
+    cdef mjData * data
+    cdef mjModel * model
+    cdef State state
+    cdef int forward_called_this_step
 
     def __cinit__(self, str fullpath):
         """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.

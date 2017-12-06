@@ -1,8 +1,8 @@
+include "mujoco/sim.pyx"
+
 import numpy as np
 from cython cimport view
-from mujoco.sim cimport BaseSim
 from codecs import encode
-from mujoco.sim import ObjType
 from pxd.lib cimport setCamera
 from pxd.renderGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
         renderOnscreen, addLabel, clearLastKey, clearMouseDy, clearMouseDx

@@ -5,5 +5,3 @@ cdef class BaseSim(object):
     cdef mjModel * model
     cdef State state
     cdef int forward_called_this_step
-
-
