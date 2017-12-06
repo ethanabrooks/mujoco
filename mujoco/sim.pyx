@@ -2,7 +2,7 @@ import os
 from os.path import join, expanduser
 from codecs import encode, decode
 from enum import Enum
-from libc.stdlib cimport free
+from libc.string cimport strncpy
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, \
     mj_id2name, mj_name2id, mj_resetData, mj_forward, mj_fwdPosition
@@ -21,6 +21,7 @@ np.import_array()
 # TODO: fix RENDER compilation issues
 # TODO: get floats working?
 # TODO: docs
+
 
 """ 
 ``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
@@ -51,7 +52,7 @@ ObjType = Enum('ObjType',
                    ' TEXT'  # text
                    ' TUPLE'  # tuple
                    ' KEY'  # keyframe
-                ),
+               ),
                module=__name__,
                qualname='mujoco.ObjType')
 
@@ -119,7 +120,8 @@ cdef class BaseSim(object):
         camid = self.get_id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        renderOffscreen(camid, & view[0], height, width, & self.state)
+        setCamera(camid, & self.state)
+        renderOffscreen(& view[0], height, width, & self.state)
         array = array.reshape(height, width, 3)
         if grayscale:
             return array.mean(axis=2)
@@ -147,38 +149,6 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    # def add_geom(self):
-        # if self.state.scn.ngeom >= self.state.scn.maxgeom:
-            # raise RuntimeError('Ran out of geoms. maxgeom: %d' % self.state.scn.maxgeom)
-
-        # cdef mjvGeom *g = self.state.scn.geoms + self.state.scn.ngeom
-
-        # # default values.
-        # g.dataid = -1
-        # g.objtype = const.OBJ_UNKNOWN
-        # g.objid = -1
-        # g.category = const.CAT_DECOR
-        # g.texid = -1
-        # g.texuniform = 0
-        # g.texrepeat[0] = 1
-        # g.texrepeat[1] = 1
-        # g.emission = 0
-        # g.specular = 0.5
-        # g.shininess = 0.5
-        # g.reflectance = 0
-        # g.type = const.GEOM_BOX
-        # g.size[:] = np.ones(3) * 0.1
-        # g.mat[:] = np.eye(3).flatten()
-        # g.rgba[:] = np.ones(4)
-        # self.state.scn.ngeom += 1
-
-    # def set_label(geom, label):
-        # strncpy(geom.label, value.encode(), 100)
-
-    def add_marker(self, label):
-        pass
-        
-
     def get_id(self, obj_type, name):
         """ 
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
@@ -203,10 +173,12 @@ cdef class BaseSim(object):
             id of object
         """
         if type(key) is str:
-            assert isinstance(obj_type, ObjType), '2nd argument must have type `ObjType`'
+            assert isinstance(
+                obj_type, ObjType), '2nd argument must have type `ObjType`'
             return self.get_id(obj_type, key)
         else:
-            assert isinstance(key, int), 'If 2nd argument is None, 1st argument must be `int`'
+            assert isinstance(
+                key, int), 'If 2nd argument is None, 1st argument must be `int`'
             return key
 
     def get_joint_id(self, key):

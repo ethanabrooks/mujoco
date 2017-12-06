@@ -15,8 +15,7 @@ typedef struct state_t {
 
 int initMujoco(const char *filepath, State * state);
 int setCamera(int camid, State * state);
-int renderOffscreen(int camid, unsigned char *rgb,
-		    int height, int width, State *);
+int renderOffscreen(unsigned char *rgb, int height, int width, State *);
 int closeMujoco(State * state);
 
 #endif
