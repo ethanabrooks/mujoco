@@ -18,7 +18,6 @@ import numpy as np
 np.import_array()
 
 # TODO: make access synchronized
-# TODO: fix RENDER compilation issues
 # TODO: get floats working?
 # TODO: docs
 

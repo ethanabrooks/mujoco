@@ -105,15 +105,15 @@ int main(int argc, const char **argv)
 	if (!fp)
 		mju_error("Could not open rgbfile for writing");
 
-    float pos1[] = {0, 0, 0};
-    float pos2[] = {0.2, 0, 0};
-
 	// main loop
 	for (int i = 0; i < 100; i++) {
     setCamera(-1, &state);
 		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
+    float pos1[] = {0, 0, 0};
+    float pos2[] = {0.2, 0, 0};
+
     setCamera(0, &state);
     addLabel("1\n", pos1, &state);
     addLabel("2\n", pos2, &state);
