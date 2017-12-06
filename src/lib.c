@@ -105,6 +105,9 @@ int main(int argc, const char **argv)
 	if (!fp)
 		mju_error("Could not open rgbfile for writing");
 
+    float pos1[] = {0, 0, 0};
+    float pos2[] = {0.2, 0, 0};
+
 	// main loop
 	for (int i = 0; i < 100; i++) {
     setCamera(-1, &state);
