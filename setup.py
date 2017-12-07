@@ -80,7 +80,7 @@ with open('README.rst') as f:
 if __name__ == '__main__':
     setup(
         name='mujoco',
-        version='1.0.10',
+        version='1.0.11',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,
         url='https://github.com/lobachevzky/mujoco',
