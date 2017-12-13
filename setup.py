@@ -37,25 +37,16 @@ def make_extension(name, main_source, render_file, libraries,
 
 
 if sys.platform == "darwin":
-    libraries = ['mujoco150', 'glfw.3']
-    names = ["mujoco.sim", "glfw.sim"]
-    sources = ["mujoco/sim.pyx", "glfw/sim.pyx"]
-    render_file = "src/renderGlfw.c"
-    extra_link_args = []
-    define_macros = []
-    extensions = [make_extension(name, main_source, render_file, libraries,
-                                 extra_link_args, define_macros)
-                  for name, main_source in zip(names, sources)]
+    extensions = [make_extension(name="mujoco.glfw",
+                                 main_source='mujoco/glfw.pyx',
+                                 render_file='src/renderGlfw.c',
+                                 libraries=['mujoco150', 'glfw.3'],
+                                 extra_link_args=[],
+                                 define_macros=[]
+                                 )]
 elif sys.platform in ["linux", "linux2"]:
     extra_link_args = ['-fopenmp', join(mjpro_path, 'bin', 'libglfw.so.3')]
     extensions = [
-        # make_extension(name="mujoco.sim",
-                       # main_source='mujoco/sim.pyx',
-                       # render_file=None,
-                       # libraries=['mujoco150', "OpenGL", "EGL", "glewegl"], # 'GL', 'glew'],
-                       # extra_link_args=extra_link_args,
-                       # define_macros=[]
-                       # ),
         make_extension(name="mujoco.egl",
                        main_source='mujoco/egl.pyx',
                        render_file='src/renderEgl.c',
