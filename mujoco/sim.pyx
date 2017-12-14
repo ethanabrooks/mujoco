@@ -51,8 +51,7 @@ ObjType = Enum('ObjType',
                    ' TUPLE'  # tuple
                    ' KEY'  # keyframe
                ),
-               module=__name__,
-               qualname='mujoco.ObjType')
+               module=__name__)
 
 """ 
 ``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``). 
@@ -68,8 +67,7 @@ GeomType = Enum('GeomType',
                     ' BOX'
                     ' MESH'
                 ),
-                module=__name__,
-                qualname='mujoco.GeomType')
+                module=__name__)
 
 
 cdef asarray(double * ptr, size_t size):
