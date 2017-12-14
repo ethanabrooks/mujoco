@@ -11,7 +11,6 @@ from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera
-from libcpp cimport bool
 
 cimport numpy as np
 import numpy as np
@@ -82,6 +81,10 @@ cdef asarray(double * ptr, size_t size):
 def get_vec(int size, np.ndarray array, int n):
     return array[n * size: (n + 1) * size]
 
+def check_ObjType(obj, argnum):
+    assert isinstance(obj, ObjType), \
+            'arg {} must be an instance of `ObjType`'.format(argnum)
+
 
 cdef class BaseSim(object):
     """ Base class for the EGL `Sim` and the GLFW `Sim` to inherit from. """
@@ -110,7 +113,7 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco(& self.state)
 
-    def render_offscreen(self, height, width, camera_name, grayscale=False):
+    def render_offscreen(self, int height, int width, str camera_name, int grayscale=False):
         """
         Args:
             height (int): height of image to return.
@@ -144,7 +147,7 @@ cdef class BaseSim(object):
         """ Calculate forward kinematics. """
         mj_forward(self.model, self.data)
 
-    def qpos_to_xpos(self, qpos):
+    def qpos_to_xpos(self, np.ndarray qpos):
         old_qpos = self.joint_qpos.copy()
         self.joint_qpos[:] = qpos
         mj_fwdPosition(self.model, self.data)
@@ -153,17 +156,16 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    def get_id(self, obj_type, name):
+    def get_id(self, obj_type, str name):
         """ 
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
-        assert isinstance(
-            obj_type, ObjType), '`obj_type` must be an instance of `ObjType`'
+        check_ObjType(obj_type, argnum=1)
         return mj_name2id(self.model, obj_type.value - 1, encode(name))
 
     def get_name(self, obj_type, id):
         """ Get name corresponding to object id. """
-        assert isinstance(obj_type, ObjType), type(obj_type)
+        check_ObjType(obj_type, argnum=1)
         buff = mj_id2name(self.model, obj_type.value - 1, id)
         if buff is not NULL:
             return decode(buff)
@@ -177,8 +179,7 @@ cdef class BaseSim(object):
             id of object
         """
         if type(key) is str:
-            assert isinstance(
-                obj_type, ObjType), '2nd argument must have type `ObjType`'
+            check_ObjType(obj_type, argnum=2)
             return self.get_id(obj_type, key)
         else:
             assert isinstance(
