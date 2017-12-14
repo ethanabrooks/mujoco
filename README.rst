@@ -28,3 +28,14 @@ If you want your code to use EGL (which is faster on linux GPUs), you must defin
 Design
 ------
 One of the main design decisions behind this implementation was to build with separate libraries for the version that uses EGL. In general, the idea is to use the exact same libraries that Emo's original MuJoCo code uses in the provided Makefile. That way if my version doesn't work, you can bet that Emo's code doesn't work either. I think the reason why ``mujoco-py`` stopped working is that it tried to get fancy with the libraries and dynamically switch between EGL- and GLFW-friendly graphics libraries.
+
+Documentation
+-------------
+Sadly, I haven't been able to load my docs to readthedocs.org yet, because of difficulties over importing mujoco headers (suggestions welcome). However, if you wish to build the docs yourself, the following commands should do it for you:
+
+```
+cd /path/to/cloned/mujoco
+make
+cd docs/
+make html
+```
