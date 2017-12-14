@@ -3,7 +3,7 @@
 MuJoCo for Python!
 ==================
 
-This is a simple python wrapper around the MuJoCo physics simulation. I wrote it when I couldn't get `mujoco-py  <https://github.com/openai/mujoco-py>`_ to work. Please note: this library is a partial replacement to (not a supplement of) 
+This is a simple python wrapper around the MuJoCo physics simulation. I wrote it when I couldn't get `mujoco-py  <https://github.com/openai/mujoco-py>`_ to work. Please note: this library is a partial replacement (not a supplement) to 
 ``mujoco-py``. It is currently not very fully featured. If there are additional capabilities you want added, please feel free to 
 `post an issue <https://github.com/lobachevzky/mujoco/issues/new>`_.
 
@@ -33,7 +33,7 @@ Sadly, I haven't been able to load my docs to readthedocs.org yet, because of di
 
 .. code-block:: bash
 
-  cd /path/to/cloned/mujoco
+  cd /path/to/cloned/directory
   make
   cd docs/
   make html
