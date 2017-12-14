@@ -31,9 +31,9 @@ Documentation
 -------------
 Sadly, I haven't been able to load my docs to readthedocs.org yet, because of difficulties over importing mujoco headers (suggestions welcome). However, if you wish to build the docs yourself, the following commands should do it for you:
 
-```
-cd /path/to/cloned/mujoco
-make
-cd docs/
-make html
-```
+.. code-block:: bash
+
+  cd /path/to/cloned/mujoco
+  make
+  cd docs/
+  make html
