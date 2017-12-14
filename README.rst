@@ -1,5 +1,3 @@
-`Documentation <http://mujoco.readthedocs.io/>`_ (not working yet)
-
 .. inclusion-marker-do-not-remove
 
 MuJoCo for Python!
