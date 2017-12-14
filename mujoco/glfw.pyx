@@ -21,7 +21,7 @@ cdef class SimGlfw(BaseSim):
         """ Does nothing, because glfwTerminate has a bug. """
         closeOpenGL()
 
-    def render(self, camera_name=None, labels=None):
+    def render(self, str camera_name=None, dict labels=None):
         """
         Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window. 
         """

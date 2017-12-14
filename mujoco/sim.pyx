@@ -79,7 +79,7 @@ cdef asarray(double * ptr, size_t size):
     return np.asarray(view)
 
 
-def get_vec(size, array, n):
+def get_vec(int size, np.ndarray array, int n):
     return array[n * size: (n + 1) * size]
 
 
