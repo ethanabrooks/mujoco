@@ -10,7 +10,6 @@
   :inherited-members:
   :show-inheritance: 
 
-
 * :ref:`modindex`
 * :ref:`search`
 

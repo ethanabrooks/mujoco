@@ -33,6 +33,7 @@ def make_extension(name, main_source, render_file, libraries,
         library_dirs=[join(mjpro_path, 'bin'), "/usr/lib/nvidia-384"],
         extra_link_args=extra_link_args,
         define_macros=define_macros,
+        compiler_directives={"embedsignature": True},
         language='c')
 
 
