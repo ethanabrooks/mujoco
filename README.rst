@@ -20,7 +20,7 @@ Working on getting a `pypi` script working. In the mean time, install from sourc
 
 Usage
 -----
-Examples are locates in the ``examples/`` directory.
+Examples are located in the ``examples/`` directory.
 
 
 If you want your code to use EGL (which is faster on linux GPUs), you must define the environment variable ``EGL=1``. Otherwise, the code defaults to GLFW. Note that when using EGL, you cannot render to the screen (you can still render offscreen).
