@@ -12,7 +12,7 @@ def print_green(str):
 # Public API:
 __all__ = ['Sim', 'SimGlfw', 'GeomType', 'ObjType']
 
-if sys.platform in ['linux', 'linux2'] and os.environ.get('EGL') == 1:
+if sys.platform in ['linux', 'linux2'] and os.environ.get('EGL') == '1':
     # Only use EGL if working in linux and there is no RENDER env variable
     print_green("Using EGL version of mujoco.")
     from mujoco.egl import SimEgl as Sim, GeomType, ObjType
