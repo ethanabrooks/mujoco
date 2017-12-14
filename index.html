@@ -1,0 +1,540 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MuJoCo for Python! &mdash; mujoco 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="mujoco 1.0.0 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mujoco-for-python">
+<h1>MuJoCo for Python!<a class="headerlink" href="#mujoco-for-python" title="Permalink to this headline">¶</a></h1>
+<p>This is a simple python wrapper around the MuJoCo physics simulation. I wrote it when I couldn&#8217;t get <a class="reference external" href="https://github.com/openai/mujoco-py">mujoco-py</a> to work. Please note: this library is a partial replacement to (not a supplement of)
+<code class="docutils literal"><span class="pre">mujoco-py</span></code>. It is currently not very fully featured. If there are additional capabilities you want added, please feel free to
+<a class="reference external" href="https://github.com/lobachevzky/mujoco/issues/new">post an issue</a>.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Working on getting a <cite>pypi</cite> script working. In the mean time, install from source:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -e /path/to/cloned/directory
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Examples are located in the <code class="docutils literal"><span class="pre">examples/</span></code> directory.</p>
+<p>If you want your code to use EGL (which is faster on linux GPUs), you must define the environment variable <code class="docutils literal"><span class="pre">EGL=1</span></code>. Otherwise, the code defaults to GLFW. Note that when using EGL, you cannot render to the screen (you can still render offscreen).</p>
+</div>
+<div class="section" id="design">
+<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>One of the main design decisions behind this implementation was to build with separate libraries for the version that uses EGL. In general, the idea is to use the exact same libraries that Emo&#8217;s original MuJoCo code uses in the provided Makefile. That way if my version doesn&#8217;t work, you can bet that Emo&#8217;s code doesn&#8217;t work either. I think the reason why <code class="docutils literal"><span class="pre">mujoco-py</span></code> stopped working is that it tried to get fancy with the libraries and dynamically switch between EGL- and GLFW-friendly graphics libraries.</p>
+</div>
+<div class="section" id="docs">
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-mujoco"></span><dl class="attribute">
+<dt id="mujoco.Sim">
+<code class="descclassname">mujoco.</code><code class="descname">Sim</code><a class="headerlink" href="#mujoco.Sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#mujoco.SimGlfw" title="mujoco.SimGlfw"><code class="xref py py-class docutils literal"><span class="pre">SimGlfw</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="mujoco.SimGlfw">
+<em class="property">class </em><code class="descclassname">mujoco.</code><code class="descname">SimGlfw</code><a class="headerlink" href="#mujoco.SimGlfw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">mujoco.glfw.BaseSim</span></code></p>
+<p>Sim that uses GLFW functionality, which supports both offscreen and onscreen rendering.</p>
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.actuator_ctrl">
+<code class="descname">actuator_ctrl</code><a class="headerlink" href="#mujoco.SimGlfw.actuator_ctrl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joint actuations.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.actuator_ctrlrange">
+<code class="descname">actuator_ctrlrange</code><a class="headerlink" href="#mujoco.SimGlfw.actuator_ctrlrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Range of controls (low, high).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.body_xpos">
+<code class="descname">body_xpos</code><a class="headerlink" href="#mujoco.SimGlfw.body_xpos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cartesian coordinates of bodies.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.body_xquat">
+<code class="descname">body_xquat</code><a class="headerlink" href="#mujoco.SimGlfw.body_xquat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quaternions of bodies.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.close_opengl">
+<code class="descname">close_opengl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.close_opengl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does nothing, because glfwTerminate has a bug.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate forward kinematics.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.geom_pos">
+<code class="descname">geom_pos</code><a class="headerlink" href="#mujoco.SimGlfw.geom_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Positions of geoms.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.geom_size">
+<code class="descname">geom_size</code><a class="headerlink" href="#mujoco.SimGlfw.geom_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sizes of geoms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_body_xpos">
+<code class="descname">get_body_xpos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_body_xpos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get xpos (cartesian coordinates) of body corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_body_xquat">
+<code class="descname">get_body_xquat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_body_xquat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get quaternion of body corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_geom_pos">
+<code class="descname">get_geom_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_geom_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get position of geom corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_geom_size">
+<code class="descname">get_geom_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_geom_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get size of geom corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_geom_type">
+<code class="descname">get_geom_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_geom_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get type of geom corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_id">
+<code class="descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get numerical ID corresponding to object type and name. Useful for indexing arrays.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_joint_id">
+<code class="descname">get_joint_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_joint_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_joint_qpos">
+<code class="descname">get_joint_qpos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_joint_qpos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get qpos (joint values) of object corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_joint_qvel">
+<code class="descname">get_joint_qvel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_joint_qvel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get qvel (joint velocities) of object corresponding to key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_last_key_press">
+<code class="descname">get_last_key_press</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_last_key_press" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_mouse_dx">
+<code class="descname">get_mouse_dx</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_mouse_dx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_mouse_dy">
+<code class="descname">get_mouse_dy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_mouse_dy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name corresponding to object id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.init_opengl">
+<code class="descname">init_opengl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.init_opengl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize GLFW.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.joint_qpos">
+<code class="descname">joint_qpos</code><a class="headerlink" href="#mujoco.SimGlfw.joint_qpos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joint positions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.joint_qvel">
+<code class="descname">joint_qvel</code><a class="headerlink" href="#mujoco.SimGlfw.joint_qvel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joint velocities.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.nbody">
+<code class="descname">nbody</code><a class="headerlink" href="#mujoco.SimGlfw.nbody" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of bodies in model.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.ngeom">
+<code class="descname">ngeom</code><a class="headerlink" href="#mujoco.SimGlfw.ngeom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of geoms in model.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.nq">
+<code class="descname">nq</code><a class="headerlink" href="#mujoco.SimGlfw.nq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of generalized coordinates.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.nsensordata">
+<code class="descname">nsensordata</code><a class="headerlink" href="#mujoco.SimGlfw.nsensordata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of actuators/controls.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.nu">
+<code class="descname">nu</code><a class="headerlink" href="#mujoco.SimGlfw.nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of actuators/controls.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.nv">
+<code class="descname">nv</code><a class="headerlink" href="#mujoco.SimGlfw.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of degrees of freedom.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.qpos_to_xpos">
+<code class="descname">qpos_to_xpos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.qpos_to_xpos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.render">
+<code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the view from camera corresponding to <code class="docutils literal"><span class="pre">camera_name</span></code> in an onscreen GLFW window.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.render_offscreen">
+<code class="descname">render_offscreen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.render_offscreen" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>height (int): height of image to return.
+width (int): width of image to return.
+camera_name (str): Name of camera, as specified in xml file.</dd>
+<dt>Returns:</dt>
+<dd><code class="docutils literal"><span class="pre">height</span></code> x <code class="docutils literal"><span class="pre">width</span></code> image from camera with name <code class="docutils literal"><span class="pre">camera_name</span></code></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset simulation to starting state.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.sensordata">
+<code class="descname">sensordata</code><a class="headerlink" href="#mujoco.SimGlfw.sensordata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quaternions of bodies.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mujoco.SimGlfw.step">
+<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mujoco.SimGlfw.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance simulation one timestep.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.SimGlfw.timestep">
+<code class="descname">timestep</code><a class="headerlink" href="#mujoco.SimGlfw.timestep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length of simulation timestep.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mujoco.GeomType">
+<em class="property">class </em><code class="descclassname">mujoco.</code><code class="descname">GeomType</code><a class="headerlink" href="#mujoco.GeomType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="mujoco.GeomType.BOX">
+<code class="descname">BOX</code><em class="property"> = &lt;GeomType.BOX: 7&gt;</em><a class="headerlink" href="#mujoco.GeomType.BOX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.CAPSULE">
+<code class="descname">CAPSULE</code><em class="property"> = &lt;GeomType.CAPSULE: 4&gt;</em><a class="headerlink" href="#mujoco.GeomType.CAPSULE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.CYLINDER">
+<code class="descname">CYLINDER</code><em class="property"> = &lt;GeomType.CYLINDER: 6&gt;</em><a class="headerlink" href="#mujoco.GeomType.CYLINDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.ELLIPSOID">
+<code class="descname">ELLIPSOID</code><em class="property"> = &lt;GeomType.ELLIPSOID: 5&gt;</em><a class="headerlink" href="#mujoco.GeomType.ELLIPSOID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.HFIELD">
+<code class="descname">HFIELD</code><em class="property"> = &lt;GeomType.HFIELD: 2&gt;</em><a class="headerlink" href="#mujoco.GeomType.HFIELD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.MESH">
+<code class="descname">MESH</code><em class="property"> = &lt;GeomType.MESH: 8&gt;</em><a class="headerlink" href="#mujoco.GeomType.MESH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.PLANE">
+<code class="descname">PLANE</code><em class="property"> = &lt;GeomType.PLANE: 1&gt;</em><a class="headerlink" href="#mujoco.GeomType.PLANE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.GeomType.SPHERE">
+<code class="descname">SPHERE</code><em class="property"> = &lt;GeomType.SPHERE: 3&gt;</em><a class="headerlink" href="#mujoco.GeomType.SPHERE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mujoco.ObjType">
+<em class="property">class </em><code class="descclassname">mujoco.</code><code class="descname">ObjType</code><a class="headerlink" href="#mujoco.ObjType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="mujoco.ObjType.ACTUATOR">
+<code class="descname">ACTUATOR</code><em class="property"> = &lt;ObjType.ACTUATOR: 18&gt;</em><a class="headerlink" href="#mujoco.ObjType.ACTUATOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.BODY">
+<code class="descname">BODY</code><em class="property"> = &lt;ObjType.BODY: 2&gt;</em><a class="headerlink" href="#mujoco.ObjType.BODY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.CAMERA">
+<code class="descname">CAMERA</code><em class="property"> = &lt;ObjType.CAMERA: 8&gt;</em><a class="headerlink" href="#mujoco.ObjType.CAMERA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.DOF">
+<code class="descname">DOF</code><em class="property"> = &lt;ObjType.DOF: 5&gt;</em><a class="headerlink" href="#mujoco.ObjType.DOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.EQUALITY">
+<code class="descname">EQUALITY</code><em class="property"> = &lt;ObjType.EQUALITY: 16&gt;</em><a class="headerlink" href="#mujoco.ObjType.EQUALITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.EXCLUDE">
+<code class="descname">EXCLUDE</code><em class="property"> = &lt;ObjType.EXCLUDE: 15&gt;</em><a class="headerlink" href="#mujoco.ObjType.EXCLUDE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.GEOM">
+<code class="descname">GEOM</code><em class="property"> = &lt;ObjType.GEOM: 6&gt;</em><a class="headerlink" href="#mujoco.ObjType.GEOM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.HFIELD">
+<code class="descname">HFIELD</code><em class="property"> = &lt;ObjType.HFIELD: 11&gt;</em><a class="headerlink" href="#mujoco.ObjType.HFIELD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.JOINT">
+<code class="descname">JOINT</code><em class="property"> = &lt;ObjType.JOINT: 4&gt;</em><a class="headerlink" href="#mujoco.ObjType.JOINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.KEY">
+<code class="descname">KEY</code><em class="property"> = &lt;ObjType.KEY: 23&gt;</em><a class="headerlink" href="#mujoco.ObjType.KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.LIGHT">
+<code class="descname">LIGHT</code><em class="property"> = &lt;ObjType.LIGHT: 9&gt;</em><a class="headerlink" href="#mujoco.ObjType.LIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.MATERIAL">
+<code class="descname">MATERIAL</code><em class="property"> = &lt;ObjType.MATERIAL: 13&gt;</em><a class="headerlink" href="#mujoco.ObjType.MATERIAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.MESH">
+<code class="descname">MESH</code><em class="property"> = &lt;ObjType.MESH: 10&gt;</em><a class="headerlink" href="#mujoco.ObjType.MESH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = &lt;ObjType.NUMERIC: 20&gt;</em><a class="headerlink" href="#mujoco.ObjType.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.PAIR">
+<code class="descname">PAIR</code><em class="property"> = &lt;ObjType.PAIR: 14&gt;</em><a class="headerlink" href="#mujoco.ObjType.PAIR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.SENSOR">
+<code class="descname">SENSOR</code><em class="property"> = &lt;ObjType.SENSOR: 19&gt;</em><a class="headerlink" href="#mujoco.ObjType.SENSOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.SITE">
+<code class="descname">SITE</code><em class="property"> = &lt;ObjType.SITE: 7&gt;</em><a class="headerlink" href="#mujoco.ObjType.SITE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.TENDON">
+<code class="descname">TENDON</code><em class="property"> = &lt;ObjType.TENDON: 17&gt;</em><a class="headerlink" href="#mujoco.ObjType.TENDON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.TEXT">
+<code class="descname">TEXT</code><em class="property"> = &lt;ObjType.TEXT: 21&gt;</em><a class="headerlink" href="#mujoco.ObjType.TEXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.TEXTURE">
+<code class="descname">TEXTURE</code><em class="property"> = &lt;ObjType.TEXTURE: 12&gt;</em><a class="headerlink" href="#mujoco.ObjType.TEXTURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.TUPLE">
+<code class="descname">TUPLE</code><em class="property"> = &lt;ObjType.TUPLE: 22&gt;</em><a class="headerlink" href="#mujoco.ObjType.TUPLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.UNKNOWN">
+<code class="descname">UNKNOWN</code><em class="property"> = &lt;ObjType.UNKNOWN: 1&gt;</em><a class="headerlink" href="#mujoco.ObjType.UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mujoco.ObjType.XBODY">
+<code class="descname">XBODY</code><em class="property"> = &lt;ObjType.XBODY: 3&gt;</em><a class="headerlink" href="#mujoco.ObjType.XBODY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<ul class="simple">
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">MuJoCo for Python!</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#design">Design</a></li>
+<li><a class="reference internal" href="#docs">Docs</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ethan Brooks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
