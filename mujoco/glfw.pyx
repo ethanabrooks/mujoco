@@ -24,6 +24,9 @@ cdef class SimGlfw(BaseSim):
     def render(self, str camera_name=None, dict labels=None):
         """
         Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window. 
+        ``labels`` must be a dict of ``{label: pos}``, where ``label`` is a value that can be 
+        cast to a ``str`` and ``pos`` is a ``list``, ``tuple``, or ``ndarray`` with elements
+        corresponding to ``(x, y, z)``.
         """
         cdef float[::view.contiguous] view
 
@@ -37,10 +40,12 @@ cdef class SimGlfw(BaseSim):
             assert isinstance(labels, dict), \
                     '`labels` must be a dict not a {}.'.format(type(labels))
             for label, pos in labels.items():
+                if type(pos) in (list, tuple):
+                    pos = np.array(pos)
                 assert pos.shape == (3,), \
                         'shape of `pos` must be (3,) not {}.'.format(pos.shape)
                 view = pos.astype(np.float32)
-                addLabel(encode(label), &view[0], &self.state)
+                addLabel(encode(str(label)), &view[0], &self.state)
 
         return renderOnscreen(&self.graphics_state)
 
