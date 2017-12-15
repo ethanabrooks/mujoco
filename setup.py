@@ -31,10 +31,11 @@ def make_extension(name, main_source, render_file, libraries,
         ],
         libraries=libraries,
         library_dirs=[join(mjpro_path, 'bin'), "/usr/lib/nvidia-384"],
-        extra_link_args=extra_link_args,
         define_macros=define_macros,
-        compiler_directives={"embedsignature": True},
+        extra_link_args=extra_link_args,
+        extra_compile_args=['-Wno-unused-function'],
         language='c')
+    # e.cython_directives = {"embedsignature": True}
 
 
 if sys.platform == "darwin":
