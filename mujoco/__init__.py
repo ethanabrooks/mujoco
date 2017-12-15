@@ -1,6 +1,6 @@
 import sys
 import os
-from mujoco.glfw import SimGlfw
+
 
 def print_green(str):
     OKGREEN = '\033[92m'
@@ -10,7 +10,7 @@ def print_green(str):
 
 
 # Public API:
-__all__ = ['Sim', 'SimGlfw', 'GeomType', 'ObjType']
+__all__ = ['Sim', 'GeomType', 'ObjType']
 
 if sys.platform in ['linux', 'linux2'] and os.environ.get('EGL') == '1':
     # Only use EGL if working in linux and there is no RENDER env variable
@@ -20,3 +20,4 @@ if sys.platform in ['linux', 'linux2'] and os.environ.get('EGL') == '1':
 else:
     print_green("Using GLFW version of mujoco.")
     from mujoco.glfw import SimGlfw as Sim, GeomType, ObjType
+    __all__.insert(0, 'SimGlfw')
