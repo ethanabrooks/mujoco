@@ -26,7 +26,7 @@ np.import_array()
 
 """ 
 ``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
-Some of ``Sim``'s getter methods take this as an argument e.g. ``get_name`` and ``get_id``.
+Some of ``Sim``'s getter methods take this as an argument e.g. ``id2name`` and ``name2id``.
 """
 ObjType = Enum('ObjType',
                (
@@ -124,7 +124,7 @@ cdef class BaseSim(object):
             ``height`` x ``width`` image from camera with name ``camera_name`` 
         """
 
-        camid = self.get_id(ObjType.CAMERA, camera_name)
+        camid = self.name2id(ObjType.CAMERA, camera_name)
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         setCamera(camid, & self.state)
@@ -148,22 +148,22 @@ cdef class BaseSim(object):
         mj_forward(self.model, self.data)
 
     def qpos_to_xpos(self, np.ndarray qpos):
-        old_qpos = self.joint_qpos.copy()
-        self.joint_qpos[:] = qpos
+        old_qpos = self.qpos.copy()
+        self.qpos[:] = qpos
         mj_fwdPosition(self.model, self.data)
-        xpos = self.body_xpos.copy()
-        self.joint_qpos[:] = old_qpos
+        xpos = self.xpos.copy()
+        self.qpos[:] = old_qpos
         self.forward()
         return xpos
 
-    def get_id(self, obj_type, str name):
+    def name2id(self, obj_type, str name):
         """ 
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
         check_ObjType(obj_type, argnum=1)
         return mj_name2id(self.model, obj_type.value - 1, encode(name))
 
-    def get_name(self, obj_type, id):
+    def id2name(self, obj_type, id):
         """ Get name corresponding to object id. """
         check_ObjType(obj_type, argnum=1)
         buff = mj_id2name(self.model, obj_type.value - 1, id)
@@ -180,20 +180,20 @@ cdef class BaseSim(object):
         """
         if type(key) is str:
             check_ObjType(obj_type, argnum=2)
-            return self.get_id(obj_type, key)
+            return self.name2id(obj_type, key)
         else:
             assert isinstance(
                 key, int), 'If 2nd argument is None, 1st argument must be `int`'
             return key
 
-    def get_joint_id(self, key):
+    def jnt_qposadr(self, key):
         if type(key) is str:
-            key = self.get_id(ObjType.JOINT, key)
+            key = self.name2id(ObjType.JOINT, key)
         return self.model.jnt_qposadr[key]
 
     def get_joint_qpos(self, key):
         """ Get qpos (joint values) of object corresponding to key. """
-        return self.data.qpos[self.get_joint_id(key)]
+        return self.data.qpos[self.jnt_qposadr(key)]
 
     def get_joint_qvel(self, key):
         """ Get qvel (joint velocities) of object corresponding to key. """
@@ -205,11 +205,11 @@ cdef class BaseSim(object):
 
     def get_body_xpos(self, key):
         """ Get xpos (cartesian coordinates) of body corresponding to key. """
-        return get_vec(3, self.body_xpos, self._key2id(key, ObjType.BODY))
+        return get_vec(3, self.xpos, self._key2id(key, ObjType.BODY))
 
     def get_body_xquat(self, key):
         """ Get quaternion of body corresponding to key. """
-        return get_vec(4, self.body_xquat, self._key2id(key, ObjType.BODY))
+        return get_vec(4, self.xquat, self._key2id(key, ObjType.BODY))
 
     def get_geom_size(self, key):
         """ Get size of geom corresponding to key. """
@@ -260,27 +260,27 @@ cdef class BaseSim(object):
         return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu * 2)
 
     @property
-    def joint_qpos(self):
+    def qpos(self):
         """ Joint positions. """
         return asarray( < double*> self.data.qpos, self.nq)
 
     @property
-    def joint_qvel(self):
+    def qvel(self):
         """ Joint velocities. """
         return asarray( < double*> self.data.qvel, self.nv)
 
     @property
-    def actuator_ctrl(self):
+    def ctrl(self):
         """ Joint actuations. """
         return asarray( < double*> self.data.ctrl, self.nu)
 
     @property
-    def body_xpos(self):
+    def xpos(self):
         """ Cartesian coordinates of bodies. """
         return asarray( < double*> self.data.xpos, self.nbody * 3)
 
     @property
-    def body_xquat(self):
+    def xquat(self):
         """ Quaternions of bodies. """
         return asarray( < double*> self.data.xquat, self.nbody * 4)
 
