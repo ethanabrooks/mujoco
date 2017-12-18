@@ -6,35 +6,35 @@ from Cython.Build import cythonize
 from os.path import join, expanduser
 import numpy as np
 import sys
-import os
-import subprocess
 import yaml
 
 if sys.version_info.major == 2:
     FileNotFoundError = OSError
 
 build_dir = "build"
+config_path = 'config.yml'
 
 if __name__ == '__main__':
-    config_path = 'config.yml'
     try:
         with open(config_path) as f:
             config = yaml.load(f)
     except FileNotFoundError:
         config = dict()
         for key, description, default in [
-                ('mjkey-path', 'path to mjkey.txt', '~/.mujoco/mjkey.txt'), 
-                ('mjpro-dir', 'mjpro150 directory', '~/.mujoco/mjpro150'), 
+                ('mjkey-path', 'path to mjkey.txt', '~/.mujoco/mjkey.txt'),
+                ('mjpro-dir', 'mjpro150 directory', '~/.mujoco/mjpro150'),
                 ('opengl-dir', 'directory containing libOpenGL.so', None)
-            ]:
-            value = input('Enter {} [default is {}]:'.format(description, default))
+        ]:
+            value = input(
+                    'Enter {} [default is {}]:'.format(description, default))
             config[key] = value if value else default
         with open(config_path, 'w') as f:
             yaml.dump(config, f, default_flow_style=False)
 
     mjpro_dir = expanduser(config['mjpro-dir'])
     mjkey_path = '"' + expanduser(config['mjkey-path']) + '"'
-    opengl_dir = [expanduser(config['opengl-dir'])] if config['opengl-dir'] else []
+    opengl_dir = config['opengl-dir']
+    opengl_dir = [expanduser(opengl_dir)] if opengl_dir else []
 
     def make_extension(name, main_source, util_file, libraries,
                        extra_link_args, define_macros):
@@ -56,36 +56,35 @@ if __name__ == '__main__':
             extra_link_args=extra_link_args,
             extra_compile_args=['-Wno-unused-function'],
             language='c')
-        # e.cython_directives = {"embedsignature": True}
 
     if sys.platform == "darwin":
-        extensions = [
-                make_extension(name="mujoco.glfw",
-                               main_source='mujoco/glfw.pyx',
-                               util_file='src/utilGlfw.c',
-                               libraries=['mujoco150', 'glfw.3'],
-                               extra_link_args=[],
-                               define_macros=[]
-                               )]
+        extensions = [make_extension(
+                    name="mujoco.glfw",
+                    main_source='mujoco/glfw.pyx',
+                    util_file='src/utilGlfw.c',
+                    libraries=['mujoco150', 'glfw.3'],
+                    extra_link_args=[],
+                    define_macros=[]
+                    )]
     elif sys.platform in ["linux", "linux2"]:
         extra_link_args = ['-fopenmp', join(mjpro_dir, 'bin', 'libglfw.so.3')]
-        extensions = [
-                make_extension(name="mujoco.glfw",
-                               main_source='mujoco/glfw.pyx',
-                               util_file='src/utilGlfw.c',
-                               libraries=['mujoco150', 'GL', 'glew'],
-                               extra_link_args=extra_link_args,
-                               define_macros=[]
-                               )]
+        extensions = [make_extension(
+                    name="mujoco.glfw",
+                    main_source='mujoco/glfw.pyx',
+                    util_file='src/utilGlfw.c',
+                    libraries=['mujoco150', 'GL', 'glew'],
+                    extra_link_args=extra_link_args,
+                    define_macros=[]
+                    )]
         if opengl_dir:
-            extensions += [
-                make_extension(name="mujoco.egl",
-                       main_source='mujoco/egl.pyx',
-                       util_file='src/utilEgl.c',
-                       libraries=["mujoco150", "OpenGL", "EGL", "glewegl"],
-                       extra_link_args=extra_link_args,
-                       define_macros=[('MJ_EGL', 1)]
-                       )]
+            extensions += [make_extension(
+                    name="mujoco.egl",
+                    main_source='mujoco/egl.pyx',
+                    util_file='src/utilEgl.c',
+                    libraries=["mujoco150", "OpenGL", "EGL", "glewegl"],
+                    extra_link_args=extra_link_args,
+                    define_macros=[('MJ_EGL', 1)]
+                    )]
     else:
         raise SystemError("We don't support Windows!")
 
