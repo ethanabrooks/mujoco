@@ -257,7 +257,9 @@ cdef class BaseSim(object):
     @property
     def actuator_ctrlrange(self):
         """ Range of controls (low, high). """
-        return asarray( < double*> self.model.actuator_ctrlrange, self.model.nu * 2)
+        return asarray( < double*> self.model.actuator_ctrlrange, 
+                       self.model.nu * 2).reshape(-1, 2)
+
 
     @property
     def qpos(self):
