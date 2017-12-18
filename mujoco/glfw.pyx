@@ -3,8 +3,8 @@ include "mujoco/sim.pyx"
 import numpy as np
 from cython cimport view
 from codecs import encode
-from pxd.lib cimport setCamera
-from pxd.renderGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
+from pxd.util cimport setCamera
+from pxd.utilGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
         renderOnscreen, addLabel, clearLastKey, clearMouseDy, clearMouseDx
 
 cdef class SimGlfw(BaseSim):

@@ -2,7 +2,7 @@ include "mujoco.pxd"
 include "mjvisualize.pxd"
 include "mjrender.pxd"
 
-cdef extern from "lib.h":
+cdef extern from "util.h":
     ctypedef struct State:
         mjModel * m
         mjData * d

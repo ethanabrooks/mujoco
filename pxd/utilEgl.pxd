@@ -1,10 +1,10 @@
-include "lib.pxd"
+include "util.pxd"
 
-cdef extern from "lib.h":
+cdef extern from "util.h":
     ctypedef struct State
 
 
-cdef extern from "renderEgl.h":
+cdef extern from "utilEgl.h":
     ctypedef int GraphicsState
 
     int initOpenGL()

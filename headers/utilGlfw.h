@@ -1,8 +1,8 @@
-#ifndef _RENDER_H
-#define _RENDER_H
+#ifndef _UTILGLFW_H
+#define _UTILGLFW_H
 
 #include "glfw3.h"
-#include "lib.h"
+#include "util.h"
 #include "pthread.h"
 
 typedef struct graphics_state_t {

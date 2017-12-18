@@ -1,7 +1,7 @@
 #include <EGL/egl.h>
 #include "mujoco.h"
-#include "renderEgl.h"
-#include "lib.h"
+#include "utilEgl.h"
+#include "util.h"
 
 // create OpenGL context/window
 int initOpenGL()

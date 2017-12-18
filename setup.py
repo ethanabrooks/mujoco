@@ -36,13 +36,13 @@ if __name__ == '__main__':
     mjkey_path = '"' + expanduser(config['mjkey-path']) + '"'
     opengl_dir = expanduser(config['opengl-dir'])
 
-    def make_extension(name, main_source, render_file, libraries,
+    def make_extension(name, main_source, util_file, libraries,
                        extra_link_args, define_macros):
         return Extension(
             name,
-            sources=([render_file] if render_file else []) + [
+            sources=([util_file] if util_file else []) + [
                 main_source,
-                "src/lib.c",
+                "src/util.c",
             ],
             include_dirs=[
                 join(mjpro_dir, 'include'),
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     if sys.platform == "darwin":
         extensions = [make_extension(name="mujoco.glfw",
                                      main_source='mujoco/glfw.pyx',
-                                     render_file='src/renderGlfw.c',
+                                     util_file='src/utilGlfw.c',
                                      libraries=['mujoco150', 'glfw.3'],
                                      extra_link_args=[],
                                      define_macros=[]
@@ -71,14 +71,14 @@ if __name__ == '__main__':
         extensions = [
             make_extension(name="mujoco.egl",
                            main_source='mujoco/egl.pyx',
-                           render_file='src/renderEgl.c',
+                           util_file='src/utilEgl.c',
                            libraries=["mujoco150", "OpenGL", "EGL", "glewegl"],
                            extra_link_args=extra_link_args,
                            define_macros=[('MJ_EGL', 1)]
                            ),
             make_extension(name="mujoco.glfw",
                            main_source='mujoco/glfw.pyx',
-                           render_file='src/renderGlfw.c',
+                           util_file='src/utilGlfw.c',
                            libraries=['mujoco150', 'GL', 'glew'],
                            extra_link_args=extra_link_args,
                            define_macros=[]

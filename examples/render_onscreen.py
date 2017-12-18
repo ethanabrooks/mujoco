@@ -4,6 +4,6 @@ import glfw
 import mujoco
 
 sim = mujoco.Sim('xml/humanoid.xml')
-while not sim.should_close
+while True:
     sim.step()
     sim.render()

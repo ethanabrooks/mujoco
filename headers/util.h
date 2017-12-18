@@ -1,5 +1,5 @@
-#ifndef _LIB_H
-#define _LIB_H
+#ifndef _UTIL_H
+#define _UTIL_H
 
 #include "glfw3.h"
 #include "mujoco.h"

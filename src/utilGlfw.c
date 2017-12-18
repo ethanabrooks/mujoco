@@ -1,5 +1,5 @@
-#include "renderGlfw.h"
-#include "lib.h"
+#include "utilGlfw.h"
+#include "util.h"
 #include "glfw3.h"
 #include "stdio.h"
 #include "string.h"

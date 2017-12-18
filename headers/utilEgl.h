@@ -1,9 +1,9 @@
-#ifndef _RENDER_H
-#define _RENDER_H
+#ifndef _UTILEGL_H
+#define _UTILEGL_H
 
 #include "EGL/egl.h"
 #include "mujoco.h"
-#include "lib.h"
+#include "util.h"
 
 typedef int GraphicsState;
 

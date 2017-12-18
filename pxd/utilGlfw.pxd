@@ -1,4 +1,4 @@
-include "lib.pxd"
+include "util.pxd"
 
 cdef extern from "pthread.h":
     ctypedef struct pthread_mutex_t:
@@ -7,7 +7,7 @@ cdef extern from "pthread.h":
 cdef extern from "glfw3.h":
     ctypedef struct GLFWwindow
 
-cdef extern from "renderGlfw.h":
+cdef extern from "utilGlfw.h":
     ctypedef struct GraphicsState:
         State* state
         GLFWwindow* window

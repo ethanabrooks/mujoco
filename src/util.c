@@ -1,8 +1,8 @@
-#include "lib.h"
+#include "util.h"
 #ifdef MJ_EGL
-#include "renderEgl.h"
+#include "utilEgl.h"
 #else
-#include "renderGlfw.h"
+#include "utilGlfw.h"
 #endif
 #include "mujoco.h"
 #include "stdio.h"

@@ -10,21 +10,21 @@ default:
 
 osx:
 	$(MK_BUILD)
-	clang $(COMMON) src/renderGlfw.c -DMJ_GLFW src/lib.c -lmujoco150 -lglfw.3 -o $(BUILD)renderosx
-	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)renderosx
-	$(BUILD)renderosx
+	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
+	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)utilosx
+	$(BUILD)utilosx
 
 glfw:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 src/renderGlfw.c -DMJ_GLFW src/lib.c -lmujoco150 -lGL -lglew $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)renderglfw
-	$(BUILD)renderglfw
+	g++ $(COMMON) -std=c++11 src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lGL -lglew $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)utilglfw
+	$(BUILD)utilglfw
 	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 	vlc $(BUILD)video.mp4
 
 egl:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-384 -DMJ_EGL src/renderEgl.c src/lib.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)renderegl
-	$(BUILD)renderegl
+	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-384 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
+	$(BUILD)utilegl
 	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 	vlc $(BUILD)video.mp4
 
