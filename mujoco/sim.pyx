@@ -12,6 +12,9 @@ from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
 from pxd.lib cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera
 
+cdef extern from *:  # defined as macro
+    char* MJKEY_PATH
+
 cimport numpy as np
 import numpy as np
 np.import_array()
@@ -98,8 +101,7 @@ cdef class BaseSim(object):
         Args:
             fullpath (str): full path to model xml file.
         """
-        key_path = join(expanduser('~'), '.mujoco', 'mjkey.txt')
-        mj_activate(encode(key_path))
+        mj_activate(MJKEY_PATH)
         self.init_opengl()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
