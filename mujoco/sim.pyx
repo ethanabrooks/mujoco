@@ -203,9 +203,13 @@ cdef class BaseSim(object):
         """ Get type of geom corresponding to key. """
         return self.model.geom_type[self._key2id(key, ObjType.JOINT)]
 
-    def get_body_xpos(self, key):
+    def get_body_xpos(self, key, qpos=None):
         """ Get xpos (cartesian coordinates) of body corresponding to key. """
-        return get_vec(3, self.xpos, self._key2id(key, ObjType.BODY))
+        if qpos is None:
+            xpos = self.xpos
+        else:
+            xpos = self.qpos_to_xpos(qpos)
+        return get_vec(3, xpos, self._key2id(key, ObjType.BODY))
 
     def get_body_xquat(self, key):
         """ Get quaternion of body corresponding to key. """
