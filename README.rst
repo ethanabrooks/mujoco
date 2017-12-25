@@ -39,7 +39,7 @@ One of the main design decisions behind this implementation was to use the exact
 
 Documentation
 -------------
-Sadly, I haven't been able to load my docs to readthedocs.org yet, because of difficulties over importing mujoco headers (suggestions welcome). However, if you wish to build the docs yourself, the following commands should do it for you:
+Sadly, I haven't been able to load my docs to readthedocs.org yet, because of difficulties over importing the original MuJoCo headers on their servers (suggestions welcome). However, if you wish to build the docs yourself, the following commands should do it for you:
 
 .. code-block:: bash
 
