@@ -14,7 +14,9 @@ Working on getting a ``pypi`` script working. In the mean time, install from sou
 
 .. code-block:: bash
 
-  pip install -e /path/to/cloned/directory
+  cd /path/to/cloned/directory
+  make
+  pip install -e .
 
 Usage
 -----
