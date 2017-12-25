@@ -25,3 +25,4 @@ fixed_wheels
 .idea
 main.py
 config.yml
+mujoco/__init__.pyc
