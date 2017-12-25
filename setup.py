@@ -23,11 +23,16 @@ if __name__ == '__main__':
         for key, description, default in [
                 ('mjkey-path', 'path to mjkey.txt', '~/.mujoco/mjkey.txt'),
                 ('mjpro-dir', 'mjpro150 directory', '~/.mujoco/mjpro150'),
-                ('opengl-dir', 'directory containing libOpenGL.so', None)
+                ('opengl-dir', 'directory containing libOpenGL.so \
+                        (None if you don\'t have a GPU)', None)
         ]:
             value = input(
                     'Enter {} [default is {}]:'.format(description, default))
-            config[key] = value if value else default
+            if value is 'None':
+                value = None
+            elif value is '':
+                value = default
+            config[key] = value
         with open(config_path, 'w') as f:
             yaml.dump(config, f, default_flow_style=False)
 
