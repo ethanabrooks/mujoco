@@ -31,7 +31,9 @@ Usage
 -----
 Examples are located in the ``examples/`` directory.
 
-If you want your code to use EGL (which is faster on linux GPUs), you must define the environment variable ``EGL=1``. Otherwise, the code defaults to GLFW. Note that when using EGL, you cannot render to the screen (you can still render offscreen).
+EGL
+---
+`EGL <https://devblogs.nvidia.com/parallelforall/egl-eye-opengl-visualization-without-x-server/>_` is a graphics library for linux GPUs which speeds up offscreen rendering. First, you need to install ``libegl1-mesa`` and check that ``/usr/include/EGL/egl.h`` exitst. Second, you must define the environment variable ``EGL=1``. Otherwise, the code defaults to GLFW. Note that when using EGL, you cannot render to the screen (you can still render offscreen).
 
 Design
 ------
