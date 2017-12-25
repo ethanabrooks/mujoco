@@ -10,7 +10,16 @@ This is a simple python wrapper around the MuJoCo physics simulation. I wrote it
 Installation
 ------------
 
-Working on getting a ``pypi`` script working. In the mean time, install from source:
+OS X
+~~~~
+
+.. code-block:: bash
+
+  pip install mujoco
+  
+Linux
+~~~~~
+Building ``pypi`` wheels for linux packages that use C extensions (like this one) is very difficult (nay impossible?). Please install from source:
 
 .. code-block:: bash
 
@@ -30,7 +39,7 @@ One of the main design decisions behind this implementation was to use the exact
 
 Documentation
 -------------
-Sadly, I haven't been able to load my docs to readthedocs.org yet, because of difficulties over importing mujoco headers (suggestions welcome). However, if you wish to build the docs yourself, the following commands should do it for you:
+Sadly, I haven't been able to load my docs to readthedocs.org yet, because of difficulties over importing the original MuJoCo headers on their servers (suggestions welcome). However, if you wish to build the docs yourself, the following commands should do it for you:
 
 .. code-block:: bash
 
