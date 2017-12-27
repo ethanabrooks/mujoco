@@ -1,0 +1,3 @@
+mjkey-path: ~/.mujoco/mjkey.txt
+mjpro-dir: ~/.mujoco/mjpro150
+opengl-dir: null
