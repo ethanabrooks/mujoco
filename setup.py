@@ -15,17 +15,31 @@ build_dir = "build"
 config_path = 'config.yml'
 
 if __name__ == '__main__':
-    with open(config_path) as f:
-        config = yaml.load(f)
+    keys = ['mjkey-path',
+            'mjpro-dir',
+            'opengl-dir',]
+    try:
+        with open(config_path) as f:
+            config = yaml.load(f)
+        if not sorted(config.keys()) == sorted(keys):
+            raise RuntimeError(config_path,
+                'should contain exactly the following keys:', keys)
+    except FileNotFoundError:
+        config = dict(zip(keys, 
+            ['~/.mujoco/mjkey.txt',
+             '~/.mujoco/mjpro150',
+             None,]))
+        with open(config_path, 'w') as f:
+            f.write(yaml.dump(config, default_flow_style=False))
     print('---------------------------')
     print('Using the following config:')
-    for value, description in zip(config.values(), [
-        'path to mjkey.txt',
-        'mjpro150 directory',
-        'directory containing libOpenGL.so \
-(should be None if you don\'t have a GPU)'
-    ]):
-        print("{}: {}".format(description, value))
+    descriptions = dict(zip(keys,
+        ['path to mjkey.txt',
+         'mjpro150 directory',
+         'directory containing libOpenGL.so' \
+            '(should be None if you don\'t have a GPU)']))
+    for key in keys:
+        print("{}: {}".format(descriptions[key], config[key]))
     print('To change, edit', realpath(config_path))
     print('---------------------------')
     mjpro_dir = expanduser(config['mjpro-dir'])
