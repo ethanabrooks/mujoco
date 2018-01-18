@@ -161,7 +161,11 @@ cdef class BaseSim(object):
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
         check_ObjType(obj_type, argnum=1)
-        return mj_name2id(self.model, obj_type.value - 1, encode(name))
+        id = mj_name2id(self.model, obj_type.value - 1, encode(name))
+        if id > 0:
+            return id
+        else:
+            raise RuntimeError("name", name, "not found in model")
 
     def id2name(self, obj_type, id):
         """ Get name corresponding to object id. """
@@ -169,6 +173,8 @@ cdef class BaseSim(object):
         buff = mj_id2name(self.model, obj_type.value - 1, id)
         if buff is not NULL:
             return decode(buff)
+        else:
+            raise RuntimeError("id", id, "not found in model")
 
     def _key2id(self, key, obj_type=None):
         """ 
