@@ -113,7 +113,7 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco(& self.state)
 
-    def render_offscreen(self, int height, int width, str camera_name, int grayscale=False):
+    def render_offscreen(self, int height, int width, camera_name=None, camera_id=None, int grayscale=False):
         """
         Args:
             height (int): height of image to return.
@@ -123,11 +123,13 @@ cdef class BaseSim(object):
         Returns:
             ``height`` x ``width`` image from camera with name ``camera_name`` 
         """
-
-        camid = self.name2id(ObjType.CAMERA, camera_name)
+        if camera_name is not None:
+            camera_id = self.name2id(ObjType.CAMERA, camera_name)
+        elif camera_id is None:
+            camera_id = -1
         array = np.empty(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        setCamera(camid, & self.state)
+        setCamera(camera_id, & self.state)
         renderOffscreen(& view[0], height, width, & self.state)
         array = array.reshape(height, width, 3)
         if grayscale:
@@ -162,10 +164,9 @@ cdef class BaseSim(object):
         """
         check_ObjType(obj_type, argnum=1)
         id = mj_name2id(self.model, obj_type.value - 1, encode(name))
-        if id > 0:
-            return id
-        else:
+        if id < 0:
             raise RuntimeError("name", name, "not found in model")
+        return id
 
     def id2name(self, obj_type, id):
         """ Get name corresponding to object id. """
