@@ -132,6 +132,7 @@ cdef class BaseSim(object):
         setCamera(camera_id, & self.state)
         renderOffscreen(& view[0], height, width, & self.state)
         array = array.reshape(height, width, 3)
+        array = np.flip(array, 0)
         if grayscale:
             return array.mean(axis=2)
         else:
