@@ -13,6 +13,11 @@ osx:
 	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
 	$(BUILD)utilosx
 
+bug:
+	$(MK_BUILD)
+	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/renderOffscreenBug.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
+	$(BUILD)utilosx
+
 glfw:
 	$(MK_BUILD)
 	g++ $(COMMON) -std=c++11 src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lGL -lglew $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)utilglfw
