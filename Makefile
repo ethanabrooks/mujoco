@@ -11,7 +11,6 @@ default:
 osx:
 	$(MK_BUILD)
 	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
-	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)utilosx
 	$(BUILD)utilosx
 
 glfw:

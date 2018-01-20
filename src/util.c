@@ -74,12 +74,22 @@ int closeMujoco(State * state)
 	return 0;
 }
 
+int count_zeros(unsigned char *rgb, size_t size) {
+  int count = 0;
+  for (size_t i = 0; i < size; i++) {
+    if (rgb[i] == 0) {
+      count++;
+    }
+  }
+  return count;
+}
+
 //-------------------------------- main function ----------------------------------------
 
 int main(int argc, const char **argv)
 {
-	int H = 800;
-	int W = 800;
+	int H = 1024;
+	int W = 1024;
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
   char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
@@ -106,7 +116,7 @@ int main(int argc, const char **argv)
 		mju_error("Could not open rgbfile for writing");
 
 	// main loop
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 10; i++) {
     setCamera(-1, &state);
 		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
@@ -126,6 +136,7 @@ int main(int argc, const char **argv)
 	    ("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",
 	     H, W);
 
+  printf("zeros: %d\n", count_zeros(rgb, 3 * H * W));
 	fclose(fp);
 	free(rgb);
 	closeMujoco(&state);

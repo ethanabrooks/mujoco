@@ -10,7 +10,7 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
-from pxd.util cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera
+from pxd.util cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera, count_zeros
 
 cdef extern from *:  # defined as macro
     char* MJKEY_PATH
@@ -113,7 +113,8 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco(& self.state)
 
-    def render_offscreen(self, int height, int width, camera_name=None, camera_id=None, int grayscale=False):
+    def render_offscreen(self, int height, int width, 
+            camera_name=None, camera_id=None, int grayscale=False):
         """
         Args:
             height (int): height of image to return.
@@ -123,20 +124,22 @@ cdef class BaseSim(object):
         Returns:
             ``height`` x ``width`` image from camera with name ``camera_name`` 
         """
-        if camera_name is not None:
-            camera_id = self.name2id(ObjType.CAMERA, camera_name)
-        elif camera_id is None:
-            camera_id = -1
-        array = np.empty(height * width * 3, dtype=np.uint8)
+        # if camera_name is not None:
+            # camera_id = self.name2id(ObjType.CAMERA, camera_name)
+        # elif camera_id is None:
+        camera_id = -1
+        array = np.zeros(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         setCamera(camera_id, & self.state)
         renderOffscreen(& view[0], height, width, & self.state)
+        print(count_zeros(&view[0], height*width*3))
         array = array.reshape(height, width, 3)
-        array = np.flip(array, 0)
-        if grayscale:
-            return array.mean(axis=2)
-        else:
-            return array
+        return array
+        # array = np.flip(array, 0)
+        # if grayscale:
+            # return array.mean(axis=2)
+        # else:
+            # return array
 
     def step(self):
         """ Advance simulation one timestep. """
