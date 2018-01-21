@@ -77,6 +77,11 @@ int main(int argc, const char** argv)
       mjr_readPixels(rgb, NULL, window_rect, &con);
       fwrite(rgb, 3, W*H, fp);
 
+      /*cam.type = mjCAMERA_FREE;*/
+      /*mjv_updateScene(m, d, &opt, NULL, &cam, mjCAT_ALL, &scn);*/
+      /*mjr_setBuffer(mjFB_WINDOW, &con);*/
+      /*mjr_render(window_rect, &scn, &con);*/
+
       glfwSwapBuffers(window);
       mj_step(m, d);
     }
