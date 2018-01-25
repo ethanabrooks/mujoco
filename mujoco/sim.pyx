@@ -267,6 +267,11 @@ cdef class BaseSim(object):
         return self.model.nsensordata
 
     @property
+    def nmocap(self):
+        """ Number of mocap bodies."""
+        return self.model.nmocap
+
+    @property
     def actuator_ctrlrange(self):
         """ Range of controls (low, high). """
         return asarray( < double*> self.model.actuator_ctrlrange, 
@@ -312,3 +317,13 @@ cdef class BaseSim(object):
     def geom_pos(self):
         """ Positions of geoms. """
         return asarray( < double*> self.model.geom_pos, self.ngeom * 3)
+
+    @property
+    def mocap_pos(self):
+        """ Positions of mocap bodies. """
+        return asarray( < double*> self.data.mocap_pos, self.nmocap * 3)
+
+    @property
+    def mocap_quat(self):
+        """ Quaternions of mocap bodies. """
+        return asarray( < double*> self.data.mocap_quat, self.nmocap * 4) 
