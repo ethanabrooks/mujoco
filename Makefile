@@ -29,7 +29,10 @@ egl:
 	vlc $(BUILD)video.mp4
 
 package:
+	rm -rf dist/
 	python setup.py bdist_wheel
+	twine upload dist/*
+
 
 clean:
 	rm -f MUJOCO_LOG.txt
