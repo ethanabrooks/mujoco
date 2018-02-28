@@ -24,7 +24,7 @@ Building ``pypi`` wheels for linux packages that use C extensions (like this one
 .. code-block:: bash
 
   cd /path/to/cloned/directory
-  pip install Cython mujoco
+  pip install Cython mujoco pyyaml
   make
   pip install -e .
 
