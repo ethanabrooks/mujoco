@@ -24,6 +24,7 @@ Building ``pypi`` wheels for linux packages that use C extensions (like this one
 .. code-block:: bash
 
   cd /path/to/cloned/directory
+  pip install Cython
   make
   pip install -e .
 
