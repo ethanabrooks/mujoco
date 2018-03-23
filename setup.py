@@ -65,7 +65,7 @@ if __name__ == '__main__':
             library_dirs=[join(mjpro_dir, 'bin')] + opengl_dir,
             define_macros=define_macros + [('MJKEY_PATH', mjkey_path)],
             extra_link_args=extra_link_args,
-            extra_compile_args=['-Wno-unused-function'],
+            extra_compile_args=['-Wno-unused-function', '-std=c99'],
             language='c')
 
     if sys.platform == "darwin":
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     setup(
         name='mujoco',
-        version='2.0.1',
+        version='2.0.2',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,
         url='https://github.com/lobachevzky/mujoco',
