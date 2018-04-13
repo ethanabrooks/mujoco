@@ -327,3 +327,18 @@ cdef class BaseSim(object):
     def mocap_quat(self):
         """ Quaternions of mocap bodies. """
         return asarray( < double*> self.data.mocap_quat, self.nmocap * 4) 
+
+    @property
+    def qfrc_actuator(self):
+        """ actuator force. """
+        return asarray( < double*> self.data.qfrc_actuator, self.nv) 
+
+    @property
+    def qfrc_unc(self):
+        """ net unconstrained force """
+        return asarray( < double*> self.data.qfrc_unc, self.nv) 
+
+    @property
+    def qfrc_constraint(self):
+        """ net unconstrained force """
+        return asarray( < double*> self.data.qfrc_constraint, self.nv) 
