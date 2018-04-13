@@ -9,7 +9,7 @@ import sys
 import yaml
 
 if sys.version_info.major == 2:
-    FileNotFoundError = OSError
+    FileNotFoundError = IOError
 
 build_dir = "build"
 config_path = 'config.yml'
