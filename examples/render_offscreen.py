@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-import numpy as np
 import mujoco
 from PIL import Image
 import sys
