@@ -56,29 +56,38 @@ int adjustDimensions(int* height, int* width, State* state)
 
 	mjrRect viewport = mjr_maxViewport(&con);	
 	float aspect_ratio = viewport.width / (float)viewport.height;
+	float desired_ar = *width / (float)*height;
+	float scaling;
 
-	// Given AR not same as buffer, change dimensions to ensure no distorted output
-	if(*width / *height != aspect_ratio)
+	// Code to maintain aspect ratio of viewport
+	if(*height > viewport.height || *width > viewport.width)
 	{
 		if (*height * aspect_ratio <= viewport.width)
+		{
+			*width = viewport.width;
 			*height = *width / aspect_ratio;
-		else{
-			*height = viewport.height;
-			*width = viewport.width;
 		}
-
-		printf("Warning: given aspect_ratio different than viewport ratio, resizing\n");
+		else
+		{
+			*height = viewport.height;
+			*width = *height * aspect_ratio;
+		}
+		
+		printf("Warning: requested dimensions too large, resizing\n");
 	}
 
-	// AR is same, make sure it fits within buffer
-	else{
-		if(*height > viewport.height || *width > viewport.width){
-			*height = viewport.height;
-			*width = viewport.width;
-			printf("Warning: requested dimensions too large, resizing\n");
+	else
+	{
+		if (*height * aspect_ratio <= viewport.width)
+		{
+			*height = *width / aspect_ratio;
+		}
+		else
+		{
+			*width = *height * aspect_ratio;
 		}
 	}
-
+		
 	return 0;
 }
 
@@ -92,7 +101,7 @@ renderOffscreen(unsigned char *rgb,
 	if (con.currentBuffer != mjFB_OFFSCREEN)
 		printf
 		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
-	mjrRect viewport = {0, 0, *height, *width};
+	mjrRect viewport = {0, 0, height, width};
 	mjr_render(viewport, &scn, &con);
 	mjr_readPixels(rgb, NULL, viewport, &con);
 	return 0;
@@ -127,9 +136,9 @@ int main(int argc, const char **argv)
 {
 	int H = 1024;
 	int W = 1024;
-  /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
-  char const *filepath = "xml/humanoid.xml";
-	char const *keypath = "/home/bhairav/.mujoco/mjkey.txt";
+  	// char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; 
+    char const *filepath = "xml/humanoid.xml";
+	char const *keypath = "/home/YOURUSER/.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
 	initOpenGL();
@@ -154,8 +163,9 @@ int main(int argc, const char **argv)
 
 	// main loop
 	for (int i = 0; i < 10; i++) {	
+  		adjustDimensions(&H, &W, &state);
   		setCamera(-1, &state);
-		renderOffscreen(rgb, &H, &W, &state);
+		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
     float pos1[] = {0, 0, 0};

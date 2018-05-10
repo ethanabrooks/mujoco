@@ -129,6 +129,7 @@ cdef class BaseSim(object):
         # elif camera_id is None:
         camera_id = -1
         adjustDimensions(& height, & width, & self.state)
+        print(height, width, 'after')
         array = np.zeros(height * width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
 
