@@ -9,4 +9,5 @@ height, width = map(int, sys.argv[1:])
 sim = mujoco.Sim('xml/humanoid.xml')
 for _ in range(100):
     array = sim.render_offscreen(height, width)
+    print(array.shape)
 Image.fromarray(array).show()

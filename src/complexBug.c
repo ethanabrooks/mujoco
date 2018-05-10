@@ -45,7 +45,7 @@ int setCamera(int camid, State * state)
 
 int
 renderOffscreen(unsigned char *rgb,
-		int height, int width, State * state)
+		int *height, int *width, State * state)
 {
 	mjvScene scn = state->scn;
 	mjrContext con = state->con;

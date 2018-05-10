@@ -8,6 +8,9 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "assert.h"
+
+int VIEWPORT_H, VIEWPORT_W;
 
 int initMujoco(const char *filepath, State * state)
 {
@@ -43,19 +46,53 @@ int setCamera(int camid, State * state)
 	return 0;
 }
 
+int adjustDimensions(int* height, int* width, State* state)
+{
+	mjrContext con = state->con;
+	mjr_setBuffer(mjFB_OFFSCREEN, &con);
+	if (con.currentBuffer != mjFB_OFFSCREEN)
+		printf
+		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
+
+	mjrRect viewport = mjr_maxViewport(&con);	
+	float aspect_ratio = viewport.width / (float)viewport.height;
+
+	// Given AR not same as buffer, change dimensions to ensure no distorted output
+	if(*width / *height != aspect_ratio)
+	{
+		if (*height * aspect_ratio <= viewport.width)
+			*height = *width / aspect_ratio;
+		else{
+			*height = viewport.height;
+			*width = viewport.width;
+		}
+
+		printf("Warning: given aspect_ratio different than viewport ratio, resizing\n");
+	}
+
+	// AR is same, make sure it fits within buffer
+	else{
+		if(*height > viewport.height || *width > viewport.width){
+			*height = viewport.height;
+			*width = viewport.width;
+			printf("Warning: requested dimensions too large, resizing\n");
+		}
+	}
+
+	return 0;
+}
+
 int
 renderOffscreen(unsigned char *rgb,
 		int height, int width, State * state)
 {
 	mjvScene scn = state->scn;
 	mjrContext con = state->con;
-	mjrRect viewport = { 0, 0, height, width };
-
-	// write offscreen-rendered pixels to file
 	mjr_setBuffer(mjFB_OFFSCREEN, &con);
 	if (con.currentBuffer != mjFB_OFFSCREEN)
 		printf
 		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
+	mjrRect viewport = {0, 0, *height, *width};
 	mjr_render(viewport, &scn, &con);
 	mjr_readPixels(rgb, NULL, viewport, &con);
 	return 0;
@@ -92,7 +129,7 @@ int main(int argc, const char **argv)
 	int W = 1024;
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
   char const *filepath = "xml/humanoid.xml";
-	char const *keypath = "../.mujoco/mjkey.txt";
+	char const *keypath = "/home/bhairav/.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
 	initOpenGL();
@@ -116,9 +153,9 @@ int main(int argc, const char **argv)
 		mju_error("Could not open rgbfile for writing");
 
 	// main loop
-	for (int i = 0; i < 10; i++) {
-    setCamera(-1, &state);
-		renderOffscreen(rgb, H, W, &state);
+	for (int i = 0; i < 10; i++) {	
+  		setCamera(-1, &state);
+		renderOffscreen(rgb, &H, &W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifndef MJ_EGL
     float pos1[] = {0, 0, 0};
@@ -143,3 +180,4 @@ int main(int argc, const char **argv)
 
 	return 0;
 }
+	

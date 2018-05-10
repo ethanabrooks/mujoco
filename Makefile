@@ -18,12 +18,16 @@ bug:
 	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/renderOffscreenBug.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
 	$(BUILD)utilosx
 
+glfwbug:
+	$(MK_BUILD)
+	g++ $(COMMON) -std=c++11 src/utilGlfw.c -DMJ_GLFW src/renderOffscreenBug.c -lmujoco150 -lGL -lglew $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)utilglfw
+
+
 glfw:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lGL -lglew $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)utilglfw
+	g++ $(COMMON) -std=c++11 src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lGL $(MJ_DIR)bin/libglew.so $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)utilglfw
 	$(BUILD)utilglfw
-	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
-	vlc $(BUILD)video.mp4
+
 
 egl:
 	$(MK_BUILD)

@@ -24,4 +24,5 @@ cdef extern from "util.h":
     int renderOffscreen(unsigned char *rgb, int height, int width, State *);
     int closeMujoco(State * state);
     int count_zeros(unsigned char *rgb, size_t size);
+    int adjustDimensions(int* height, int* width, State *);
 
