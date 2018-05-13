@@ -104,7 +104,6 @@ cdef class BaseSim(object):
         Args:
             fullpath (str): full path to model xml file.
         """
-        mj_activate(MJKEY_PATH)
         self.init_opengl()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
