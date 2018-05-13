@@ -25,7 +25,7 @@ if __name__ == '__main__':
             raise RuntimeError(config_path,
                 'should contain exactly the following keys:', keys)
     except FileNotFoundError:
-        config = dict(zip(keys, 
+        config = dict(zip(keys,
             ['~/.mujoco/mjkey.txt',
              '~/.mujoco/mjpro150',
              None,]))
@@ -128,7 +128,7 @@ if __name__ == '__main__':
             build_dir=build_dir,
         ),
         install_requires=[
-            'Cython==0.27.3',
-            'numpy==1.13.3',
-            'pyyaml==3.12',
+            'Cython>=0.27.3',
+            'numpy>=1.13.3',
+            'pyyaml>=3.12',
         ])
