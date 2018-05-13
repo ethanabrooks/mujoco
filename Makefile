@@ -4,7 +4,7 @@ MJ_DIR=$(HOME)/.mujoco/mjpro150/
 COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -mavx
 
 default:
-	pip install Cython pyyaml
+	pip install Cython mujoco pyyaml
 	python setup.py build_ext --inplace
 
 # glfw and egl build a simple test example to ensure that the underlying c code works
