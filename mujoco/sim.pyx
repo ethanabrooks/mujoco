@@ -86,6 +86,7 @@ def check_ObjType(obj, argnum):
     assert isinstance(obj, ObjType), \
             'arg {} must be an instance of `ObjType`'.format(argnum)
 
+cdef int ACTIVATED = 0
 
 cdef class BaseSim(object):
     """ Base class for the EGL `Sim` and the GLFW `Sim` to inherit from. """
@@ -101,7 +102,10 @@ cdef class BaseSim(object):
         Args:
             fullpath (str): full path to model xml file.
         """
-        mj_activate(MJKEY_PATH)
+        global ACTIVATED
+        if not ACTIVATED:
+            mj_activate(MJKEY_PATH)
+            ACTIVATED = True
         self.init_opengl()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
