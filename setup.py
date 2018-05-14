@@ -25,7 +25,7 @@ if __name__ == '__main__':
             raise RuntimeError(config_path,
                 'should contain exactly the following keys:', keys)
     except FileNotFoundError:
-        config = dict(zip(keys, 
+        config = dict(zip(keys,
             ['~/.mujoco/mjkey.txt',
              '~/.mujoco/mjpro150',
              None,]))
