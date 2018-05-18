@@ -27,3 +27,4 @@ main.py
 mujoco/__init__.pyc
 config.yml.bak
 config.yml
+.ropeproject
