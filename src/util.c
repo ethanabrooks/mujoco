@@ -1,7 +1,9 @@
 #include "util.h"
 #ifdef MJ_EGL
 #include "utilEgl.h"
-#else
+#elif defined(MJ_OSMESA)
+#include "utilOsmesa.h"
+#elif defined(MJ_GLFW)
 #include "utilGlfw.h"
 #endif
 #include "mujoco.h"
@@ -86,12 +88,14 @@ int main(int argc, const char **argv)
 	State state;
 #ifdef MJ_EGL
 	initOpenGL();
-#else
+#elif defined(MJ_OSMESA)
+  OSMesaContext ctx;
+  initOpenGL(&ctx);
+#elif defined(MJ_GLFW)
 	GraphicsState graphicsState;
 	initOpenGL(&graphicsState, &state);
 #endif
-	mj_activate(keypath);
-	// install GLFW mouse and keyboard callbacks
+	mj_activate(keypath); // install GLFW mouse and keyboard callbacks
 	initMujoco(filepath, &state);
 	mj_resetDataKeyframe(state.m, state.d, 0);
 
@@ -110,7 +114,7 @@ int main(int argc, const char **argv)
     setCamera(-1, &state);
 		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
-#ifndef MJ_EGL
+#ifdef MJ_GLFW
     float pos1[] = {0, 0, 0};
     float pos2[] = {0.2, 0, 0};
 
@@ -129,6 +133,13 @@ int main(int argc, const char **argv)
 	fclose(fp);
 	free(rgb);
 	closeMujoco(&state);
+#ifdef MJ_EGL
+  closeOpenGL(&graphicsState);
+#elif defined(MJ_OSMESA)
+  closeOpenGL(&ctx);
+#else
+  closeOpenGL();
+#endif
 
 	return 0;
 }
