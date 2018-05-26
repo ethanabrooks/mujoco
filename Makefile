@@ -2,7 +2,8 @@ BUILD=build/
 MK_BUILD=mkdir -p $(BUILD)
 MJ_DIR=$(HOME)/.mujoco/mjpro150/
 COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -mavx
-RUN=ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4; vlc $(BUILD)video.mp4
+RUN=ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
+PLAY=vlc $(BUILD)video.mp4
 
 default:
 	pip install -r requirements.txt
@@ -24,7 +25,7 @@ glfw:
 
 osmesa:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 src/utilOsmesa.c -DMJ_OSMESA src/util.c -lmujoco150 -lOSMesa -lglewosmesa -o $(BUILD)utilosmesa
+	g++ -g $(COMMON) -std=c++11 src/utilOsmesa.c -DMJ_OSMESA src/util.c -lmujoco150 -lOSMesa -lglewosmesa -o $(BUILD)utilosmesa
 	$(BUILD)utilosmesa
 	$(RUN)
 
