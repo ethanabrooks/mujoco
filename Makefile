@@ -30,7 +30,7 @@ osmesa:
 
 egl:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-384 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
+	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-390 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
 	$(BUILD)utilegl
 	$(RUN)
 

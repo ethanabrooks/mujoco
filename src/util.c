@@ -134,11 +134,11 @@ int main(int argc, const char **argv)
 	free(rgb);
 	closeMujoco(&state);
 #ifdef MJ_EGL
-  closeOpenGL(&graphicsState);
+  closeOpenGL();
 #elif defined(MJ_OSMESA)
   closeOpenGL(&ctx);
-#else
-  closeOpenGL();
+#elif defined(MJ_GLFW)
+  closeOpenGL(&graphicsState);
 #endif
 
 	return 0;
