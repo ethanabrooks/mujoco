@@ -91,7 +91,7 @@ int main(int argc, const char **argv)
 #elif defined(MJ_OSMESA)
 	OSMesaContext ctx;
 	void *buffer;
-	initOpenGL(&ctx, &buffer, W, H);
+	initOpenGL(&ctx, &buffer);
 #elif defined(MJ_GLFW)
 	GraphicsState graphicsState;
 	initOpenGL(&graphicsState, &state);
@@ -137,12 +137,10 @@ int main(int argc, const char **argv)
 	printf("Closing MuJoCo...\n");
 	closeMujoco(&state);
 	printf("Closing OpenGL...\n");
-#ifdef MJ_EGL
-	closeOpenGL();
-#elif defined(MJ_OSMESA)
+#ifdef MJ_OSMESA
 	closeOpenGL(ctx, buffer);
-#elif defined(MJ_GLFW)
-	closeOpenGL(&graphicsState);
+#else
+	closeOpenGL();
 #endif
 
 	return 0;

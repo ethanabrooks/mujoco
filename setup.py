@@ -13,11 +13,11 @@ if sys.version_info.major == 2:
 
 build_dir = "build"
 config_path = 'config.yml'
-
 if __name__ == '__main__':
     keys = ['mjkey-path',
             'mjpro-dir',
-            'opengl-dir',]
+            'opengl-dir',
+            'headless']
     try:
         with open(config_path) as f:
             config = yaml.load(f)
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         config = dict(zip(keys,
             ['~/.mujoco/mjkey.txt',
              '~/.mujoco/mjpro150',
-             None,]))
+             None, False]))
         with open(config_path, 'w') as f:
             f.write(yaml.dump(config, default_flow_style=False))
     print('---------------------------')
@@ -37,7 +37,8 @@ if __name__ == '__main__':
         ['path to mjkey.txt',
          'mjpro150 directory',
          'directory containing libOpenGL.so' \
-            '(should be None if you don\'t have a GPU)']))
+            '(should be None if you don\'t have a GPU)',
+         'whether performing headless rendering']))
     for key in keys:
         print("{}: {}".format(descriptions[key], config[key]))
     print('To change, edit', realpath(config_path))
@@ -78,14 +79,15 @@ if __name__ == '__main__':
                     define_macros=[]
                     )]
     elif sys.platform in ["linux", "linux2"]:
-        extra_link_args = ['-fopenmp', join(mjpro_dir, 'bin', 'libglfw.so.3')]
-        extensions = [make_extension(
-                    name="mujoco.glfw",
-                    main_source='mujoco/glfw.pyx',
-                    util_file='src/utilGlfw.c',
-                    libraries=['mujoco150', 'GL', 'glew'],
-                    extra_link_args=extra_link_args,
-                    define_macros=[]
+        extensions = []
+        if not opengl_dir and config['headless']:
+            extensions += [make_extension(
+                    name="mujoco.osmesa",
+                    main_source='mujoco/osmesa.pyx',
+                    util_file='src/utilOsmesa.c',
+                    libraries=["mujoco150", "OSMesa", "glewosmesa"],
+                    extra_link_args=[],
+                    define_macros=[('MJ_OSMESA', 1)]
                     )]
         if opengl_dir:
             extensions += [make_extension(
@@ -93,9 +95,19 @@ if __name__ == '__main__':
                     main_source='mujoco/egl.pyx',
                     util_file='src/utilEgl.c',
                     libraries=["mujoco150", "OpenGL", "EGL", "glewegl"],
-                    extra_link_args=extra_link_args,
+                    extra_link_args=[],
                     define_macros=[('MJ_EGL', 1)]
                     )]
+        if not config['headless']:
+            extra_link_args = ['-fopenmp', join(mjpro_dir, 'bin', 'libglfw.so.3')]
+            extensions = [make_extension(
+                        name="mujoco.glfw",
+                        main_source='mujoco/glfw.pyx',
+                        util_file='src/utilGlfw.c',
+                        libraries=['mujoco150', 'GL', 'glew'],
+                        extra_link_args=extra_link_args,
+                        define_macros=[('MJ_GLFW', 1)]
+                        )]
     else:
         raise SystemError("We don't support Windows!")
 

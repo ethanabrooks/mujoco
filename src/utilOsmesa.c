@@ -3,13 +3,11 @@
 #include "utilOsmesa.h"
 #include "util.h"
 #include "stdio.h"
-/*OSMesaContext ctx;*/
-unsigned char buffer[10000000];
 
 // create OpenGL context/window
-int initOpenGL(OSMesaContext * ctx, void **buffer, int W, int H)
+int initOpenGL(OSMesaContext * ctx, void **buffer)
 {
-	*buffer = malloc(W * H * 4 * sizeof(unsigned char));
+	*buffer = malloc(10000000 * sizeof(unsigned char));
 	// create context
 	*ctx = OSMesaCreateContextExt(GL_RGBA, 24, 8, 8, 0);
 	if (!*ctx)

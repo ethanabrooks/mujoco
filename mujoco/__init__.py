@@ -13,14 +13,24 @@ def print_green(str):
 __all__ = ['Sim', 'GeomType', 'ObjType']
 
 
-if sys.platform in ['linux', 'linux2'] and os.environ.get('EGL') == '1':
-    # Only use EGL if working in linux and there is no RENDER env variable
-    print_green("Using EGL version of mujoco.")
-    from mujoco.egl import SimEgl as Sim, GeomType, ObjType, activate
-    __all__.insert(0, 'SimEgl')
+if os.environ.get('EGL') == '1':
+    try:
+        from mujoco.egl import SimEgl as Sim, GeomType, ObjType, activate
+        __all__.insert(0, 'SimEgl')
+        print_green("Using EGL version of mujoco.")
+    except ImportError:
+        print('EGL library could not be imported. Either specify `opengl-dir` '
+              'in config.yml (to build EGL library) or make sure the '
+              'environment variable `EGL` is not set to 1, to use either '
+              'the GLFW library or the OSMesa library.')
 else:
-    print_green("Using GLFW version of mujoco.")
-    from mujoco.glfw import SimGlfw as Sim, GeomType, ObjType, activate
-    __all__.insert(0, 'SimGlfw')
+    try:
+        from mujoco.glfw import SimGlfw as Sim, GeomType, ObjType, activate
+        __all__.insert(0, 'SimGlfw')
+        print_green("Using GLFW version of mujoco.")
+    except ImportError:
+        from mujoco.osmesa import SimOsmesa as Sim, GeomType, ObjType, activate
+        __all__.insert(0, 'SimOsmesa')
+        print_green("Using OSMesa version of mujoco.")
 
 activate()

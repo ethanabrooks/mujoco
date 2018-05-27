@@ -1,10 +1,10 @@
 include "mujoco/sim.pyx"
 
-from pxd.utilEgl cimport initOpenGL, closeOpenGL
+from pxd.utilOsmesa cimport initOpenGL, closeOpenGL
 from codecs import encode, decode
 
 
-cdef class SimEgl(BaseSim):
+cdef class SimOsmesa(BaseSim):
     """ 
     Sim that uses EGL functionality (faster on the Nvidia GPUs).  Currently supports offscreen but not onscreen rendering.
     """
@@ -17,5 +17,5 @@ cdef class SimEgl(BaseSim):
         """ Close EGL. """
         closeOpenGL()
 
-    def render(self):
-        raise RuntimeError("Onscreen rendering with EGL is not currently supported")
+    def render(self, str camera_name=None, dict labels=None):
+        raise RuntimeError("Onscreen rendering with EGL is not supported")

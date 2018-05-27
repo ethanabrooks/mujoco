@@ -7,7 +7,7 @@
 
 typedef int GraphicsState;
 
-int initOpenGL(OSMesaContext *, void **, int, int);
+int initOpenGL(OSMesaContext *, void **);
 int closeOpenGL(OSMesaContext, void *);
 int renderOnscreen(int camid, GraphicsState window, State * state);
 
