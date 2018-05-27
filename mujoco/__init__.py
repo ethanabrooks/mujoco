@@ -20,9 +20,9 @@ if os.environ.get('EGL') == '1':
         print_green("Using EGL version of mujoco.")
     except ImportError:
         print('EGL library could not be imported. Either specify `opengl-dir` '
-              'in config.yml (to build EGL library) or make sure the '
+              'in config.yml (to build EGL version of mujoco) or make sure the '
               'environment variable `EGL` is not set to 1, to use either '
-              'the GLFW library or the OSMesa library.')
+              'the GLFW version or the OSMesa version.')
 else:
     try:
         from mujoco.glfw import SimGlfw as Sim, GeomType, ObjType, activate
@@ -32,5 +32,12 @@ else:
         from mujoco.osmesa import SimOsmesa as Sim, GeomType, ObjType, activate
         __all__.insert(0, 'SimOsmesa')
         print_green("Using OSMesa version of mujoco.")
+    except ImportError:
+        from mujoco.egl import SimEgl as Sim, GeomType, ObjType, activate
+        __all__.insert(0, 'SimEgl')
+        print_green("Using EGL version of mujoco.")
+    except ImportError:
+        print('Could not import GLFW, OSMesa, or EGL version of mujoco. '
+              'Try rebuilding (rerun `make`).')
 
 activate()
