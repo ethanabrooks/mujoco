@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
     setup(
         name='mujoco',
-        version='2.0.2',
+        version='2.1.2',
         description='Python wrapper for MuJoCo physics simulation.',
         long_description=long_description,
         url='https://github.com/lobachevzky/mujoco',
