@@ -1,10 +1,10 @@
 include "mujoco/sim.pyx"
 
-from pxd.utilOsmesa cimport initOpenGL, closeOpenGL
+from pxd.utilEgl cimport initOpenGL, closeOpenGL
 from codecs import encode, decode
 
 
-cdef class SimOsmesa(BaseSim):
+cdef class SimEgl(BaseSim):
     """ 
     Sim that uses EGL functionality (faster on the Nvidia GPUs).  Currently supports offscreen but not onscreen rendering.
     """

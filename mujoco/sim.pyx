@@ -97,8 +97,9 @@ cdef class BaseSim(object):
     cdef mjModel * model
     cdef State state
     cdef int forward_called_this_step
+    cdef int n_substeps
 
-    def __cinit__(self, str fullpath):
+    def __cinit__(self, str fullpath, int n_substeps = 1):
         """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.
 
         Args:
@@ -108,6 +109,7 @@ cdef class BaseSim(object):
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
+        self.n_substeps=n_substeps
 
     def __enter__(self):
         return self
@@ -142,7 +144,8 @@ cdef class BaseSim(object):
 
     def step(self):
         """ Advance simulation one timestep. """
-        mj_step(self.model, self.data)
+        for _ in range(self.n_substeps):
+            mj_step(self.model, self.data)
 
     def reset(self):
         """ Reset simulation to starting state. """
