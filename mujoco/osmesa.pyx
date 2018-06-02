@@ -12,11 +12,11 @@ cdef class SimOsmesa(BaseSim):
     cdef OSMesaContext ctx
 
     def init_opengl(self):
-        """ Initialize EGL. """
+        """ Initialize OSMesa. """
         initOpenGL(&self.ctx, &self.buffer )
 
     def close_opengl(self):
-        """ Close EGL. """
+        """ Close OSMesa. """
         closeOpenGL(self.ctx, self.buffer)
 
     def render(self, str camera_name=None, dict labels=None):
