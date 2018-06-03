@@ -129,6 +129,6 @@ if __name__ == '__main__':
         ),
         install_requires=[
             'Cython>=0.27.3',
-            'numpy>=1.13.3',
+            'numpy>=1.14',
             'pyyaml>=3.12',
         ])
