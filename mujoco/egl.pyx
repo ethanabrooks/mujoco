@@ -1,6 +1,6 @@
 include "mujoco/sim.pyx"
 
-from pxd.utilOsmesa cimport initOpenGL, closeOpenGL
+from pxd.utilEgl cimport initOpenGL, closeOpenGL
 from codecs import encode, decode
 
 
