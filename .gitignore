@@ -28,3 +28,4 @@ mujoco/__init__.pyc
 config.yml.bak
 config.yml
 .ropeproject
+.venv

@@ -24,8 +24,8 @@ np.import_array()
 # TODO: docs
 
 
-""" 
-``enum`` of different MuJoCo object types (corresponds to ``mjtObj``). 
+"""
+``enum`` of different MuJoCo object types (corresponds to ``mjtObj``).
 Some of ``Sim``'s getter methods take this as an argument e.g. ``id2name`` and ``name2id``.
 """
 ObjType = Enum('ObjType',
@@ -56,8 +56,8 @@ ObjType = Enum('ObjType',
                ),
                module=__name__)
 
-""" 
-``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``). 
+"""
+``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``).
 """
 GeomType = Enum('GeomType',
                 (
@@ -97,8 +97,9 @@ cdef class BaseSim(object):
     cdef mjModel * model
     cdef State state
     cdef int forward_called_this_step
+    cdef int n_substeps
 
-    def __cinit__(self, str fullpath):
+    def __cinit__(self, str fullpath, int n_substeps = 1):
         """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.
 
         Args:
@@ -108,6 +109,7 @@ cdef class BaseSim(object):
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
+        self.n_substeps=n_substeps
 
     def __enter__(self):
         return self
@@ -123,7 +125,7 @@ cdef class BaseSim(object):
             camera_name (str): Name of camera, as specified in xml file.
 
         Returns:
-            ``height`` x ``width`` image from camera with name ``camera_name`` 
+            ``height`` x ``width`` image from camera with name ``camera_name``
         """
         if camera_name is not None:
             camera_id = self.name2id(ObjType.CAMERA, camera_name)
@@ -142,7 +144,8 @@ cdef class BaseSim(object):
 
     def step(self):
         """ Advance simulation one timestep. """
-        mj_step(self.model, self.data)
+        for _ in range(self.n_substeps):
+            mj_step(self.model, self.data)
 
     def reset(self):
         """ Reset simulation to starting state. """
@@ -162,7 +165,7 @@ cdef class BaseSim(object):
         return xpos
 
     def name2id(self, obj_type, str name):
-        """ 
+        """
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
         check_ObjType(obj_type, argnum=1)
@@ -181,10 +184,10 @@ cdef class BaseSim(object):
             raise RuntimeError("id", id, "not found in model")
 
     def _key2id(self, key, obj_type=None):
-        """ 
+        """
         Args:
-            key (str|int): name or id of object 
-            obj_type (ObjType): type of object (ignored if key is an id)  
+            key (str|int): name or id of object
+            obj_type (ObjType): type of object (ignored if key is an id)
         Returns:
             id of object
         """
@@ -276,7 +279,7 @@ cdef class BaseSim(object):
     @property
     def actuator_ctrlrange(self):
         """ Range of controls (low, high). """
-        return asarray( < double*> self.model.actuator_ctrlrange, 
+        return asarray( < double*> self.model.actuator_ctrlrange,
                        self.model.nu * 2).reshape(-1, 2)
 
 
@@ -328,19 +331,19 @@ cdef class BaseSim(object):
     @property
     def mocap_quat(self):
         """ Quaternions of mocap bodies. """
-        return asarray( < double*> self.data.mocap_quat, self.nmocap * 4) 
+        return asarray( < double*> self.data.mocap_quat, self.nmocap * 4)
 
     @property
     def qfrc_actuator(self):
         """ actuator force. """
-        return asarray( < double*> self.data.qfrc_actuator, self.nv) 
+        return asarray( < double*> self.data.qfrc_actuator, self.nv)
 
     @property
     def qfrc_unc(self):
         """ net unconstrained force """
-        return asarray( < double*> self.data.qfrc_unc, self.nv) 
+        return asarray( < double*> self.data.qfrc_unc, self.nv)
 
     @property
     def qfrc_constraint(self):
         """ net unconstrained force """
-        return asarray( < double*> self.data.qfrc_constraint, self.nv) 
+        return asarray( < double*> self.data.qfrc_constraint, self.nv)

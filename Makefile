@@ -2,9 +2,11 @@ BUILD=build/
 MK_BUILD=mkdir -p $(BUILD)
 MJ_DIR=$(HOME)/.mujoco/mjpro150/
 COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -mavx
+RUN=ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
+PLAY=vlc $(BUILD)video.mp4
 
 default:
-	pip install Cython pyyaml
+	pip install -r requirements.txt
 	python setup.py build_ext --inplace
 
 # glfw and egl build a simple test example to ensure that the underlying c code works
@@ -19,15 +21,19 @@ glfw:
 	$(MK_BUILD)
 	g++ $(COMMON) -std=c++11 src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lGL -lglew $(MJ_DIR)bin/libglfw.so.3 -o  $(BUILD)utilglfw
 	$(BUILD)utilglfw
-	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
-	vlc $(BUILD)video.mp4
+	$(RUN)
+
+osmesa:
+	$(MK_BUILD)
+	g++ -g $(COMMON) -std=c++11 src/utilOsmesa.c -DMJ_OSMESA src/util.c -lmujoco150 -lOSMesa -lglewosmesa -o $(BUILD)utilosmesa
+	$(BUILD)utilosmesa
+	$(RUN)
 
 egl:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-384 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
+	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-390 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
 	$(BUILD)utilegl
-	ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
-	vlc $(BUILD)video.mp4
+	$(RUN)
 
 package:
 	rm -rf dist/

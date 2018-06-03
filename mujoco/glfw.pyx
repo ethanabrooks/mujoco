@@ -8,7 +8,7 @@ from pxd.utilGlfw cimport GraphicsState, initOpenGL, closeOpenGL, \
         renderOnscreen, addLabel, clearLastKey, clearMouseDy, clearMouseDx
 
 cdef class SimGlfw(BaseSim):
-    """ 
+    """
     Sim that uses GLFW functionality, which supports both offscreen and onscreen rendering.
     """
     cdef GraphicsState graphics_state
@@ -23,8 +23,8 @@ cdef class SimGlfw(BaseSim):
 
     def render(self, str camera_name=None, dict labels=None):
         """
-        Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window. 
-        ``labels`` must be a dict of ``{label: pos}``, where ``label`` is a value that can be 
+        Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window.
+        ``labels`` must be a dict of ``{label: pos}``, where ``label`` is a value that can be
         cast to a ``str`` and ``pos`` is a ``list``, ``tuple``, or ``ndarray`` with elements
         corresponding to ``(x, y, z)``.
         """
