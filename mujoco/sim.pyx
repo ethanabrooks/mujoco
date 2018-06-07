@@ -262,6 +262,11 @@ cdef class BaseSim(object):
         return self.model.nv
 
     @property
+    def na(self):
+        """ Number of activation states. """
+        return self.model.na
+
+    @property
     def nu(self):
         """ Number of actuators/controls. """
         return self.model.nu
@@ -282,7 +287,6 @@ cdef class BaseSim(object):
         return asarray( < double*> self.model.actuator_ctrlrange,
                        self.model.nu * 2).reshape(-1, 2)
 
-
     @property
     def qpos(self):
         """ Joint positions. """
@@ -292,6 +296,11 @@ cdef class BaseSim(object):
     def qvel(self):
         """ Joint velocities. """
         return asarray( < double*> self.data.qvel, self.nv)
+
+    @property
+    def act(self):
+        """ Actuator activation. """
+        return asarray( < double*> self.data.act, self.na)
 
     @property
     def ctrl(self):
