@@ -81,6 +81,7 @@ if __name__ == '__main__':
     elif sys.platform in ["linux", "linux2"]:
         extensions = []
         if not opengl_dir and config['headless']:
+            print('Building OSMesa version...')
             extensions += [make_extension(
                     name="mujoco.osmesa",
                     main_source='mujoco/osmesa.pyx',
@@ -90,6 +91,7 @@ if __name__ == '__main__':
                     define_macros=[('MJ_OSMESA', 1)]
                     )]
         if opengl_dir:
+            print('Building EGL version...')
             extensions += [make_extension(
                     name="mujoco.egl",
                     main_source='mujoco/egl.pyx',
@@ -99,8 +101,9 @@ if __name__ == '__main__':
                     define_macros=[('MJ_EGL', 1)]
                     )]
         if not config['headless']:
+            print('Building GLFW version...')
             extra_link_args = ['-fopenmp', join(mjpro_dir, 'bin', 'libglfw.so.3')]
-            extensions = [make_extension(
+            extensions += [make_extension(
                         name="mujoco.glfw",
                         main_source='mujoco/glfw.pyx',
                         util_file='src/utilGlfw.c',

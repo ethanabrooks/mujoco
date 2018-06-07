@@ -23,6 +23,7 @@ if os.environ.get('EGL') == '1':
               'in config.yml (to build EGL version of mujoco) or make sure the '
               'environment variable `EGL` is not set to 1, to use either '
               'the GLFW version or the OSMesa version.')
+        exit()
 else:
     try:
         from mujoco.glfw import SimGlfw as Sim, GeomType, ObjType, activate
@@ -39,5 +40,6 @@ else:
     except ImportError:
         print('Could not import GLFW, OSMesa, or EGL version of mujoco. '
               'Try rebuilding (rerun `make`).')
+        exit()
 
 activate()
