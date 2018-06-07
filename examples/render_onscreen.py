@@ -3,7 +3,7 @@
 import numpy as np
 import mujoco
 
-sim = mujoco.Sim('xml/humanoid.xml')
+sim = mujoco.Sim('xml/humanoid.xml', n_substeps=1)
 while True:
     sim.step()
     sim.ctrl[:] = -np.ones((sim.ctrl.shape))
