@@ -2,7 +2,7 @@ BUILD=build/
 MK_BUILD=mkdir -p $(BUILD)
 MJ_DIR=$(HOME)/.mujoco/mjpro150/
 COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -mavx
-RUN=ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
+RUN=ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
 PLAY=vlc $(BUILD)video.mp4
 
 default:
@@ -15,6 +15,8 @@ osx:
 	$(MK_BUILD)
 	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
 	$(BUILD)utilosx
+	$(RUN)
+	$(PLAY)
 
 bug:
 	$(MK_BUILD)
