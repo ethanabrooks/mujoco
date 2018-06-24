@@ -76,16 +76,14 @@ int closeMujoco(State * state)
 
 //-------------------------------- main function ----------------------------------------
 
-/*unsigned char buffer[10000000];*/
 int main(int argc, const char **argv)
 {
-	int H = 800;
-	int W = 800;
-	/*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
-	char const *filepath = "xml/humanoid.xml";
+	int H = 1024;
+	int W = 1024;
+  /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
+  char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	State state;
-/*printf("Initializing OpenGL...\n");*/
 #ifdef MJ_EGL
 	initOpenGL();
 #elif defined(MJ_OSMESA)
