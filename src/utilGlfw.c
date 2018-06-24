@@ -178,7 +178,7 @@ int initOpenGL(GraphicsState * graphicsState, State * state)
 	// create visible window, double-buffered glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	GLFWwindow *window =
-	    glfwCreateWindow(800, 800, "Visible window", NULL, NULL);
+	    glfwCreateWindow(300, 300, "Visible window", NULL, NULL);
 	if (!window)
 		mju_error("Could not create GLFW window");
 	glfwMakeContextCurrent(window);

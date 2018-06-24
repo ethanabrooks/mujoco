@@ -78,8 +78,8 @@ int closeMujoco(State * state)
 
 int main(int argc, const char **argv)
 {
-	int H = 800;
-	int W = 800;
+	int H = atoi(argv[1]);
+	int W = atoi(argv[2]);
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
   char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
