@@ -35,6 +35,12 @@ EGL
 ---
 `EGL <https://devblogs.nvidia.com/parallelforall/egl-eye-opengl-visualization-without-x-server/>`_ is a graphics library for linux GPUs which speeds up offscreen rendering. First, you need to install ``libegl1-mesa`` and check that ``/usr/include/EGL/egl.h`` exists. Second, you must define the environment variable ``EGL=1``. Otherwise, the code defaults to GLFW. Note that when using EGL, you cannot render to the screen (you can still render offscreen).
 
+Headless Rendering
+------------------
+GLFW does not currently support headless rendering (usually this means rendering on a remote server without an attached display).
+Instead you must use EGL (if you are on an NVIDIA GPU) or OSMesa otherwise. 
+To ensure that the proper libraries are built and imported, set ``headless: True`` in your ``config.yml``.
+
 Design
 ------
 One of the main design decisions behind this implementation was to use the exact same libraries that Emo's original MuJoCo code uses in the provided Makefile. That way if my version doesn't work, you can bet that Emo's code doesn't work either. I think the reason why ``mujoco-py`` stopped working is that it tried to get fancy with the libraries and dynamically switch between EGL- and GLFW-friendly graphics libraries.

@@ -2,7 +2,10 @@ BUILD=build/
 MK_BUILD=mkdir -p $(BUILD)
 MJ_DIR=$(HOME)/.mujoco/mjpro150/
 COMMON=-O2 -I$(MJ_DIR)/include -Iheaders -L$(MJ_DIR)/bin -mavx
-RUN=ffmpeg -f rawvideo -pixel_format rgb24 -video_size 800x800 -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4; vlc $(BUILD)video.mp4
+H=800
+W=800
+RUN=ffmpeg -f rawvideo -pixel_format rgb24 -video_size $(H)x$(W) -framerate 60 -i $(BUILD)rgb.out -vf 'vflip' $(BUILD)video.mp4
+PLAY=vlc $(BUILD)video.mp4
 
 default:
 	pip install -r requirements.txt
@@ -13,7 +16,11 @@ default:
 osx:
 	$(MK_BUILD)
 	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/util.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
-	#DYLD_LIBRARY_PATH=$(MJ_DIR)bin $(BUILD)utilosx
+	$(BUILD)utilosx $(H) $(W)
+
+bug:
+	$(MK_BUILD)
+	clang $(COMMON) src/utilGlfw.c -DMJ_GLFW src/renderOffscreenBug.c -lmujoco150 -lglfw.3 -o $(BUILD)utilosx
 	$(BUILD)utilosx
 
 glfw:
@@ -24,13 +31,13 @@ glfw:
 
 osmesa:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 src/utilOsmesa.c -DMJ_OSMESA src/util.c -lmujoco150 -lOSMesa -lglewosmesa -o $(BUILD)utilosmesa
+	g++ -g $(COMMON) -std=c++11 src/utilOsmesa.c -DMJ_OSMESA src/util.c -lmujoco150 -lOSMesa -lglewosmesa -o $(BUILD)utilosmesa
 	$(BUILD)utilosmesa
 	$(RUN)
 
 egl:
 	$(MK_BUILD)
-	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-384 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
+	g++ $(COMMON) -std=c++11 -L/usr/lib/nvidia-390 -DMJ_EGL src/utilEgl.c src/util.c -lmujoco150 -lOpenGL -lEGL -lglewegl -o  $(BUILD)utilegl
 	$(BUILD)utilegl
 	$(RUN)
 
