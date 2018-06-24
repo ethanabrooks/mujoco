@@ -78,8 +78,8 @@ int closeMujoco(State * state)
 
 int main(int argc, const char **argv)
 {
-	int H = 1024;
-	int W = 1024;
+	int H = 800;
+	int W = 800;
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
   char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
@@ -110,7 +110,7 @@ int main(int argc, const char **argv)
 		mju_error("Could not open rgbfile for writing");
 
 	printf("Running simulation...\n");
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 100; i++) {
 		setCamera(-1, &state);
 		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
