@@ -45,9 +45,7 @@ int setCamera(int camid, State * state)
 	return 0;
 }
 
-int
-renderOffscreen(unsigned char *rgb,
-		int height, int width, State * state)
+int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
 {
 	mjvScene scn = state->scn;
 	mjrContext con = state->con;
@@ -80,8 +78,8 @@ int closeMujoco(State * state)
 
 int main(int argc, const char **argv)
 {
-	int H = 800;
-	int W = 800;
+	int H = 1024;
+	int W = 1024;
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
   char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
@@ -89,38 +87,40 @@ int main(int argc, const char **argv)
 #ifdef MJ_EGL
 	initOpenGL();
 #elif defined(MJ_OSMESA)
-  OSMesaContext ctx;
-  initOpenGL(&ctx);
+	OSMesaContext ctx;
+	void *buffer;
+	initOpenGL(&ctx, &buffer);
 #elif defined(MJ_GLFW)
 	GraphicsState graphicsState;
 	initOpenGL(&graphicsState, &state);
 #endif
-	mj_activate(keypath); // install GLFW mouse and keyboard callbacks
+	mj_activate(keypath);	// install GLFW mouse and keyboard callbacks
+	printf("Initializing MuJoCo...\n");
 	initMujoco(filepath, &state);
 	mj_resetDataKeyframe(state.m, state.d, 0);
 
-	// allocate rgb and depth buffers
+	printf("Allocating rgb and depth buffers...\n");
 	unsigned char *rgb = (unsigned char *)malloc(3 * H * W);
 	if (!rgb)
-		mju_error("Could not allocate buffers");
+		mju_error("Could not allocate buffers\n");
 
-	// create output rgb file
+	printf("Creating output rgb file...\n");
 	FILE *fp = fopen("build/rgb.out", "wb");
 	if (!fp)
 		mju_error("Could not open rgbfile for writing");
 
-	// main loop
-	for (int i = 0; i < 100; i++) {
-    setCamera(-1, &state);
+	printf("Running simulation...\n");
+	for (int i = 0; i < 1; i++) {
+		setCamera(-1, &state);
 		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifdef MJ_GLFW
-    float pos1[] = {0, 0, 0};
-    float pos2[] = {0.2, 0, 0};
+		float pos1[] = { 0, 0, 0 };
+		float pos2[] = { 0.2, 0, 0 };
 
-    setCamera(0, &state);
-    addLabel("1\n", pos1, &state);
-    addLabel("2\n", pos2, &state);
+		setCamera(0, &state);
+		addLabel("1\n", pos1, &state);
+		addLabel("2\n", pos2, &state);
 		renderOnscreen(&graphicsState);
 #endif
 		state.d->ctrl[0] = 0.5;
@@ -132,13 +132,13 @@ int main(int argc, const char **argv)
 
 	fclose(fp);
 	free(rgb);
+	printf("Closing MuJoCo...\n");
 	closeMujoco(&state);
-#ifdef MJ_EGL
-  closeOpenGL(&graphicsState);
-#elif defined(MJ_OSMESA)
-  closeOpenGL(&ctx);
+	printf("Closing OpenGL...\n");
+#ifdef MJ_OSMESA
+	closeOpenGL(ctx, buffer);
 #else
-  closeOpenGL();
+	closeOpenGL();
 #endif
 
 	return 0;

@@ -2,27 +2,28 @@
 #include "mujoco.h"
 #include "utilOsmesa.h"
 #include "util.h"
+#include "stdio.h"
 
 // create OpenGL context/window
-int initOpenGL(OSMesaContext* ctx)
+int initOpenGL(OSMesaContext * ctx, void **buffer)
 {
+	*buffer = malloc(10000000 * sizeof(unsigned char));
+	// create context
 	*ctx = OSMesaCreateContextExt(GL_RGBA, 24, 8, 8, 0);
-	if (!(*ctx)) {
+	if (!*ctx)
 		mju_error("OSMesa context creation failed");
-  }
 
 	// make current
-  unsigned char buffer[10000000];
-	if (!OSMesaMakeCurrent(*ctx, buffer, GL_UNSIGNED_BYTE, 800, 800)) {
+	if (!OSMesaMakeCurrent(*ctx, *buffer, GL_UNSIGNED_BYTE, 800, 800))
 		mju_error("OSMesa make current failed");
-  }
 	return 0;
 }
 
 // close OpenGL context/window
-int closeOpenGL(OSMesaContext* ctx)
+int closeOpenGL(OSMesaContext ctx, void *buffer)
 {
-	OSMesaDestroyContext(*ctx);
+	free(buffer);
+	OSMesaDestroyContext(ctx);
 	return 0;
 }
 
