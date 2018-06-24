@@ -272,6 +272,11 @@ cdef class BaseSim(object):
         return self.model.nu
 
     @property
+    def njnt(self):
+        """ Number of joints. """
+        return self.model.njnt
+
+    @property
     def nsensordata(self):
         """ Number of actuators/controls. """
         return self.model.nsensordata
@@ -356,3 +361,14 @@ cdef class BaseSim(object):
     def qfrc_constraint(self):
         """ net unconstrained force """
         return asarray( < double*> self.data.qfrc_constraint, self.nv)
+
+    @property
+    def jnt_range(self):
+        """ joint range """
+        return asarray( < double*> self.model.jnt_range, 2 * self.njnt
+                ).reshape(-1, 2)
+
+    @property
+    def jnt_limited(self):
+        """ joint limits """
+        return asarray( < double*> self.model.jnt_limited, self.njnt)
