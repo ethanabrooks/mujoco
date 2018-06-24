@@ -17,6 +17,5 @@ int initMujoco(const char *filepath, State * state);
 int setCamera(int camid, State * state);
 int renderOffscreen(unsigned char *rgb, int height, int width, State *);
 int closeMujoco(State * state);
-int count_zeros(unsigned char *rgb, size_t size);
 
 #endif
