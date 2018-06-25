@@ -135,8 +135,7 @@ cdef class BaseSim(object):
         cast to a ``str`` and ``pos`` is a ``list``, ``tuple``, or ``ndarray`` with elements
         corresponding to ``(x, y, z)``.
         """
-        raise RuntimeError("`render` method is only defined for the GLFW
-        version.")
+        raise RuntimeError("`render` method is only defined for the GLFW version.")
 
     def render_offscreen(self, camera_name=None, camera_id=None, int grayscale=False):
         """
