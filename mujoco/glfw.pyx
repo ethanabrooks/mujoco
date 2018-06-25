@@ -22,12 +22,6 @@ cdef class SimGlfw(BaseSim):
         closeOpenGL()
 
     def render(self, str camera_name=None, dict labels=None):
-        """
-        Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window.
-        ``labels`` must be a dict of ``{label: pos}``, where ``label`` is a value that can be
-        cast to a ``str`` and ``pos`` is a ``list``, ``tuple``, or ``ndarray`` with elements
-        corresponding to ``(x, y, z)``.
-        """
         cdef float[::view.contiguous] view
 
         if camera_name is None:

@@ -128,6 +128,16 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco(& self.state)
 
+    def render(self, str camera_name=None, dict labels=None):
+        """
+        Display the view from camera corresponding to ``camera_name`` in an onscreen GLFW window.
+        ``labels`` must be a dict of ``{label: pos}``, where ``label`` is a value that can be
+        cast to a ``str`` and ``pos`` is a ``list``, ``tuple``, or ``ndarray`` with elements
+        corresponding to ``(x, y, z)``.
+        """
+        raise RuntimeError("`render` method is only defined for the GLFW
+        version.")
+
     def render_offscreen(self, camera_name=None, camera_id=None, int grayscale=False):
         """
         Args:
