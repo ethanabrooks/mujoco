@@ -89,7 +89,7 @@ int main(int argc, const char **argv)
 #elif defined(MJ_OSMESA)
 	OSMesaContext ctx;
 	void *buffer;
-	initOpenGL(&ctx, &buffer);
+	initOpenGL(&ctx, &buffer, H, W);
 #elif defined(MJ_GLFW)
 	GraphicsState graphicsState;
 	initOpenGL(&graphicsState, &state);

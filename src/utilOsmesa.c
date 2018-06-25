@@ -6,7 +6,7 @@
 
 // create OpenGL context / window
 int 
-initOpenGL(OSMesaContext * ctx, void **buffer)
+initOpenGL(OSMesaContext * ctx, void **buffer, int h, int w)
 {
 	*buffer = malloc(10000000 * sizeof(unsigned char));
 	//create context
@@ -15,7 +15,7 @@ initOpenGL(OSMesaContext * ctx, void **buffer)
 		mju_error("OSMesa context creation failed");
 
 	//make current
-		if (!OSMesaMakeCurrent(*ctx, *buffer, GL_UNSIGNED_BYTE, 800, 800))
+		if (!OSMesaMakeCurrent(*ctx, *buffer, GL_UNSIGNED_BYTE, h, w))
 		mju_error("OSMesa make current failed");
 	return 0;
 }

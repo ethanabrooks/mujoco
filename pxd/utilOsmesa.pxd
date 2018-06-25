@@ -10,6 +10,6 @@ cdef extern from "util.h":
 cdef extern from "utilOsmesa.h":
     ctypedef int GraphicsState
 
-    int initOpenGL(OSMesaContext * ctx, void ** buffer)
+    int initOpenGL(OSMesaContext * ctx, void ** buffer, int h, int w)
     int closeOpenGL(OSMesaContext ctx, void * buffer)
     int renderOnscreen(int camid, GraphicsState window, State * state)

@@ -98,13 +98,24 @@ cdef class BaseSim(object):
     cdef State state
     cdef int forward_called_this_step
     cdef int n_substeps
+    cdef int height
+    cdef int width
 
-    def __cinit__(self, str fullpath, int n_substeps = 1):
+    def __cinit__(self, str fullpath, int n_substeps = 1,
+            int height = 0, int width = 0):
         """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.
 
         Args:
             fullpath (str): full path to model xml file.
+            height (int): height of image for rendering.
+            width (int): width of image for rendering.
         """
+        if height <= 0:
+            height = 800
+        if width <= 0:
+            width = 800
+        self.height = height
+        self.width = width
         self.init_opengl()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
@@ -117,12 +128,9 @@ cdef class BaseSim(object):
     def __exit__(self, *args):
         closeMujoco(& self.state)
 
-    def render_offscreen(self, int height, int width, 
-            camera_name=None, camera_id=None, int grayscale=False):
+    def render_offscreen(self, camera_name=None, camera_id=None, int grayscale=False):
         """
         Args:
-            height (int): height of image to return.
-            width (int): width of image to return.
             camera_name (str): Name of camera, as specified in xml file.
 
         Returns:
@@ -132,11 +140,11 @@ cdef class BaseSim(object):
             camera_id = self.name2id(ObjType.CAMERA, camera_name)
         elif camera_id is None:
             camera_id = -1
-        array = np.zeros(height * width * 3, dtype=np.uint8)
+        array = np.zeros(self.height * self.width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         setCamera(camera_id, & self.state)
-        renderOffscreen(& view[0], height, width, & self.state)
-        array = array.reshape(height, width, 3)
+        renderOffscreen(& view[0], self.width, self.height, & self.state)
+        array = array.reshape(self.height, self.width, 3)
         array = np.flip(array, 0)
         if grayscale:
             return array.mean(axis=2)
