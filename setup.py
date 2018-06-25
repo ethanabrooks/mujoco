@@ -34,17 +34,17 @@ if __name__ == '__main__':
             opengl_dir=None,
             headless=False,
         )
-        print('---------------------------')
-        print('Using the following config:')
-        for key, description in zip(config['MAIN'].keys(), descriptions):
-
-            value = config['MAIN']
-            print('{}: {} ({})'.format(
-                key, config['MAIN'].get(key), description))
         with open(config_filename, 'w') as f:
             config.write(f)
 
     config = config['MAIN']
+    print('---------------------------')
+    print('Using the following config:')
+    for key, description in zip(config.keys(), descriptions):
+
+        value = config
+        print('{}: {} ({})'.format(
+            key, config.get(key), description))
     print('To change, edit', config_path)
     print('---------------------------')
     mjpro_dir = config['mjpro_dir']
@@ -149,5 +149,4 @@ if __name__ == '__main__':
         install_requires=[
             'Cython>=0.27.3',
             'numpy>=1.14',
-            'pyyaml>=3.12',
         ])
