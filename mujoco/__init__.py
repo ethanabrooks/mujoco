@@ -1,4 +1,3 @@
-import sys
 import os
 
 
@@ -12,17 +11,17 @@ def print_green(str):
 # Public API:
 __all__ = ['Sim', 'GeomType', 'ObjType']
 
-
 if os.environ.get('EGL') == '1':
     try:
         from mujoco.egl import SimEgl as Sim, GeomType, ObjType, activate
         __all__.insert(0, 'SimEgl')
         print_green("Using EGL version of mujoco.")
     except ImportError:
-        print('EGL library could not be imported. Either specify `opengl-dir` '
-              'in config.yml (to build EGL version of mujoco) or make sure the '
-              'environment variable `EGL` is not set to 1, to use either '
-              'the GLFW version or the OSMesa version.')
+        print(
+            'EGL library could not be imported. Either specify `opengl-dir` '
+            'in config.yml (to build EGL version of mujoco) or make sure the '
+            'environment variable `EGL` is not set to 1, to use either '
+            'the GLFW version or the OSMesa version.')
         exit()
 else:
     try:

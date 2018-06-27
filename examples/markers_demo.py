@@ -2,10 +2,13 @@
 # demonstration of markers (visual-only geoms)
 
 import math
-import time
 import os
+import time
+
 import numpy as np
+
 from mujoco import Sim
+
 # from mujoco_py import load_model_from_xml, MjSim, MjViewer
 
 sim = Sim('xml/markers.xml')

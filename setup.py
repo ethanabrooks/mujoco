@@ -1,12 +1,13 @@
 #! /usr/bin/env python
 
-# from distutils.core import setup, Extension
-from setuptools import setup, Extension
-from Cython.Build import cythonize
-import numpy as np
-import sys
 import configparser
+import sys
 from pathlib import Path
+
+import numpy as np
+from Cython.Build import cythonize
+# from distutils.core import setup, Extension
+from setuptools import Extension, setup
 
 if sys.version_info.major == 2:
     FileNotFoundError = IOError

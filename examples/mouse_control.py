@@ -2,6 +2,7 @@
 """Agent that executes random actions"""
 # import gym
 import numpy as np
+
 import mujoco
 
 sim = mujoco.Sim('xml/humanoid.xml')
