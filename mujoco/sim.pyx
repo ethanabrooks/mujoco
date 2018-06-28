@@ -101,8 +101,9 @@ cdef class BaseSim(object):
     cdef int height
     cdef int width
 
-    def __cinit__(self, str fullpath, int n_substeps = 1,
-            int height = 0, int width = 0):
+    def __cinit__(self, str fullpath, 
+            int height = 0, int width = 0, 
+            int n_substeps = 1):
         """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.
 
         Args:
@@ -110,12 +111,9 @@ cdef class BaseSim(object):
             height (int): height of image for rendering.
             width (int): width of image for rendering.
         """
-        if height <= 0:
-            height = 800
-        if width <= 0:
-            width = 800
-        self.height = height
-        self.width = width
+        self.height = height or 800
+        self.width = width or 800
+        assert self.height > 0 and self.width > 0
         self.init_opengl()
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
