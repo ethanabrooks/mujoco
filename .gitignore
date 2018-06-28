@@ -30,3 +30,4 @@ config.yml
 .ropeproject
 .venv
 config.ini
+.venv
