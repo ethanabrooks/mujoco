@@ -13,7 +13,6 @@ if sys.version_info.major == 2:
     FileNotFoundError = IOError
 
 build_dir = "build"
-config_path = 'config.yml'
 if __name__ == '__main__':
     keys = ['mjkey_path',
             'mjpro_dir',
@@ -46,7 +45,7 @@ if __name__ == '__main__':
         value = config
         print('{}: {} ({})'.format(
             key, config.get(key), description))
-    print('To change, edit', config_path)
+    print('To change, edit', config_filename)
     print('---------------------------')
     mjpro_dir = config['mjpro_dir']
     mjkey_path = '"' + config['mjkey_path'] + '"'
