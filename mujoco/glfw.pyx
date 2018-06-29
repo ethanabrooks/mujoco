@@ -33,7 +33,7 @@ cdef class SimGlfw(BaseSim):
         if labels:
             assert isinstance(labels, dict), \
                     '`labels` must be a dict not a {}.'.format(type(labels))
-            for label, pos in labels.items():
+            for pos, label in labels.items():
                 if type(pos) in (list, tuple):
                     pos = np.array(pos)
                 assert pos.shape == (3,), \
