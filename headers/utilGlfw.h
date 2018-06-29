@@ -23,7 +23,7 @@ int addLabel(const char* label, const float* pos, State* s);
 int clearLastKey(GraphicsState* state);
 int clearMouseDx(GraphicsState* state);
 int clearMouseDy(GraphicsState* state);
-int initOpenGL(GraphicsState *, State *);
+int initOpenGL(GraphicsState *, State *, int, int);
 int closeOpenGL(void);
 int renderOnscreen(GraphicsState* state);
 

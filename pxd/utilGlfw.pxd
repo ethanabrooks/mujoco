@@ -25,6 +25,6 @@ cdef extern from "utilGlfw.h":
     int clearLastKey(GraphicsState* state)
     int clearMouseDx(GraphicsState* state)
     int clearMouseDy(GraphicsState* state)
-    int initOpenGL(GraphicsState *, State *)
+    int initOpenGL(GraphicsState *, State *, int, int)
     int closeOpenGL()
     int renderOnscreen(GraphicsState* state)

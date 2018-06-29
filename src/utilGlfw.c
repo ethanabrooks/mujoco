@@ -167,7 +167,7 @@ int clearMouseDy(GraphicsState * state)
 	return 0;
 }
 
-int initOpenGL(GraphicsState * graphicsState, State * state)
+int initOpenGL(GraphicsState * graphicsState, State * state, int height, int width)
 {
 	if (!glfwInit()) {
 		mju_error("Could not initialize GLFW");
@@ -178,7 +178,7 @@ int initOpenGL(GraphicsState * graphicsState, State * state)
 	// create visible window, double-buffered glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	GLFWwindow *window =
-	    glfwCreateWindow(300, 300, "Visible window", NULL, NULL);
+	    glfwCreateWindow(height, width, "Visible window", NULL, NULL);
 	if (!window)
 		mju_error("Could not create GLFW window");
 	glfwMakeContextCurrent(window);

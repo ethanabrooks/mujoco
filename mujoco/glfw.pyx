@@ -15,7 +15,7 @@ cdef class SimGlfw(BaseSim):
 
     def init_opengl(self):
         """ Initialize GLFW. """
-        initOpenGL(&self.graphics_state, &self.state)
+        initOpenGL(&self.graphics_state, &self.state, self.height, self.width)
 
     def close_opengl(self):
         """ Does nothing, because glfwTerminate has a bug. """
