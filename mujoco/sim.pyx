@@ -114,7 +114,7 @@ cdef class BaseSim(object):
         self.height = height or 800
         self.width = width or 800
         assert self.height > 0 and self.width > 0
-        self.init_opengl()
+        self.init_opengl(height or 800, width or 800)
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d

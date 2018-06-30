@@ -9,7 +9,7 @@ cdef class SimEgl(BaseSim):
     Sim that uses EGL functionality (faster on the Nvidia GPUs).  Currently supports offscreen but not onscreen rendering.
     """
 
-    def init_opengl(self):
+    def init_opengl(self, int height, int width):
         """ Initialize EGL. """
         initOpenGL()
 

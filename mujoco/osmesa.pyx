@@ -11,9 +11,9 @@ cdef class SimOsmesa(BaseSim):
 
     cdef OSMesaContext ctx
 
-    def init_opengl(self):
+    def init_opengl(self, height, width):
         """ Initialize OSMesa. """
-        initOpenGL(&self.ctx, &self.buffer, self.height, self.width)
+        initOpenGL(&self.ctx, &self.buffer, height, width)
 
     def close_opengl(self):
         """ Close OSMesa. """
