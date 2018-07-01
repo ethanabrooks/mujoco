@@ -88,9 +88,14 @@ JointType = Enum('JointType',
         module=__name__)
 
 
-cdef asarray(double * ptr, size_t size):
+cdef as_double_array(double * ptr, size_t size):
     """ Convenience function for converting a pointer to an array of length ``size``"""
     cdef double[:] view = <double[:size] > ptr
+    return np.asarray(view)
+
+cdef as_int_array(int * ptr, size_t size):
+    """ Convenience function for converting a pointer to an array of length ``size``"""
+    cdef int[:] view = <int[:size] > ptr
     return np.asarray(view)
 
 
@@ -320,86 +325,91 @@ cdef class BaseSim(object):
     @property
     def actuator_ctrlrange(self):
         """ Range of controls (low, high). """
-        return asarray( < double*> self.model.actuator_ctrlrange,
+        return as_double_array( < double*> self.model.actuator_ctrlrange,
                        self.model.nu * 2).reshape(-1, 2)
 
     @property
     def qpos(self):
         """ Joint positions. """
-        return asarray( < double*> self.data.qpos, self.nq)
+        return as_double_array( < double*> self.data.qpos, self.nq)
 
     @property
     def qvel(self):
         """ Joint velocities. """
-        return asarray( < double*> self.data.qvel, self.nv)
+        return as_double_array( < double*> self.data.qvel, self.nv)
 
     @property
     def act(self):
         """ Actuator activation. """
-        return asarray( < double*> self.data.act, self.na)
+        return as_double_array( < double*> self.data.act, self.na)
 
     @property
     def ctrl(self):
         """ Joint actuations. """
-        return asarray( < double*> self.data.ctrl, self.nu)
+        return as_double_array( < double*> self.data.ctrl, self.nu)
 
     @property
     def xpos(self):
         """ Cartesian coordinates of bodies. """
-        return asarray( < double*> self.data.xpos, self.nbody * 3)
+        return as_double_array( < double*> self.data.xpos, self.nbody * 3)
 
     @property
     def xquat(self):
         """ Quaternions of bodies. """
-        return asarray( < double*> self.data.xquat, self.nbody * 4)
+        return as_double_array( < double*> self.data.xquat, self.nbody * 4)
 
     @property
     def sensordata(self):
         """ Quaternions of bodies. """
-        return asarray( < double*> self.data.sensordata, self.nsensordata)
+        return as_double_array( < double*> self.data.sensordata, self.nsensordata)
 
     @property
     def geom_size(self):
         """ Sizes of geoms. """
-        return asarray( < double*> self.model.geom_size, self.ngeom * 3)
+        return as_double_array( < double*> self.model.geom_size, self.ngeom * 3)
 
     @property
     def geom_pos(self):
         """ Positions of geoms. """
-        return asarray( < double*> self.model.geom_pos, self.ngeom * 3)
+        return as_double_array( < double*> self.model.geom_pos, self.ngeom * 3)
 
     @property
     def mocap_pos(self):
         """ Positions of mocap bodies. """
-        return asarray( < double*> self.data.mocap_pos, self.nmocap * 3)
+        return as_double_array( < double*> self.data.mocap_pos, self.nmocap * 3)
 
     @property
     def mocap_quat(self):
         """ Quaternions of mocap bodies. """
-        return asarray( < double*> self.data.mocap_quat, self.nmocap * 4)
+        return as_double_array( < double*> self.data.mocap_quat, self.nmocap * 4)
 
     @property
     def qfrc_actuator(self):
         """ actuator force. """
-        return asarray( < double*> self.data.qfrc_actuator, self.nv)
+        return as_double_array( < double*> self.data.qfrc_actuator, self.nv)
 
     @property
     def qfrc_unc(self):
         """ net unconstrained force """
-        return asarray( < double*> self.data.qfrc_unc, self.nv)
+        return as_double_array( < double*> self.data.qfrc_unc, self.nv)
 
     @property
     def qfrc_constraint(self):
         """ net unconstrained force """
-        return asarray( < double*> self.data.qfrc_constraint, self.nv)
+        return as_double_array( < double*> self.data.qfrc_constraint, self.nv)
 
     @property
     def jnt_range(self):
         """ joint range """
-        return asarray( < double*> self.model.jnt_range, 2 * self.njnt
-                ).reshape(-1, 2)
+        array = as_double_array( <double*> self.model.jnt_range, self.njnt * 2)
+        return array.reshape(-1, 2)
 
     @property
     def jnt_limited(self):
         """ joint limits """
-        return asarray( < double*> self.model.jnt_limited, self.njnt)
+        cdef unsigned char[:] view = <unsigned char[:self.njnt]> self.model.jnt_limited
+        return np.asarry(view)
+
+    @property
+    def jnt_type(self):
+        return as_int_array( < int*> self.model.jnt_type, self.njnt)
