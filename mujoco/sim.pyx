@@ -271,6 +271,19 @@ cdef class BaseSim(object):
         """ Get position of geom corresponding to key. """
         return get_vec(3, self.geom_pos, self._key2id(key, ObjType.GEOM))
 
+    def get_dof_jntid(self, key):
+        """ joint type """
+        if type(key) is str:
+            key = self.name2id(ObjType.JOINT, key)
+        return self.model.dof_jntid[key]
+
+    def get_jnt_type(self, key):
+        """ joint type """
+        if type(key) is str:
+            key = self.name2id(ObjType.JOINT, key)
+        type_number = self.model.jnt_type[key]
+        return next(j.name for j in JointType if j.value == type_number)
+
     @property
     def timestep(self):
         """ Length of simulation timestep. """
