@@ -54,6 +54,7 @@ ObjType = Enum('ObjType',
                    ' TUPLE'  # tuple
                    ' KEY'  # keyframe
                ),
+               start=0,
                module=__name__)
 
 """
@@ -70,7 +71,21 @@ GeomType = Enum('GeomType',
                     ' BOX'
                     ' MESH'
                 ),
+               start=0,
                 module=__name__)
+
+"""
+``enum`` of different MuJoCo ``geom`` types (corresponds to ``mjtGeom``).
+"""
+JointType = Enum('JointType',
+        (
+            ' mjJNT_FREE'  # global position and orientation (quat)       (7)
+            ' mjJNT_BALL'  # orientation (quat) relative to parent        (4)
+            ' mjJNT_SLIDE' # sliding distance along body-fixed axis       (1)
+            ' mjJNT_HINGE' # rotation angle (rad) around body-fixed axis  (1)
+        ),
+               start=0,
+        module=__name__)
 
 
 cdef asarray(double * ptr, size_t size):
@@ -185,7 +200,7 @@ cdef class BaseSim(object):
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
         check_ObjType(obj_type, argnum=1)
-        id = mj_name2id(self.model, obj_type.value - 1, encode(name))
+        id = mj_name2id(self.model, obj_type.value, encode(name))
         if id < 0:
             raise RuntimeError("name", name, "not found in model")
         return id
@@ -193,7 +208,7 @@ cdef class BaseSim(object):
     def id2name(self, obj_type, id):
         """ Get name corresponding to object id. """
         check_ObjType(obj_type, argnum=1)
-        buff = mj_id2name(self.model, obj_type.value - 1, id)
+        buff = mj_id2name(self.model, obj_type.value, id)
         if buff is not NULL:
             return decode(buff)
         else:
