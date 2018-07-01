@@ -230,12 +230,11 @@ cdef class BaseSim(object):
         if type(key) is str:
             check_ObjType(obj_type, argnum=2)
             return self.name2id(obj_type, key)
-        else:
-            assert isinstance(
-                key, int), 'If 2nd argument is None, 1st argument must be `int`'
-            return key
+        assert isinstance(
+            key, int), 'If 2nd argument is None, 1st argument must be `int`'
+        return key
 
-    def jnt_qposadr(self, key):
+    def get_jnt_qposadr(self, key):
         if type(key) is str:
             key = self.name2id(ObjType.JOINT, key)
         return self.model.jnt_qposadr[key]
@@ -409,6 +408,11 @@ cdef class BaseSim(object):
         """ joint limits """
         cdef unsigned char[:] view = <unsigned char[:self.njnt]> self.model.jnt_limited
         return np.asarry(view)
+
+    @property
+    def jnt_qposadr(self):
+        """ indices of each joint in qpos """
+        return as_int_array( < int*> self.model.jnt_qposadr, self.njnt)
 
     @property
     def jnt_type(self):
