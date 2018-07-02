@@ -92,7 +92,7 @@ int main(int argc, const char **argv)
 	initOpenGL(&ctx, &buffer, H, W);
 #elif defined(MJ_GLFW)
 	GraphicsState graphicsState;
-	initOpenGL(&graphicsState, &state);
+	initOpenGL(&graphicsState, &state, H, W);
 #endif
 	mj_activate(keypath);	// install GLFW mouse and keyboard callbacks
 	printf("Initializing MuJoCo...\n");
