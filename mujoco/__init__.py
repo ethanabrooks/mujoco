@@ -29,16 +29,18 @@ else:
         __all__.insert(0, 'SimGlfw')
         print_green("Using GLFW version of mujoco.")
     except ImportError:
-        from mujoco.osmesa import SimOsmesa as Sim, GeomType, ObjType, JointType, activate
-        __all__.insert(0, 'SimOsmesa')
-        print_green("Using OSMesa version of mujoco.")
-    except ImportError:
-        from mujoco.egl import SimEgl as Sim, GeomType, ObjType, JointType, activate
-        __all__.insert(0, 'SimEgl')
-        print_green("Using EGL version of mujoco.")
-    except ImportError:
-        print('Could not import GLFW, OSMesa, or EGL version of mujoco. '
-              'Try rebuilding (rerun `make`).')
-        exit()
+        try:
+            from mujoco.osmesa import SimOsmesa as Sim, GeomType, ObjType, JointType, activate
+            __all__.insert(0, 'SimOsmesa')
+            print_green("Using OSMesa version of mujoco.")
+        except ImportError:
+            try:
+                from mujoco.egl import SimEgl as Sim, GeomType, ObjType, JointType, activate
+                __all__.insert(0, 'SimEgl')
+                print_green("Using EGL version of mujoco.")
+            except ImportError:
+                print('Could not import GLFW, OSMesa, or EGL version of mujoco. '
+                    'Try rebuilding (rerun `make`).')
+                exit()
 
 activate()
