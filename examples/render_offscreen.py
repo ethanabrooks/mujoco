@@ -13,7 +13,7 @@ parser.add_argument('width', type=int)
 args = parser.parse_args()
 
 print(args.height, args.width)
-path = '/Users/ethan/mujoco/../soft_actor_critic/environments/models/world.xml'
+path = 'xml/humanoid.xml'
 
 sim = mujoco.Sim(path, height=args.height, width=args.width)
 for _ in range(10):

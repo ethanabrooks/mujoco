@@ -78,6 +78,10 @@ int closeMujoco(State * state)
 
 int main(int argc, const char **argv)
 {
+  if (argc != 2) {
+    printf("Usage: /path/to/binary height width");
+    exit(0);
+  }
 	int H = atoi(argv[1]);
 	int W = atoi(argv[2]);
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
