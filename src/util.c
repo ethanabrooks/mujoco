@@ -78,7 +78,7 @@ int closeMujoco(State * state)
 
 int main(int argc, const char **argv)
 {
-  if (argc != 2) {
+  if (argc != 3) {
     printf("Usage: /path/to/binary height width");
     exit(0);
   }
