@@ -260,7 +260,7 @@ cdef class BaseSim(object):
 
     def get_body_xvelp(self, key):
         id = self._key2id(key, ObjType.BODY)
-        jacp = self.get_body_jacp(self, key).reshape((3, self.nv))
+        jacp = self.get_body_jacp(key).reshape((3, self.nv))
         xvelp = np.dot(jacp, self.qvel)
         return xvelp
 
@@ -300,6 +300,10 @@ cdef class BaseSim(object):
             key = self.name2id(ObjType.JOINT, key)
         type_number = self.model.jnt_type[key]
         return next(j.name for j in JointType if j.value == type_number)
+
+    @property
+    def nsubsteps(self):
+        return self.n_substeps
 
     @property
     def timestep(self):
