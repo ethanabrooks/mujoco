@@ -78,6 +78,10 @@ int closeMujoco(State * state)
 
 int main(int argc, const char **argv)
 {
+  if (argc != 3) {
+    printf("Usage: /path/to/binary height width");
+    exit(0);
+  }
 	int H = atoi(argv[1]);
 	int W = atoi(argv[2]);
   /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
@@ -92,7 +96,7 @@ int main(int argc, const char **argv)
 	initOpenGL(&ctx, &buffer, H, W);
 #elif defined(MJ_GLFW)
 	GraphicsState graphicsState;
-	initOpenGL(&graphicsState, &state);
+	initOpenGL(&graphicsState, &state, H, W);
 #endif
 	mj_activate(keypath);	// install GLFW mouse and keyboard callbacks
 	printf("Initializing MuJoCo...\n");
