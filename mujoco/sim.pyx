@@ -4,8 +4,8 @@ from codecs import encode, decode
 from enum import Enum
 from libc.string cimport strncpy
 from cython cimport view
-from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, \
-    mj_id2name, mj_name2id, mj_resetData, mj_forward, mj_fwdPosition
+from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_id2name, \
+        mj_name2id, mj_resetData, mj_forward, mj_fwdPosition, mj_jacBody
 from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
@@ -251,6 +251,19 @@ cdef class BaseSim(object):
         """ Get type of geom corresponding to key. """
         return self.model.geom_type[self._key2id(key, ObjType.JOINT)]
 
+    def get_body_jacp(self, key):
+        id = self._key2id(key, ObjType.BODY)
+        cdef np.ndarray[double, ndim=1, mode='c'] jacp = np.zeros(3 * self.nv)
+        cdef double * jacp_view = &jacp[0]
+        mj_jacBody(self.model, self.data, jacp_view, NULL, id)
+        return jacp
+
+    def get_body_xvelp(self, key):
+        id = self._key2id(key, ObjType.BODY)
+        jacp = self.get_body_jacp(self, key).reshape((3, self.nv))
+        xvelp = np.dot(jacp, self.qvel)
+        return xvelp
+
     def get_body_xpos(self, key, qpos=None):
         """ Get xpos (cartesian coordinates) of body corresponding to key. """
         if qpos is None:
@@ -369,6 +382,10 @@ cdef class BaseSim(object):
     def xquat(self):
         """ Quaternions of bodies. """
         return as_double_array( < double*> self.data.xquat, self.nbody * 4)
+
+    @property
+    def jacp(self):
+        return as_int_array( < int*> self.model.jnt_type, self.njnt)
 
     @property
     def sensordata(self):
