@@ -272,6 +272,10 @@ cdef class BaseSim(object):
             xpos = self.qpos_to_xpos(qpos)
         return get_vec(3, xpos, self._key2id(key, ObjType.BODY))
 
+    def get_body_xmat(self, key):
+        """ Get xpos (cartesian coordinates) of body corresponding to key. """
+        return get_vec(9, self.xmat, self._key2id(key, ObjType.BODY)).reshape((3, 3))
+
     def get_body_xquat(self, key):
         """ Get quaternion of body corresponding to key. """
         return get_vec(4, self.xquat, self._key2id(key, ObjType.BODY))
@@ -382,6 +386,11 @@ cdef class BaseSim(object):
     def xquat(self):
         """ Quaternions of bodies. """
         return as_double_array( < double*> self.data.xquat, self.nbody * 4)
+
+    @property
+    def xmat(self):
+        """ Cartesian coordinates of bodies. """
+        return as_double_array( < double*> self.data.xmat, self.nbody * 9)
 
     @property
     def jacp(self):
