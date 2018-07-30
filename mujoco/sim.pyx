@@ -251,12 +251,25 @@ cdef class BaseSim(object):
         """ Get type of geom corresponding to key. """
         return self.model.geom_type[self._key2id(key, ObjType.JOINT)]
 
+    def get_body_jacr(self, key):
+        id = self._key2id(key, ObjType.BODY)
+        cdef np.ndarray[double, ndim=1, mode='c'] jacr = np.zeros(3 * self.nv)
+        cdef double * jacr_view = &jacr[0]
+        mj_jacBody(self.model, self.data, jacr_view, NULL, id)
+        return jacr
+
     def get_body_jacp(self, key):
         id = self._key2id(key, ObjType.BODY)
         cdef np.ndarray[double, ndim=1, mode='c'] jacp = np.zeros(3 * self.nv)
         cdef double * jacp_view = &jacp[0]
         mj_jacBody(self.model, self.data, jacp_view, NULL, id)
         return jacp
+
+    def get_body_xvelr(self, key):
+        id = self._key2id(key, ObjType.BODY)
+        jacr = self.get_body_jacr(key).reshape((3, self.nv))
+        xvelr = np.dot(jacr, self.qvel)
+        return xvelr
 
     def get_body_xvelp(self, key):
         id = self._key2id(key, ObjType.BODY)
@@ -399,6 +412,15 @@ cdef class BaseSim(object):
     @property
     def jacp(self):
         return as_int_array( < int*> self.model.jnt_type, self.njnt)
+
+    @property
+    def jacr(self):
+        jacrs = np.zeros((self.nbody, 3 * self.nv))
+        cdef double [:] jacr_view
+        for i, jacr in enumerate(jacrs):
+            jacr_view = jacr
+            mj_jacBody(self.model, self.data, NULL, &jacr_view[0], i)
+        return jacrs
 
     @property
     def sensordata(self):
