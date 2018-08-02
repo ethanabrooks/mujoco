@@ -241,7 +241,7 @@ cdef class BaseSim(object):
 
     def get_joint_qpos(self, key):
         """ Get qpos (joint values) of object corresponding to key. """
-        return self.data.qpos[self.jnt_qposadr(key)]
+        return self.data.qpos[self.get_jnt_qposadr(key)]
 
     def get_joint_qvel(self, key):
         """ Get qvel (joint velocities) of object corresponding to key. """
