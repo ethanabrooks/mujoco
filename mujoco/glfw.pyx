@@ -22,8 +22,6 @@ cdef class SimGlfw(BaseSim):
         closeOpenGL()
 
     def render(self, str camera_name=None, dict labels=None):
-        cdef float[::view.contiguous] view
-
         if camera_name is None:
             camid = -1
         else:
@@ -31,15 +29,7 @@ cdef class SimGlfw(BaseSim):
         setCamera(camid, &self.state)
 
         if labels:
-            assert isinstance(labels, dict), \
-                    '`labels` must be a dict not a {}.'.format(type(labels))
-            for pos, label in labels.items():
-                if type(pos) in (list, tuple):
-                    pos = np.array(pos)
-                assert pos.shape == (3,), \
-                        'shape of `pos` must be (3,) not {}.'.format(pos.shape)
-                view = pos.astype(np.float32)
-                addLabel(encode(str(label)), &view[0], &self.state)
+            self.add_labels(labels)
 
         return renderOnscreen(&self.graphics_state)
 

@@ -155,6 +155,18 @@ cdef class BaseSim(object):
         """
         raise RuntimeError("`render` method is only defined for the GLFW version.")
 
+    def add_labels(self, labels):
+        cdef float[::view.contiguous] view
+        assert isinstance(labels, dict), \
+                '`labels` must be a dict not a {}.'.format(type(labels))
+        for pos, label in labels.items():
+            if type(pos) in (list, tuple):
+                pos = np.array(pos)
+            assert pos.shape == (3,), \
+                    'shape of `pos` must be (3,) not {}.'.format(pos.shape)
+            view = pos.astype(np.float32)
+            addLabel(encode(str(label)), &view[0], &self.state)
+
     def render_offscreen(self, camera_name=None, camera_id=None, int
             grayscale=False, labels=None):
         """
@@ -171,6 +183,10 @@ cdef class BaseSim(object):
         array = np.zeros(self.height * self.width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         setCamera(camera_id, & self.state)
+
+        if labels:
+            self.add_labels(labels)
+
         renderOffscreen(& view[0], self.width, self.height, & self.state)
         array = array.reshape(self.height, self.width, 3)
         array = np.flip(array, 0)
