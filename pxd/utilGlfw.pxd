@@ -21,7 +21,6 @@ cdef extern from "utilGlfw.h":
         double mouseDy
         char lastKeyPress
 
-    int addLabel(const char* label, float* pos, State* s)
     int clearLastKey(GraphicsState* state)
     int clearMouseDx(GraphicsState* state)
     int clearMouseDy(GraphicsState* state)

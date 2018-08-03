@@ -45,6 +45,38 @@ int setCamera(int camid, State * state)
 	return 0;
 }
 
+int addLabel(const char* label, const float* pos, State* s)
+{
+	mjvScene* scn = &(s->scn);
+  
+  if (scn->ngeom >= scn->maxgeom)
+  {
+    printf("Warning: reached max geoms %d\n", scn->maxgeom);
+    return 1;
+  }
+  double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+  mjvGeom *g = scn->geoms + scn->ngeom++;
+  g->type = 104;  // label geom
+  g->dataid = -1; // None
+  g->objtype = 0; // unknown
+  g->objid = -1;  // decor
+  g->category = 4;  // decorative geom
+  g->texid = -1; // no texture
+  g->texuniform = 0;
+  g->texrepeat[0] = 1;
+  g->texrepeat[1] = 1;
+  g->emission = 0;
+  g->specular = 0.5;
+  g->shininess = 0.5;
+  g->reflectance = 0;
+  memcpy(g->pos, pos, 3 * sizeof(float));
+  memset(g->size, 0.1, 3 * sizeof(float));
+  memset(g->rgba, 1, 4 * sizeof(float));
+  memcpy(g->mat, mat, 9 * sizeof(float)); // cartesian orientation
+  strncpy(g->label, label, 100);
+  return 0;
+}
+
 int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
 {
 	mjvScene scn = state->scn;

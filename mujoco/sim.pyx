@@ -155,7 +155,8 @@ cdef class BaseSim(object):
         """
         raise RuntimeError("`render` method is only defined for the GLFW version.")
 
-    def render_offscreen(self, camera_name=None, camera_id=None, int grayscale=False):
+    def render_offscreen(self, camera_name=None, camera_id=None, int
+            grayscale=False, labels=None):
         """
         Args:
             camera_name (str): Name of camera, as specified in xml file.

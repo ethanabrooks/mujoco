@@ -13,6 +13,7 @@ typedef struct state_t {
 	mjvOption opt;
 } State;
 
+int addLabel(const char* label, const float* pos, State* s);
 int initMujoco(const char *filepath, State * state);
 int setCamera(int camid, State * state);
 int renderOffscreen(unsigned char *rgb, int height, int width, State *);
