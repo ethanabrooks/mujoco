@@ -10,7 +10,7 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext
-from pxd.util cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera
+from pxd.util cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera, addLabel
 
 cdef extern from *:  # defined as macro
     char* MJKEY_PATH
