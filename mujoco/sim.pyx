@@ -168,7 +168,7 @@ cdef class BaseSim(object):
             addLabel(encode(str(label)), &view[0], &self.state)
 
     def render_offscreen(self, camera_name=None, camera_id=None, int
-            grayscale=False, labels=None):
+            grayscale=False, dict labels=None):
         """
         Args:
             camera_name (str): Name of camera, as specified in xml file.
