@@ -180,13 +180,13 @@ cdef class BaseSim(object):
             camera_id = self.name2id(ObjType.CAMERA, camera_name)
         elif camera_id is None:
             camera_id = -1
-        array = np.zeros(self.height * self.width * 3, dtype=np.uint8)
-        cdef unsigned char[::view.contiguous] view = array
         setCamera(camera_id, & self.state)
 
         if labels:
             self.add_labels(labels)
 
+        array = np.zeros(self.height * self.width * 3, dtype=np.uint8)
+        cdef unsigned char[::view.contiguous] view = array
         renderOffscreen(& view[0], self.width, self.height, & self.state)
         array = array.reshape(self.height, self.width, 3)
         array = np.flip(array, 0)
