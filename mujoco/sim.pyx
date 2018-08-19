@@ -11,7 +11,7 @@ from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
 from pxd.mjrender cimport mjrContext, mjtFontScale
-from pxd.util cimport FILE, State, initMujoco, renderOffscreen, closeMujoco, setCamera, addLabel, openFile, closeFile
+from pxd.util cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera, addLabel
 
 cdef extern from *:  # defined as macro
     char* MJKEY_PATH
@@ -122,7 +122,6 @@ cdef class BaseSim(object):
     cdef int n_substeps
     cdef int height
     cdef int width
-    cdef FILE * fp
 
     def __cinit__(self, str fullpath,
             int height = 0, int width = 0,
@@ -143,14 +142,12 @@ cdef class BaseSim(object):
         self.data = self.state.d
         self._con = self.state.con
         self.n_substeps=n_substeps
-        openFile(& self.fp)
 
     def __enter__(self):
         return self
 
     def __exit__(self, *args):
         closeMujoco(& self.state)
-        closeFile(& self.fp)
 
     def render(self, str camera_name=None, dict labels=None):
         """
@@ -201,12 +198,11 @@ cdef class BaseSim(object):
         # check off-screen buffer size
         if self.width > self._con.offWidth or self.height > self._con.offHeight:
             self._update_offscreen_buffer_size()
-            print("Update Off-screen buffer size to : {} x {}".format(self.height, self.width))
 
         # render off-screen
         array = np.zeros(self.height * self.width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
-        renderOffscreen(& view[0], self.width, self.height, & self.state, & self.fp)
+        renderOffscreen(& view[0], self.width, self.height, & self.state)
         array = array.reshape(self.height, self.width, 3)
         array = np.flip(array, 0)
         if grayscale:

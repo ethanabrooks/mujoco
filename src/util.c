@@ -11,14 +11,6 @@
 #include "stdlib.h"
 #include "string.h"
 
-int openFile(FILE ** fp)
-{
-    *fp = fopen("rgb.out", "wb");
-    if ( !*fp )
-        mju_error("Could not open rgbfile for writing");
-    return 0;
-}
-
 int initMujoco(const char *filepath, State * state)
 {
 	char error[1000] = "Could not load xml model";
@@ -88,7 +80,7 @@ int addLabel(const char* label, const float* pos, State* s)
   return 0;
 }
 
-int renderOffscreen(unsigned char *rgb, int height, int width, State * state, FILE ** fp)
+int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
 {
     mjvScene scn = state->scn;
 	mjrContext con = state->con;
@@ -101,7 +93,6 @@ int renderOffscreen(unsigned char *rgb, int height, int width, State * state, FI
 		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
     mjr_render(viewport, &scn, &con);
     mjr_readPixels(rgb, NULL, viewport, &con);
-    fwrite(rgb, 3, height*width, *fp);
     return 0;
 }
 
@@ -118,11 +109,6 @@ int closeMujoco(State * state)
     return 0;
 }
 
-int closeFile(FILE ** fp)
-{
-    fclose(*fp);
-    return 0;
-}
 //-------------------------------- main function ----------------------------------------
 
 int main(int argc, const char **argv)
@@ -165,7 +151,7 @@ int main(int argc, const char **argv)
 	printf("Running simulation...\n");
 	for (int i = 0; i < 100; i++) {
 		setCamera(-1, &state);
-		renderOffscreen(rgb, H, W, &state, & fp);
+		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifdef MJ_GLFW
 		float pos1[] = { 0, 0, 0 };

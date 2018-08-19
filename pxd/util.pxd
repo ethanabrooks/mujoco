@@ -3,8 +3,6 @@ include "mjvisualize.pxd"
 include "mjrender.pxd"
 
 cdef extern from "util.h":
-    ctypedef struct FILE
-
     ctypedef struct State:
         mjModel * m
         mjData * d
@@ -21,10 +19,8 @@ cdef extern from "util.h":
         double mouseDy
         char lastKeyPress
 
-    int openFile(FILE ** fp)
-    int closeFile(FILE ** fp)
     int initMujoco(const char *filepath, State * state)
     int setCamera(int camid, State * state)
     int addLabel(const char* label, float* pos, State* s)
-    int renderOffscreen(unsigned char *rgb, int height, int width, State * state, FILE ** fp)
+    int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
     int closeMujoco(State * state)
