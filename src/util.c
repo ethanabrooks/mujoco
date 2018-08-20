@@ -18,12 +18,12 @@ int initMujoco(const char *filepath, State * state)
 	if (!state->m)
 		mju_error_s("Load model error: %s", error);
 
-    // make data, run one computation to initialize all fields
-    state->d = mj_makeData(state->m);
+	// make data, run one computation to initialize all fields
+	state->d = mj_makeData(state->m);
 	mj_forward(state->m, state->d);
 
-    // initialize MuJoCo visualization
-    mjv_makeScene(&state->scn, 1000);
+	// initialize MuJoCo visualization
+	mjv_makeScene(&state->scn, 1000);
 	mjv_defaultCamera(&state->cam);
 	mjv_defaultOption(&state->opt);
 	mjr_defaultContext(&state->con);
@@ -52,48 +52,47 @@ int addLabel(const char* label, const float* pos, State* s)
 {
 	mjvScene* scn = &(s->scn);
 
-  if (scn->ngeom >= scn->maxgeom)
-  {
-    printf("Warning: reached max geoms %d\n", scn->maxgeom);
-    return 1;
-  }
-  double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-  mjvGeom *g = scn->geoms + scn->ngeom++;
-  g->type = 104;  // label geom
-  g->dataid = -1; // None
-  g->objtype = 0; // unknown
-  g->objid = -1;  // decor
-  g->category = 4;  // decorative geom
-  g->texid = -1; // no texture
-  g->texuniform = 0;
-  g->texrepeat[0] = 1;
-  g->texrepeat[1] = 1;
-  g->emission = 0;
-  g->specular = 0.5;
-  g->shininess = 0.5;
-  g->reflectance = 0;
-  memcpy(g->pos, pos, 3 * sizeof(float));
-  memset(g->size, 0.1, 3 * sizeof(float));
-  memset(g->rgba, 1, 4 * sizeof(float));
-  memcpy(g->mat, mat, 9 * sizeof(float)); // cartesian orientation
-  strncpy(g->label, label, 100);
-  return 0;
+	if (scn->ngeom >= scn->maxgeom) {
+		printf("Warning: reached max geoms %d\n", scn->maxgeom);
+		return 1;
+	}
+	double mat [] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+	mjvGeom *g = scn->geoms + scn->ngeom++;
+	g->type = 104;  // label geom
+	g->dataid = -1; // None
+	g->objtype = 0; // unknown
+	g->objid = -1;  // decor
+	g->category = 4;  // decorative geom
+	g->texid = -1;  // no texture
+	g->texuniform = 0;
+	g->texrepeat[0] = 1;
+	g->texrepeat[1] = 1;
+	g->emission = 0;
+	g->specular = 0.5;
+	g->shininess = 0.5;
+	g->reflectance = 0;
+	memcpy(g->pos, pos, 3 * sizeof(float));
+	memset(g->size, 0.1, 3 * sizeof(float));
+	memset(g->rgba, 1, 4 * sizeof(float));
+	memcpy(g->mat, mat, 9 * sizeof(float));  // cartesian orientation
+	strncpy(g->label, label, 100);
+	return 0;
 }
 
 int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
 {
-    mjvScene scn = state->scn;
+	mjvScene scn = state->scn;
 	mjrContext con = state->con;
-	mjrRect viewport = { 0, 0, height, width };
+	mjrRect viewport = {0, 0, height, width};
 
 	// write offscreen-rendered pixels to file
 	mjr_setBuffer(mjFB_OFFSCREEN, &con);
-    if (con.currentBuffer != mjFB_OFFSCREEN)
+	if (con.currentBuffer != mjFB_OFFSCREEN)
 		printf
-		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
-    mjr_render(viewport, &scn, &con);
-    mjr_readPixels(rgb, NULL, viewport, &con);
-    return 0;
+			("Warning: offscreen rendering not supported, using default/window framebuffer\n");
+	mjr_render(viewport, &scn, &con);
+	mjr_readPixels(rgb, NULL, viewport, &con);
+	return 0;
 }
 
 int closeMujoco(State * state)
@@ -106,21 +105,24 @@ int closeMujoco(State * state)
 	mjr_freeContext(&con);
 	mjv_freeScene(&scn);
 	mj_deactivate();
-    return 0;
+	return 0;
 }
 
-//-------------------------------- main function ----------------------------------------
+//--------------------------------main function-- -- ------------------------------------
 
 int main(int argc, const char **argv)
 {
-  if (argc != 3) {
-    printf("Usage: /path/to/binary height width");
-    exit(0);
-  }
+	if (argc != 3) {
+		printf("Usage: /path/to/binary height width");
+		exit(0);
+	}
 	int H = atoi(argv[1]);
 	int W = atoi(argv[2]);
-  /*char const *filepath = "../zero_shot/environment/models/pick-and-place/world.xml"; */
-  char const *filepath = "xml/humanoid.xml";
+	/*
+	 * char const *filepath =
+	 * "../zero_shot/environment/models/pick-and-place/world.xml";
+	 */
+	char const *filepath = "xml/humanoid.xml";
 	char const *keypath = "../.mujoco/mjkey.txt";
 	State state;
 #ifdef MJ_EGL
@@ -133,7 +135,7 @@ int main(int argc, const char **argv)
 	GraphicsState graphicsState;
 	initOpenGL(&graphicsState, &state, H, W);
 #endif
-	mj_activate(keypath);	// install GLFW mouse and keyboard callbacks
+	mj_activate(keypath);  // install GLFW mouse and keyboard callbacks
 	printf("Initializing MuJoCo...\n");
 	initMujoco(filepath, &state);
 	mj_resetDataKeyframe(state.m, state.d, 0);
@@ -154,8 +156,8 @@ int main(int argc, const char **argv)
 		renderOffscreen(rgb, H, W, &state);
 		fwrite(rgb, 3, H * W, fp);
 #ifdef MJ_GLFW
-		float pos1[] = { 0, 0, 0 };
-		float pos2[] = { 0.2, 0, 0 };
+		float pos1[] = {0, 0, 0};
+		float pos2[] = {0.2, 0, 0};
 
 		setCamera(0, &state);
 		addLabel("1\n", pos1, &state);
@@ -166,8 +168,8 @@ int main(int argc, const char **argv)
 		mj_step(state.m, state.d);
 	}
 	printf
-	    ("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",
-	     H, W);
+		("ffmpeg -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate 60 -i build/rgb.out -vf 'vflip' build/video.mp4\n",
+		 H, W);
 
 	fclose(fp);
 	free(rgb);
