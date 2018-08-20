@@ -17,10 +17,13 @@ int initMujoco(const char *filepath, State * state)
 	state->m = mj_loadXML(filepath, 0, error, 1000);
 	if (!state->m)
 		mju_error_s("Load model error: %s", error);
-	state->d = mj_makeData(state->m);
 
+    // make data, run one computation to initialize all fields
+    state->d = mj_makeData(state->m);
 	mj_forward(state->m, state->d);
-	mjv_makeScene(&state->scn, 1000);
+
+    // initialize MuJoCo visualization
+    mjv_makeScene(&state->scn, 1000);
 	mjv_defaultCamera(&state->cam);
 	mjv_defaultOption(&state->opt);
 	mjr_defaultContext(&state->con);
@@ -48,7 +51,7 @@ int setCamera(int camid, State * state)
 int addLabel(const char* label, const float* pos, State* s)
 {
 	mjvScene* scn = &(s->scn);
-  
+
   if (scn->ngeom >= scn->maxgeom)
   {
     printf("Warning: reached max geoms %d\n", scn->maxgeom);
@@ -79,18 +82,18 @@ int addLabel(const char* label, const float* pos, State* s)
 
 int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
 {
-	mjvScene scn = state->scn;
+    mjvScene scn = state->scn;
 	mjrContext con = state->con;
 	mjrRect viewport = { 0, 0, height, width };
 
 	// write offscreen-rendered pixels to file
 	mjr_setBuffer(mjFB_OFFSCREEN, &con);
-	if (con.currentBuffer != mjFB_OFFSCREEN)
+    if (con.currentBuffer != mjFB_OFFSCREEN)
 		printf
 		    ("Warning: offscreen rendering not supported, using default/window framebuffer\n");
-	mjr_render(viewport, &scn, &con);
-	mjr_readPixels(rgb, NULL, viewport, &con);
-	return 0;
+    mjr_render(viewport, &scn, &con);
+    mjr_readPixels(rgb, NULL, viewport, &con);
+    return 0;
 }
 
 int closeMujoco(State * state)
@@ -103,7 +106,7 @@ int closeMujoco(State * state)
 	mjr_freeContext(&con);
 	mjv_freeScene(&scn);
 	mj_deactivate();
-	return 0;
+    return 0;
 }
 
 //-------------------------------- main function ----------------------------------------

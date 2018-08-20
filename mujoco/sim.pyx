@@ -5,11 +5,12 @@ from enum import Enum
 from libc.string cimport strncpy
 from cython cimport view
 from pxd.mujoco cimport mj_activate, mj_makeData, mj_step, mj_id2name, \
-        mj_name2id, mj_resetData, mj_forward, mj_fwdPosition, mj_jacBody
+        mj_name2id, mj_resetData, mj_forward, mj_fwdPosition, mj_jacBody, \
+        mjr_freeContext, mjr_makeContext
 from pxd.mjmodel cimport mjModel, mjtObj, mjOption, mjtNum
 from pxd.mjdata cimport mjData
 from pxd.mjvisualize cimport mjvScene, mjvCamera, mjvOption
-from pxd.mjrender cimport mjrContext
+from pxd.mjrender cimport mjrContext, mjtFontScale
 from pxd.util cimport State, initMujoco, renderOffscreen, closeMujoco, setCamera, addLabel
 
 cdef extern from *:  # defined as macro
@@ -115,14 +116,15 @@ cdef class BaseSim(object):
 
     cdef mjData * data
     cdef mjModel * model
+    cdef mjrContext _con
     cdef State state
     cdef int forward_called_this_step
     cdef int n_substeps
     cdef int height
     cdef int width
 
-    def __cinit__(self, str fullpath, 
-            int height = 0, int width = 0, 
+    def __cinit__(self, str fullpath,
+            int height = 0, int width = 0,
             int n_substeps = 1):
         """ Activate MuJoCo, initialize OpenGL, load model from xml, and initialize MuJoCo structs.
 
@@ -138,6 +140,7 @@ cdef class BaseSim(object):
         initMujoco(encode(fullpath), & self.state)
         self.model = self.state.m
         self.data = self.state.d
+        self._con = self.state.con
         self.n_substeps=n_substeps
 
     def __enter__(self):
@@ -167,6 +170,12 @@ cdef class BaseSim(object):
             view = pos.astype(np.float32)
             addLabel(encode(str(label)), &view[0], &self.state)
 
+    def _update_offscreen_buffer_size(self):
+        self.model.vis.global_.offwidth = self.width
+        self.model.vis.global_.offheight = self.height
+        mjr_freeContext(& self._con)
+        mjr_makeContext(self.model, & self._con, mjtFontScale.mjFONTSCALE_150)
+
     def render_offscreen(self, camera_name=None, camera_id=None, int
             grayscale=False, dict labels=None):
         """
@@ -182,9 +191,15 @@ cdef class BaseSim(object):
             camera_id = -1
         setCamera(camera_id, & self.state)
 
+        # add labels
         if labels:
             self.add_labels(labels)
 
+        # check off-screen buffer size
+        if self.width > self._con.offWidth or self.height > self._con.offHeight:
+            self._update_offscreen_buffer_size()
+
+        # render off-screen
         array = np.zeros(self.height * self.width * 3, dtype=np.uint8)
         cdef unsigned char[::view.contiguous] view = array
         renderOffscreen(& view[0], self.width, self.height, & self.state)
