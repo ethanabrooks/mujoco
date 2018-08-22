@@ -9,11 +9,11 @@ def print_green(str):
 
 
 # Public API:
-__all__ = ['Sim', 'GeomType', 'ObjType', 'JointType']
+__all__ = ['Sim', 'GeomType', 'ObjType', 'JointType', 'MujocoError']
 
 if os.environ.get('EGL') == '1':
     try:
-        from mujoco.egl import SimEgl as Sim, GeomType, ObjType, JointType, activate
+        from mujoco.egl import (SimEgl as Sim, GeomType, ObjType, JointType, activate, MujocoError)
         __all__.insert(0, 'SimEgl')
         print_green("Using EGL version of mujoco.")
     except ImportError:
@@ -25,17 +25,17 @@ if os.environ.get('EGL') == '1':
         exit()
 else:
     try:
-        from mujoco.glfw import SimGlfw as Sim, GeomType, ObjType, JointType, activate
+        from mujoco.glfw import (SimGlfw as Sim, GeomType, ObjType, JointType, activate, MujocoError)
         __all__.insert(0, 'SimGlfw')
         print_green("Using GLFW version of mujoco.")
     except ImportError:
         try:
-            from mujoco.osmesa import SimOsmesa as Sim, GeomType, ObjType, JointType, activate
+            from mujoco.osmesa import (SimOsmesa as Sim, GeomType, ObjType, JointType, activate, MujocoError)
             __all__.insert(0, 'SimOsmesa')
             print_green("Using OSMesa version of mujoco.")
         except ImportError:
             try:
-                from mujoco.egl import SimEgl as Sim, GeomType, ObjType, JointType, activate
+                from mujoco.egl import (SimEgl as Sim, GeomType, ObjType, JointType, activate, MujocoError)
                 __all__.insert(0, 'SimEgl')
                 print_green("Using EGL version of mujoco.")
             except ImportError:

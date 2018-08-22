@@ -24,6 +24,8 @@ np.import_array()
 # TODO: get floats working?
 # TODO: docs
 
+class MujocoError(RuntimeError):
+    pass
 
 """
 ``enum`` of different MuJoCo object types (corresponds to ``mjtObj``).
@@ -156,7 +158,7 @@ cdef class BaseSim(object):
         cast to a ``str`` and ``pos`` is a ``list``, ``tuple``, or ``ndarray`` with elements
         corresponding to ``(x, y, z)``.
         """
-        raise RuntimeError("`render` method is only defined for the GLFW version.")
+        raise MujocoError("`render` method is only defined for the GLFW version.")
 
     def add_labels(self, labels):
         cdef float[::view.contiguous] view
@@ -239,7 +241,7 @@ cdef class BaseSim(object):
         check_ObjType(obj_type, argnum=1)
         id = mj_name2id(self.model, obj_type.value, encode(name))
         if id < 0:
-            raise RuntimeError(' '.join("name", name, "not found in model"))
+            raise MujocoError(f"name {name} not found in model")
         return id
 
     def id2name(self, obj_type, id):
@@ -249,7 +251,7 @@ cdef class BaseSim(object):
         if buff is not NULL:
             return decode(buff)
         else:
-            raise RuntimeError("id", id, "not found in model")
+            raise MujocoError(f"id {id} not found in model")
 
     def _key2id(self, key, obj_type=None):
         """
