@@ -224,7 +224,7 @@ cdef class BaseSim(object):
         check_ObjType(obj_type, argnum=1)
         id = mj_name2id(self.model, obj_type.value, encode(name))
         if id < 0:
-            raise RuntimeError("name", name, "not found in model")
+            raise RuntimeError(' '.join("name", name, "not found in model"))
         return id
 
     def id2name(self, obj_type, id):
