@@ -22,5 +22,5 @@ cdef extern from "util.h":
     int initMujoco(const char *filepath, State * state)
     int setCamera(int camid, State * state)
     int addLabel(const char* label, float* pos, State* s)
-    int renderOffscreen(unsigned char *rgb, int height, int width, State *)
+    int renderOffscreen(unsigned char *rgb, int height, int width, State * state)
     int closeMujoco(State * state)
