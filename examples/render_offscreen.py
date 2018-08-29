@@ -20,6 +20,6 @@ try:
     while True:
         sim.step()
         sim.ctrl[:] = -np.ones((sim.ctrl.shape))
-        sim.render_offscreen()
+        print(np.allclose(sim.render_offscreen(), 0))
 except KeyboardInterrupt:
     pass
