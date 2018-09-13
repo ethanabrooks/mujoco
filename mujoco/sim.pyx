@@ -254,18 +254,19 @@ cdef class BaseSim(object):
         if id < 0:
             if default is None:
                 raise MujocoError(f"name {name} not found in model")
-            else:
-                return default
+            return default
         return id
 
-    def id2name(self, obj_type, id):
+    def id2name(self, obj_type, id, default=None):
         """ Get name corresponding to object id. """
         check_ObjType(obj_type, argnum=1)
         buff = mj_id2name(self.model, obj_type.value, id)
         if buff is not NULL:
             return decode(buff)
         else:
-            raise MujocoError(f"id {id} not found in model")
+            if default is None:
+                raise MujocoError(f"id {id} not found in model")
+            return default
 
     def _key2id(self, key, obj_type=None):
         """
@@ -279,7 +280,7 @@ cdef class BaseSim(object):
             check_ObjType(obj_type, argnum=2)
             return self.name2id(obj_type, key)
         assert isinstance(
-            key, int), 'If 2nd argument is None, 1st argument must be `int`'
+            key, int), 'key must be `str` or `int`'
         return key
 
     def get_jnt_qposadr(self, key):
