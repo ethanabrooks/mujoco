@@ -234,7 +234,18 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    def name2id(self, obj_type, str name, default=None):
+    def contains(self, obj_type, key):
+        check_ObjType(obj_type, argnum=1)
+        try:
+            if type(key) is str:
+                self.name2id(obj_type, key)
+            else:
+                self.id2name(obj_type, key)
+            return True
+        except MujocoError:
+            return False
+
+    def name2id(self, obj_type, name, default=None):
         """
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
