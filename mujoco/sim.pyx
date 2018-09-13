@@ -234,14 +234,17 @@ cdef class BaseSim(object):
         self.forward()
         return xpos
 
-    def name2id(self, obj_type, str name):
+    def name2id(self, obj_type, str name, default=None):
         """
         Get numerical ID corresponding to object type and name. Useful for indexing arrays.
         """
         check_ObjType(obj_type, argnum=1)
         id = mj_name2id(self.model, obj_type.value, encode(name))
         if id < 0:
-            raise MujocoError(f"name {name} not found in model")
+            if default is None:
+                raise MujocoError(f"name {name} not found in model")
+            else:
+                return default
         return id
 
     def id2name(self, obj_type, id):
